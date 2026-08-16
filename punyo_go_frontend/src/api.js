@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://humo-tezkor.uz/api';
+const API_BASE_URL = 'https://punyogo.uz/api';
 
 const fetchWithBypass = async (url, options = {}) => {
     const controller = new AbortController();

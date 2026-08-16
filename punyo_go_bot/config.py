@@ -18,9 +18,9 @@ def get_sanitized_env(key, default):
     return val
 
 # Backend API URL (Internal or External)
-BACKEND_API_URL = get_sanitized_env('API_BASE_URL', 'https://humo-tezkor.uz/api').rstrip('/')
+BACKEND_API_URL = get_sanitized_env('API_BASE_URL', 'https://punyogo.uz/api').rstrip('/')
 
 # Web App URLs (Production Domain)
-WEB_APP_SHOP_URL = get_sanitized_env('WEB_APP_SHOP_URL', 'https://humo-tezkor.uz').rstrip('/')
-WEB_APP_CHAT_URL = get_sanitized_env('WEB_APP_CHAT_URL', 'https://humo-tezkor.uz/chat').rstrip('/')
-WEB_APP_ORDERS_URL = get_sanitized_env('WEB_APP_ORDERS_URL', 'https://humo-tezkor.uz/orders').rstrip('/')
+WEB_APP_SHOP_URL = get_sanitized_env('WEB_APP_SHOP_URL', 'https://punyogo.uz').rstrip('/')
+WEB_APP_CHAT_URL = get_sanitized_env('WEB_APP_CHAT_URL', 'https://punyogo.uz/chat').rstrip('/')
+WEB_APP_ORDERS_URL = get_sanitized_env('WEB_APP_ORDERS_URL', 'https://punyogo.uz/orders').rstrip('/')
