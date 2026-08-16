@@ -1,5 +1,5 @@
 @echo off
-set TOKEN=8354261773:AAFcVFIYIHRZ-9koTGSXaAtDo6zr-e-H3HI
+set TOKEN=8882137807:AAHmRYAda8IEBAbSfGRo-nOVOJDlmmWazEM
 
 echo --- Terminating sessions ---
 curl.exe -s -X POST "https://api.telegram.org/bot%TOKEN%/close"

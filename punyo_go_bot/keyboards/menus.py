@@ -4,16 +4,11 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
 
 # Uzbek keyboards
 def get_main_menu_uz(shop_url: str, chat_url: str, orders_url: str):
-    """Main menu keyboard in Uzbek with 2x2 layout"""
+    """Main menu keyboard in Uzbek with 1 button"""
     keyboard = [
         [
-            KeyboardButton(text="🛒 Do'kon", web_app=WebAppInfo(url=shop_url)),
-            KeyboardButton(text="📦 Buyurtmalarim", web_app=WebAppInfo(url=orders_url))
-        ],
-        [
-            KeyboardButton(text="💬 Yordam", web_app=WebAppInfo(url=chat_url)),
-            KeyboardButton(text="🌐 Til: O'zbek")
-        ],
+            KeyboardButton(text="📱 Ilovani ochish", web_app=WebAppInfo(url=shop_url))
+        ]
     ]
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
 
@@ -48,16 +43,11 @@ def get_phone_request_uz():
 
 # Russian keyboards
 def get_main_menu_ru(shop_url: str, chat_url: str, orders_url: str):
-    """Main menu keyboard in Russian with 2x2 layout"""
+    """Main menu keyboard in Russian with 1 button"""
     keyboard = [
         [
-            KeyboardButton(text="🛒 Магазин", web_app=WebAppInfo(url=shop_url)),
-            KeyboardButton(text="📦 Мои заказы", web_app=WebAppInfo(url=orders_url))
-        ],
-        [
-            KeyboardButton(text="💬 Помощь", web_app=WebAppInfo(url=chat_url)),
-            KeyboardButton(text="🌐 Язык: Русский")
-        ],
+            KeyboardButton(text="📱 Открыть приложение", web_app=WebAppInfo(url=shop_url))
+        ]
     ]
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
 

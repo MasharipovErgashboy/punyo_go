@@ -38,7 +38,7 @@ async def set_photo():
         # But wait, let's try set_chat_photo.
         print(f"Attempting to set photo from {photo_path}...")
         await bot.set_chat_photo(chat_id=(await bot.get_me()).id, photo=photo)
-        print("Humo Tezkor bot rasmi muvaffaqiyatli o'rnatildi!")
+        print("Punyo Go bot rasmi muvaffaqiyatli o'rnatildi!")
     except Exception as e:
         print(f"Xatolik: {e}")
         print("Eslatma: Ba'zan bot rasmimini faqat @BotFather orqali o'rnatish mumkin.")

@@ -1,7 +1,7 @@
 import requests
 import sys
 
-TOKEN = "8354261773:AAFcVFIYIHRZ-9koTGSXaAtDo6zr-e-H3HI"
+TOKEN = "8882137807:AAHmRYAda8IEBAbSfGRo-nOVOJDlmmWazEM"
 
 def kill_sessions():
     print(f"--- Terminating sessions for Bot ID: {TOKEN.split(':')[0]} ---")

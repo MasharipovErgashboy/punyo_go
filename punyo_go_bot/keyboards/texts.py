@@ -2,7 +2,7 @@
 
 MESSAGES = {
     'uz': {
-        'welcome': "Assalomu Aleykum {name}, Humo Tezkor botiga xush kelibsiz!",
+        'welcome': "Assalomu Aleykum {name}, Punyo Go botiga xush kelibsiz!",
         'choose_action': "Quyidagilardan birini tanlang:",
         'language_changed': "✅ Til o'zgartirildi",
         'language_select': "Tilni tanlang:",
@@ -14,7 +14,7 @@ MESSAGES = {
         'back_to_menu': "Asosiy menyu",
     },
     'ru': {
-        'welcome': "Здравствуйте {name}, добро пожаловать в бот Humo Tezkor!",
+        'welcome': "Здравствуйте {name}, добро пожаловать в бот Punyo Go!",
         'choose_action': "Выберите одно из следующих:",
         'language_changed': "✅ Язык изменен",
         'language_select': "Выберите язык:",
