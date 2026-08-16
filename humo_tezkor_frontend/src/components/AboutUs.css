@@ -1,0 +1,292 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+.au-wrapper {
+    --au-bg: var(--primary-bg);
+    --au-navy: var(--text-main);
+    --au-orange: var(--accent-color);
+    --au-border: var(--border-color);
+    --au-text-main: var(--text-main);
+    --au-text-muted: var(--text-muted);
+    --au-card-bg: var(--card-bg);
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--au-bg);
+    min-height: 100vh;
+    color: var(--au-text-main);
+    transition: all 0.3s ease;
+}
+
+/* Fixed Header */
+.au-header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--card-bg);
+    opacity: 0.95;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--au-border);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.au-back-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--card-bg);
+    border: 1px solid var(--au-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+}
+
+.au-back-circle:active {
+    transform: scale(0.9);
+    background: var(--primary-bg);
+}
+
+.au-back-arrow {
+    font-size: 20px;
+    color: var(--au-navy);
+}
+
+.au-header-text h1 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0;
+    color: var(--au-navy);
+    letter-spacing: -0.5px;
+}
+
+.au-header-text p {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--au-text-muted);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Scroll View */
+.au-scroll-area {
+    padding: 24px 20px 40px;
+}
+
+.au-content-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    animation: auFadeIn 0.6s ease-out;
+}
+
+@keyframes auFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Brand Card */
+.au-brand-card {
+    text-align: center;
+    padding: 10px 0 10px;
+}
+
+.au-shop-title {
+    font-size: 28px;
+    font-weight: 800;
+    margin: 0;
+    color: var(--au-navy);
+}
+
+.au-shop-desc {
+    font-size: 14px;
+    color: var(--au-text-muted);
+    margin: 8px 0 0;
+    font-weight: 500;
+}
+
+/* Info Grid */
+.au-info-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+.au-card-item {
+    background: var(--au-card-bg);
+    border: 1px solid var(--au-border);
+    border-radius: 20px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--shadow-sm);
+}
+
+.au-icon-box {
+    width: 48px;
+    height: 48px;
+    background: var(--primary-bg);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.au-icon-box.orange {
+    background: var(--category-hover);
+    color: var(--au-orange);
+}
+
+.au-card-body .au-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--au-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 2px;
+}
+
+.au-card-body .au-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--au-navy);
+    text-decoration: none;
+    word-break: break-all;
+}
+
+.au-card-body .au-value-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--au-text-main);
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Location Card */
+.au-location-card {
+    background: var(--au-card-bg);
+    border: 1px solid var(--au-border);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+.au-location-card .au-card-item.no-border {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+}
+
+.au-map-container {
+    height: 180px;
+    position: relative;
+    cursor: pointer;
+    margin: 0 12px 12px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--primary-bg);
+}
+
+.au-map-static {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.au-map-container:hover .au-map-static {
+    transform: scale(1.05);
+}
+
+.au-map-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.au-map-btn {
+    background: var(--au-navy);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+}
+
+.au-map-container:hover .au-map-btn {
+    transform: translateY(-2px);
+    background: var(--au-orange);
+    color: #fff;
+}
+
+/* Footer */
+.au-page-footer {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.au-footer-divider {
+    width: 40px;
+    height: 3px;
+    background: var(--au-border);
+    margin: 0 auto 16px;
+    border-radius: 2px;
+}
+
+.au-copyright {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--au-text-muted);
+    letter-spacing: 1px;
+}
+
+/* Loader */
+.au-loader-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 0;
+}
+
+.au-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--au-border);
+    border-top-color: var(--au-orange);
+    border-radius: 50%;
+    animation: auSpin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes auSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}

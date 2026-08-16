@@ -1,0 +1,233 @@
+.drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+}
+
+.auth-drawer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: var(--card-bg);
+    border-radius: 24px 24px 0 0;
+    z-index: 2001;
+    padding-bottom: constant(safe-area-inset-bottom);
+    padding-bottom: env(safe-area-inset-bottom);
+    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+.drawer-handle {
+    width: 40px;
+    height: 4px;
+    background: var(--border-color);
+    border-radius: 2px;
+    margin: 12px auto;
+}
+
+.drawer-header {
+    padding: 0 20px;
+}
+
+.drawer-back {
+    background: none;
+    border: none;
+    color: var(--text-main);
+    font-size: 16px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+}
+
+.drawer-content {
+    padding: 20px;
+}
+
+.drawer-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 8px;
+}
+
+.drawer-subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+}
+
+.input-group-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 8px;
+    margin-top: 16px;
+}
+
+.name-field {
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--input-text);
+    background: var(--input-bg);
+    outline: none;
+    transition: all 0.2s;
+}
+
+.name-field:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px var(--category-hover);
+}
+
+.name-field.has-error {
+    border-color: #ef4444;
+}
+
+.phone-input-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2px;
+    background: var(--input-bg);
+    transition: all 0.2s;
+}
+
+.phone-input-group.has-error {
+    border-color: #ef4444;
+}
+
+.country-selector-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border-right: 1px solid var(--border-color);
+    padding: 0 8px;
+}
+
+.country-dropdown {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.selected-country-view {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 8px;
+    white-space: nowrap;
+}
+
+.code-text {
+    font-weight: 700;
+    color: var(--input-text);
+    font-size: 15px;
+}
+
+.dropdown-arrow {
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+.phone-field {
+    flex: 1;
+    border: none;
+    padding: 12px 16px;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    outline: none;
+    background: transparent;
+    color: var(--input-text);
+}
+
+.drawer-error-text {
+    color: #ef4444;
+    font-size: 13px;
+    margin-top: 8px;
+    margin-left: 4px;
+}
+
+.drawer-privacy {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-top: 24px;
+    margin-bottom: 24px;
+}
+
+.save-changes-btn {
+    margin-top: 8px;
+    width: 100%;
+    background: var(--accent-color);
+    color: white;
+    padding: 16px;
+    border-radius: 12px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-md);
+}
+
+.save-changes-btn:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.save-changes-btn:active {
+    transform: scale(0.98);
+}
+
+.drawer-continue-btn {
+    width: 100%;
+    background: var(--accent-color);
+    color: white;
+    padding: 16px;
+    border-radius: 16px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+}
+
+.drawer-continue-btn:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.drawer-continue-btn:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.drawer-continue-btn:disabled {
+    opacity: 0.6;
+}

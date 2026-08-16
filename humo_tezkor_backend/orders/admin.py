@@ -1,0 +1,114 @@
+from django.contrib import admin
+from django.utils.html import format_html
+from django.utils.safestring import mark_safe
+from django.urls import reverse
+from .models import Order, OrderItem
+
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    extra = 0
+    fields = ('product', 'quantity', 'price')
+    readonly_fields = ('price',)
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    # Enhanced list_display to include products and categories
+    list_display = (
+        'id', 'user', 'phone_number', 'status', 
+        'total_amount', 'get_products', 'get_categories_links', 
+        'get_delivery_address_map', 'created_at'
+    )
+    list_select_related = ('user',)
+    list_per_page = 15
+    
+    def get_queryset(self, request):
+        # Optimization: Prefetch items and their related products and categories
+        return super().get_queryset(request).prefetch_related('items__product__category')
+
+    @admin.display(description='Delivery address')
+    def get_delivery_address_map(self, obj):
+        if not obj.delivery_address and not (obj.latitude and obj.longitude):
+            return "-"
+        
+        from urllib.parse import quote
+        
+        # Priority: coordinates if available, otherwise search by address text
+        if obj.latitude and obj.longitude:
+            # Yandex Maps URL with point (pt)
+            map_url = f"https://yandex.uz/maps/?pt={obj.longitude},{obj.latitude}&z=16&l=map"
+        else:
+            # Yandex Maps Search URL
+            map_url = f"https://yandex.uz/maps/?text={quote(obj.delivery_address)}"
+            
+        return format_html(
+            '<div style="max-width: 250px; line-height: 1.4;">'
+            '{}<br/>'
+            '<a href="{}" target="_blank" style="'
+            'display: inline-block; margin-top: 5px; padding: 4px 8px; '
+            'background: #ffcc00; color: #000; text-decoration: none; '
+            'border-radius: 4px; font-weight: bold; font-size: 11px;'
+            '">📍 Location (Yandex)</a>'
+            '</div>',
+            obj.delivery_address, map_url
+        )
+
+    @admin.display(description='Mahsulotlar')
+    def get_products(self, obj):
+        # Safety check: ensure product exists
+        products = [item.product.name for item in obj.items.all() if item.product]
+        return ", ".join(products) or "-"
+
+    @admin.display(description='Kategoriya ID')
+    def get_categories_links(self, obj):
+        # Unique list of category links from items
+        categories = {}
+        # Prefetching in get_queryset ensures this is efficient
+        for item in obj.items.all():
+            if item.product and item.product.category:
+                categories[item.product.category_id] = item.product.category.name
+        
+        if not categories:
+            return "-"
+            
+        links = []
+        for cat_id, cat_name in sorted(categories.items()):
+            try:
+                url = reverse('admin:products_category_change', args=[cat_id])
+                links.append(format_html('<a href="{}">ID {} ({})</a>', url, cat_id, cat_name))
+            except Exception:
+                links.append(format_html('ID {}', cat_id))
+        
+        return mark_safe(", ".join(links))
+
+    list_filter = ('status', 'created_at')
+    # Removed potential problematic search fields
+    search_fields = ('phone_number', 'id')
+    readonly_fields = ('id', 'created_at', 'updated_at', 'total_amount')
+    inlines = [OrderItemInline]
+    actions = ['confirm_orders', 'mark_delivered']
+
+    @admin.action(description='Buyurtmani tasdiqlash')
+    def confirm_orders(self, request, queryset):
+        rows_updated = queryset.update(status='active')
+        self.message_user(request, f"{rows_updated} ta buyurtma tasdiqlandi.")
+
+    @admin.action(description='Berdim (O\'chirish)')
+    def mark_delivered(self, request, queryset):
+        count = queryset.count()
+        queryset.delete()
+        self.message_user(request, f"{count} ta buyurtma o'chirildi (Berildi).")
+    
+    fieldsets = (
+        ('Asosiy malumotlar', {
+            'fields': ('user', 'phone_number', 'status', 'total_amount')
+        }),
+        ('Manzil va Eslatma', {
+            'fields': ('delivery_address', 'latitude', 'longitude', 'notes')
+        }),
+        ('Vaqt', {
+            'fields': ('created_at', 'updated_at'),
+        }),
+    )
+
+# We are NOT registering OrderItem here to keep the sidebar clean as requested.
+# It is still visible as an inline within OrderAdmin.
