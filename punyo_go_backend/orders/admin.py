@@ -14,16 +14,18 @@ class OrderItemInline(admin.TabularInline):
 class OrderAdmin(admin.ModelAdmin):
     # Enhanced list_display to include products and categories
     list_display = (
-        'id', 'user', 'phone_number', 'status', 
+        'id', 'restaurant', 'user', 'phone_number', 'status', 
         'total_amount', 'get_products', 'get_categories_links', 
         'get_delivery_address_map', 'created_at'
     )
-    list_select_related = ('user',)
+    list_select_related = ('user', 'restaurant')
     list_per_page = 15
     
     def get_queryset(self, request):
-        # Optimization: Prefetch items and their related products and categories
-        return super().get_queryset(request).prefetch_related('items__product__category')
+        qs = super().get_queryset(request).prefetch_related('items__product__category')
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(restaurant__admin_user=request.user)
 
     @admin.display(description='Delivery address')
     def get_delivery_address_map(self, obj):
@@ -80,9 +82,9 @@ class OrderAdmin(admin.ModelAdmin):
         
         return mark_safe(", ".join(links))
 
-    list_filter = ('status', 'created_at')
+    list_filter = ('restaurant', 'status', 'created_at')
     # Removed potential problematic search fields
-    search_fields = ('phone_number', 'id')
+    search_fields = ('phone_number', 'id', 'restaurant__name')
     readonly_fields = ('id', 'created_at', 'updated_at', 'total_amount')
     inlines = [OrderItemInline]
     actions = ['confirm_orders', 'mark_delivered']
@@ -100,7 +102,7 @@ class OrderAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Asosiy malumotlar', {
-            'fields': ('user', 'phone_number', 'status', 'total_amount')
+            'fields': ('restaurant', 'user', 'phone_number', 'status', 'total_amount')
         }),
         ('Manzil va Eslatma', {
             'fields': ('delivery_address', 'latitude', 'longitude', 'notes')

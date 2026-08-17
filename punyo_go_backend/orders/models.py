@@ -13,6 +13,14 @@ class Order(models.Model):
     ]
     
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='orders')
+    restaurant = models.ForeignKey(
+        'restaurants.Restaurant',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='orders',
+        verbose_name="Restoran"
+    )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     delivery_address = models.TextField(blank=True, default='')

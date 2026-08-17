@@ -4,7 +4,7 @@ from .models import Restaurant
 
 @admin.register(Restaurant)
 class RestaurantAdmin(admin.ModelAdmin):
-    list_display = ('name', 'image_preview', 'location', 'phone', 'delivery_price_formatted', 'is_active', 'id')
+    list_display = ('name', 'admin_user', 'image_preview', 'location', 'phone', 'is_active', 'id')
     list_filter = ('is_active',)
     search_fields = ('name', 'location', 'phone', 'id')
     readonly_fields = ('id', 'image_preview_large', 'created_at')
@@ -12,6 +12,10 @@ class RestaurantAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Asosiy ma\'lumotlar', {
             'fields': ('id', 'name', 'is_active')
+        }),
+        ('Boshqaruv (Multi-vendor)', {
+            'fields': ('admin_user', 'telegram_chat_id'),
+            'description': 'Ushbu restoran uchun javobgar foydalanuvchini (Admin) tanlang. U faqat shu restoranni ko\'ra oladi.'
         }),
         ('Rasm', {
             'fields': ('image', 'image_preview_large')
@@ -27,6 +31,22 @@ class RestaurantAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(admin_user=request.user)
+
+    def has_change_permission(self, request, obj=None):
+        if not request.user.is_superuser and obj and obj.admin_user != request.user:
+            return False
+        return True
+
+    def has_delete_permission(self, request, obj=None):
+        if not request.user.is_superuser:
+            return False
+        return True
 
     def image_preview(self, obj):
         if obj.image:

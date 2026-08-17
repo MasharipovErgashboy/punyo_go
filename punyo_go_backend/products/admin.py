@@ -61,5 +61,17 @@ class ProductAdmin(admin.ModelAdmin):
     )
     readonly_fields = ('image_base64',)
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(restaurant__admin_user=request.user)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "restaurant" and not request.user.is_superuser:
+            from restaurants.models import Restaurant
+            kwargs["queryset"] = Restaurant.objects.filter(admin_user=request.user)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
     class Media:
         js = ('products/admin_translate.js',)

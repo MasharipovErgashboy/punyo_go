@@ -7,7 +7,7 @@ import urllib.error
 
 logger = logging.getLogger(__name__)
 
-def send_telegram_notification(message):
+def send_telegram_notification(message, chat_id=None):
     """
     Sends a message to a Telegram chat/group using the bot token.
     Uses BOT_TOKEN and TELEGRAM_CHAT_ID from environment variables.
@@ -15,7 +15,9 @@ def send_telegram_notification(message):
     """
     # Fallback values if environment variables are not set on Render
     token = os.getenv('BOT_TOKEN', '8354261773:AAEh6AvvE3rrvnUoUoIN2lv3pj468ebZ5jQ')
-    chat_id = os.getenv('TELEGRAM_CHAT_ID', '-1003528740543')
+    
+    if not chat_id:
+        chat_id = os.getenv('TELEGRAM_CHAT_ID', '-1003528740543')
 
     print(f"DEBUG: Attempting to send TG notification. Chat ID: {chat_id}, Token exists: {bool(token)}")
 
