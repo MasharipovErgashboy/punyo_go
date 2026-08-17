@@ -10,7 +10,9 @@ const RestaurantList = ({ language }) => {
         const fetchRestaurants = async () => {
             try {
                 const data = await api.getRestaurants();
-                setRestaurants(data);
+                // Django REST framework with pagination returns { count, next, previous, results: [...] }
+                const results = data.results !== undefined ? data.results : (Array.isArray(data) ? data : []);
+                setRestaurants(results);
             } catch (error) {
                 console.error("Error fetching restaurants:", error);
             } finally {
