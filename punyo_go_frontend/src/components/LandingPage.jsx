@@ -3,9 +3,14 @@ import './LandingPage.css';
 
 const LandingPage = () => {
   const botLink = "https://t.me/punyogo_bot";
+  const adminLink = "https://t.me/thepunyo";
 
   const handleOpenApp = () => {
     window.location.href = botLink;
+  };
+
+  const handleOpenAdmin = () => {
+    window.location.href = adminLink;
   };
 
   useEffect(() => {
@@ -50,7 +55,7 @@ const LandingPage = () => {
               <button onClick={handleOpenApp} className="btn-primary">
                 <span style={{marginRight: '8px', fontSize: '1.2rem'}}>🟡</span> Punyo GO'ni ochish
               </button>
-              <button onClick={handleOpenApp} className="btn-secondary">
+              <button onClick={handleOpenAdmin} className="btn-secondary">
                 <span style={{marginRight: '8px', fontSize: '1.2rem'}}>⚪</span> Biznesni qo‘shish
               </button>
             </div>
@@ -156,7 +161,7 @@ const LandingPage = () => {
                 <li>📊 Savdolaringizni kuzating</li>
               </ul>
               
-              <button onClick={handleOpenApp} className="btn-primary">Biznesni qo‘shish →</button>
+              <button onClick={handleOpenAdmin} className="btn-primary">Biznesni qo‘shish →</button>
             </div>
             <div className="card animate-on-scroll fade-in-left" style={{order: 1, background: 'linear-gradient(145deg, #1e293b, #0f172a)'}}>
                <h3 style={{color: 'var(--primary-color)'}}>Biznes Admin Panel</h3>
@@ -261,7 +266,7 @@ const LandingPage = () => {
             <div className="footer-links animate-on-scroll fade-in-up delay-2">
               <h4>Bizneslar</h4>
               <ul>
-                <li><a href="#">Biznesni qo‘shish</a></li>
+                <li><a href={adminLink} target="_blank" rel="noopener noreferrer">Biznesni qo‘shish</a></li>
                 <li><a href="#">Business Panel</a></li>
                 <li><a href="#">Hamkorlik</a></li>
               </ul>
