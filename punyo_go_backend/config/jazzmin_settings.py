@@ -2,22 +2,22 @@
 
 JAZZMIN_SETTINGS = {
     # title of the window
-    "site_title": "HUMO TEZKOR Admin",
+    "site_title": "Punyo Go Admin",
     
     # Title on the login screen
-    "site_header": "HUMO TEZKOR",
+    "site_header": "Punyo Go",
     
     # Title on the brand
-    "site_brand": "HUMO TEZKOR",
+    "site_brand": "Punyo Go",
     
     # Logo to use for your site
     "site_logo": None,
     
     # Welcome text on the login screen
-    "welcome_sign": "HUMO TEZKOR Admin Paneliga Xush Kelibsiz",
+    "welcome_sign": "Punyo Go Admin Paneliga Xush Kelibsiz",
     
     # Copyright on the footer
-    "copyright": "HUMO TEZKOR",
+    "copyright": "Punyo Go",
     
     # The model admin to search from the search bar
     "search_model": "users.UserProfile",

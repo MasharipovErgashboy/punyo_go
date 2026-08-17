@@ -177,8 +177,8 @@ REST_FRAMEWORK = {
 
 # drf-spectacular settings (Swagger/OpenAPI)
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'HUMO TEZKOR API',
-    'DESCRIPTION': 'Telegram bot backend API for HUMO TEZKOR e-commerce',
+    'TITLE': 'Punyo Go API',
+    'DESCRIPTION': 'Telegram bot backend API for Punyo Go e-commerce',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     'SCHEMA_PATH_PREFIX': '/api/',
@@ -227,8 +227,8 @@ CORS_ALLOW_HEADERS = list(default_headers)
 # Import Jazzmin settings
 from .jazzmin_settings import JAZZMIN_SETTINGS, JAZZMIN_UI_TWEAKS
 
-JAZZMIN_SETTINGS["site_title"] = "HUMO TEZKOR"
-JAZZMIN_SETTINGS["site_header"] = "HUMO TEZKOR"
-JAZZMIN_SETTINGS["welcome_sign"] = "HUMO TEZKOR Admin Paneliga xush kelibsiz"
-JAZZMIN_SETTINGS["copyright"] = "HUMO TEZKOR"
+JAZZMIN_SETTINGS["site_title"] = "Punyo Go"
+JAZZMIN_SETTINGS["site_header"] = "Punyo Go"
+JAZZMIN_SETTINGS["welcome_sign"] = "Punyo Go Admin Paneliga xush kelibsiz"
+JAZZMIN_SETTINGS["copyright"] = "Punyo Go"
 

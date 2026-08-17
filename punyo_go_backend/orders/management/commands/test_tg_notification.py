@@ -13,7 +13,7 @@ class Command(BaseCommand):
         
         self.stdout.write(f"Environment - Token: {bool(token)}, ChatID: {chat_id}")
         
-        message = "<b>🔔 TEST:</b> Humo Tezkor bildirishnoma tizimi tekshirilmoqda!"
+        message = "<b>🔔 TEST:</b> Punyo Go bildirishnoma tizimi tekshirilmoqda!"
         success = send_telegram_notification(message)
         
         if success:
