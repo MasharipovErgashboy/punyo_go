@@ -82,6 +82,28 @@ class ProductAdmin(admin.ModelAdmin):
             return qs
         return qs.filter(restaurant__admin_user=request.user)
 
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super().get_fieldsets(request, obj)
+        if not request.user.is_superuser:
+            # Create a new fieldsets tuple without 'restaurant'
+            new_fieldsets = []
+            for name, opts in fieldsets:
+                if 'fields' in opts:
+                    fields = list(opts['fields'])
+                    if 'restaurant' in fields:
+                        fields.remove('restaurant')
+                    opts['fields'] = tuple(fields)
+                new_fieldsets.append((name, opts))
+            return tuple(new_fieldsets)
+        return fieldsets
+
+    def save_model(self, request, obj, form, change):
+        if not request.user.is_superuser and not obj.restaurant_id:
+            rest = request.user.managed_restaurants.first()
+            if rest:
+                obj.restaurant = rest
+        super().save_model(request, obj, form, change)
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "restaurant" and not request.user.is_superuser:
             from restaurants.models import Restaurant
