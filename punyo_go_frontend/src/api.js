@@ -43,6 +43,11 @@ export const api = {
         return response.json();
     },
 
+    async getRestaurants() {
+        const response = await fetchWithBypass(`${API_BASE_URL}/restaurants/`);
+        return response.json();
+    },
+
     async getCategoryProducts(categoryId) {
         const response = await fetchWithBypass(`${API_BASE_URL}/products/category/${categoryId}/products/`);
         return response.json();

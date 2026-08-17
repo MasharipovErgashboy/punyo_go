@@ -1,0 +1,47 @@
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background-color: #0b0b0b;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    z-index: 1000;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    gap: 4px;
+    width: 20%;
+}
+
+.nav-item.active {
+    color: #FFCC00;
+}
+
+.nav-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 24px;
+}
+
+.cart-icon-wrapper {
+    position: relative;
+}
+
+/* Adjust padding for the app to not hide behind bottom nav */
+body {
+    padding-bottom: 70px;
+}

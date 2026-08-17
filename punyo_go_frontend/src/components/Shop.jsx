@@ -4,6 +4,9 @@ import CategoryList from './CategoryList';
 import ProductGrid from './ProductGrid';
 import SearchBar from './SearchBar';
 import CategorySection from './CategorySection';
+import PromoBanner from './PromoBanner';
+import RestaurantList from './RestaurantList';
+import BottomNav from './BottomNav';
 import Sidebar from './Sidebar';
 import AuthDrawer from './AuthDrawer';
 import MyOrders from './MyOrders';
@@ -700,6 +703,8 @@ const Shop = ({ language, theme, toggleTheme }) => {
         // Default: Home View
         return (
             <div className="home-content">
+                <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} language={language} />
+                <PromoBanner language={language} />
                 <CategoryList
                     categories={categories}
                     selectedCategory={null}
@@ -707,6 +712,8 @@ const Shop = ({ language, theme, toggleTheme }) => {
                     onShowAllCategories={() => setView('all_categories')}
                     language={language}
                 />
+                
+                <RestaurantList language={language} />
 
                 <div className="featured-sections">
                     {categories.map(category => (
@@ -733,30 +740,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
     };
 
     return (
-        <div className={`shop-view ${isSidebarOpen ? 'is-sidebar-open' : ''}`}>
-            <Sidebar
-                isOpen={isSidebarOpen}
-                onClose={() => setIsSidebarOpen(false)}
-                language={language}
-                theme={theme}
-                toggleTheme={toggleTheme}
-                onLanguageChange={async (lang) => {
-                    // Update local state
-                    window.dispatchEvent(new CustomEvent('langChange', { detail: lang }));
-                    // Update backend if user is logged in
-                    if (currentUser) {
-                        try {
-                            await api.changeLanguage(currentUser.telegram_user_id, lang);
-                        } catch (e) {
-                            console.error('Failed to sync language to backend:', e);
-                        }
-                    }
-                }}
-                onItemClick={handleSidebarItemClick}
-                user={currentUser}
-                unreadCount={unreadCount}
-            />
-
+        <div className="shop-view">
             <AuthDrawer
                 isOpen={isAuthDrawerOpen}
                 onClose={() => {
@@ -784,63 +768,56 @@ const Shop = ({ language, theme, toggleTheme }) => {
                 }}
             />
 
-            <header className="header">
-                <div className="header-top">
-                    <button className="menu-btn" onClick={() => setIsSidebarOpen(true)}>
-                        <span className="menu-icon">☰</span>
-                    </button>
-                    <h1 className="brand-title">
-                        <span className="humo">HUMO</span>
-                        <span className="tezkor">TEZKOR</span>
-                    </h1>
-                    <button className="chat-btn" onClick={() => {
-                        if (!currentUser || !currentUser.phone_number || currentUser.phone_number === '-') {
-                            setIsAuthDrawerOpen(true);
-                        } else {
-                            setView('chat');
-                        }
-                    }}>
-                        <span className="chat-icon">💬</span>
+            {/* New App Header matching Screenshot */}
+            <header className="app-header">
+                <div className="header-brand">
+                    <span className="brand-punyo">PUNYO</span>
+                    <span className="brand-go">GO</span>
+                </div>
+                <div className="header-actions">
+                    <button className="notification-btn" onClick={() => handleSidebarItemClick('notifications')}>
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        {unreadCount > 0 && <span className="notification-badge"></span>}
                     </button>
                 </div>
-                <p className="subtitle">{language === 'ru' ? 'минии приложение' : 'mini ilova'}</p>
             </header>
-
-            <div className="search-container">
-                <SearchBar
-                    value={searchQuery}
-                    onChange={setSearchQuery}
-                    placeholder={language === 'ru' ? 'Поиск товаров...' : 'Mahsulotlarni qidirish...'}
-                    onSearch={() => { }}
-                />
+            {/* Location Selector beneath header */}
+            <div className="location-selector" onClick={() => setShowLocationPicker(true)}>
+                <span className="location-pin">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="#FFCC00" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                </span>
+                <span className="location-text">
+                    {selectedLocation ? selectedLocation.address.split(',')[0] : (language === 'ru' ? 'Выберите район' : 'Do\'stlik tumani')}
+                </span>
+                <span className="location-chevron">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </span>
             </div>
 
-            {renderContent()}
+            <main className="main-content pb-20">
+                {renderContent()}
+            </main>
 
-            {cart.length > 0 && ['home', 'category_products', 'all_categories', 'favorites'].includes(view) && !selectedProduct && (
-                <div className="cart-summary-fixed">
-                    <button className="cart-total-btn" onClick={submitFullOrder} disabled={isSubmittingOrder}>
-                        <span className="cart-btn-icon">🛒</span>
-                        <span className="cart-btn-text">
-                            {isSubmittingOrder
-                                ? (language === 'ru' ? 'Оформление...' : 'Yuborilmoqda...')
-                                : cartTotal.toLocaleString() + ' UZS'}
-                        </span>
-                    </button>
-                    <button
-                        className="cart-clear-btn"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            if (window.confirm(language === 'ru' ? 'Очистить корзину?' : 'Savatni tozalamoqchimisiz?')) {
-                                setCart([]);
-                            }
-                        }}
-                        title={language === 'ru' ? 'Очистить корзину' : 'Savatni tozalash'}
-                    >
-                        <span role="img" aria-label="clear-cart">🗑️</span>
-                    </button>
-                </div>
-            )}
+            {/* Bottom Navigation */}
+            <BottomNav 
+                currentView={view} 
+                onViewChange={(newView) => {
+                    if (['orders', 'profile'].includes(newView)) {
+                        handleSidebarItemClick(newView);
+                    } else {
+                        setView(newView);
+                    }
+                }} 
+                language={language} 
+            />
 
             {showCartSuccess && (
                 <div className="cart-success-toast">

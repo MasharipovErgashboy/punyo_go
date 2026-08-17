@@ -1,39 +1,42 @@
-import { getImageUrl } from '../api';
+import React from 'react';
 import './CategoryList.css';
+import { api } from '../api';
 
-export default function CategoryList({ categories, selectedCategory, onSelectCategory, onShowAllCategories, language }) {
-    const displayCategories = categories;
-    const hasMore = false;
+const CategoryList = ({ categories, selectedCategory, onSelectCategory, onShowAllCategories, language }) => {
+    // Only show max 12 categories on the home page as per 4x3 grid in screenshot
+    const displayCategories = categories.slice(0, 12);
 
     return (
-        <div className="category-list-container">
-            <div className="category-list">
+        <div className="category-section">
+            <div className="section-header">
+                <h2>{language === 'ru' ? 'Категории' : 'Kategoriyalar'}</h2>
+                <span className="view-all" onClick={onShowAllCategories}>
+                    {language === 'ru' ? 'Все' : 'Barchasi'} &gt;
+                </span>
+            </div>
+            
+            <div className="category-grid">
                 {displayCategories.map(category => (
-                    <div
-                        key={category.id}
+                    <div 
+                        key={category.id} 
                         className={`category-item ${selectedCategory?.id === category.id ? 'active' : ''}`}
                         onClick={() => onSelectCategory(category)}
                     >
                         <div className="category-image-container">
                             {category.image_base64 || category.image ? (
-                                <img src={category.image_base64 || getImageUrl(category.image)} alt={category.name} />
+                                <img src={category.image_base64 || api.getImageUrl(category.image)} alt={category.name} />
                             ) : (
                                 <span className="category-icon">📦</span>
                             )}
                         </div>
-                        <span>{language === 'ru' ? (category.name_ru || category.name) : category.name}</span>
+                        <span className="category-name">
+                            {language === 'ru' ? (category.name_ru || category.name) : category.name}
+                        </span>
                     </div>
                 ))}
-
-                {hasMore && (
-                    <div className="category-item more-button" onClick={onShowAllCategories}>
-                        <div className="category-image-container more-icon">
-                            <span className="category-icon">➕</span>
-                        </div>
-                        <span>{language === 'ru' ? 'Ещё' : 'Batafsil'}</span>
-                    </div>
-                )}
             </div>
         </div>
     );
-}
+};
+
+export default CategoryList;
