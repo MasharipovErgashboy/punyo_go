@@ -109,7 +109,7 @@ function App() {
 
     return (
         <Router>
-            <div className="app" data-theme={theme}>
+            <div className={`app ${isTelegramEnvironment ? 'tg-app' : 'landing-app'}`} data-theme={theme}>
                 <Routes>
                     <Route
                         path="/"

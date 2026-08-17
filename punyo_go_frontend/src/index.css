@@ -58,11 +58,18 @@ body {
 
 .app {
   min-height: 100vh;
-  max-width: 500px;
   margin: 0 auto;
   background: var(--primary-bg);
   position: relative;
   transition: background 0.3s ease;
+}
+
+.tg-app {
+  max-width: 500px;
+}
+
+.landing-app {
+  max-width: 100%;
 }
 
 .header {
