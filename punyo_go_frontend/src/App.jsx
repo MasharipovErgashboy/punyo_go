@@ -69,9 +69,9 @@ function App() {
     }, [theme]);
 
     useEffect(() => {
-        const isTelegramApp = Boolean(telegram?.initData || new URLSearchParams(window.location.search).get('tid'));
+        const isTelegramApp = telegram && telegram.platform && telegram.platform !== 'unknown';
         
-        if (telegram && isTelegramApp) {
+        if (telegram && (isTelegramApp || new URLSearchParams(window.location.search).get('tid'))) {
             try {
                 telegram.ready();
                 telegram.expand();
@@ -111,7 +111,7 @@ function App() {
         return () => window.removeEventListener('langChange', handleLangChange);
     }, [telegram]);
 
-    const isTelegramEnvironment = Boolean(telegram?.initData || new URLSearchParams(window.location.search).get('tid'));
+    const isTelegramEnvironment = telegram && telegram.platform && telegram.platform !== 'unknown';
 
     return (
         <Router>
