@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'orders',
     'chat',
     'products',
+    'restaurants',
     'about_us',
 ]
 

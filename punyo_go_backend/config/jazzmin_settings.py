@@ -50,6 +50,8 @@ JAZZMIN_SETTINGS = {
     "icons": {
         "auth": "fas fa-shield-alt",
         "auth.Group": "fas fa-users-cog",
+        "restaurants": "fas fa-store",
+        "restaurants.Restaurant": "fas fa-utensils",
         "users": "fas fa-users",
         "users.UserProfile": "fas fa-user-shield",
         "users.Customer": "fas fa-user",
@@ -64,7 +66,7 @@ JAZZMIN_SETTINGS = {
     },
     
     # Order for apps
-    "order_with_respect_to": ["auth", "users", "products", "orders", "chat", "about_us"],
+    "order_with_respect_to": ["restaurants", "auth", "users", "products", "orders", "chat", "about_us"],
     
     # Icons that are used when one is not manually specified
     "default_icon_parents": "fas fa-chevron-circle-right",
