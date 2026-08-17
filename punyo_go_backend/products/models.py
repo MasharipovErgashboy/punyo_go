@@ -3,6 +3,7 @@ from io import BytesIO
 from PIL import Image
 from django.core.files.base import ContentFile
 from django.db import models
+from restaurants.models import Restaurant
 
 
 class Category(models.Model):
@@ -60,6 +61,14 @@ class Category(models.Model):
 
 class Product(models.Model):
     """Product model"""
+    restaurant = models.ForeignKey(
+        Restaurant,
+        on_delete=models.CASCADE,
+        related_name='products',
+        verbose_name="Restoran",
+        null=True, 
+        blank=True
+    )
     category = models.ForeignKey(
         Category, 
         on_delete=models.CASCADE, 
@@ -112,3 +121,23 @@ class Product(models.Model):
             self.image_base64 = None
         
         super().save(*args, **kwargs)
+
+class ProductAddon(models.Model):
+    """Add-ons for a specific product"""
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='addons',
+        verbose_name="Mahsulot"
+    )
+    name = models.CharField(max_length=100, verbose_name="Qo'shimcha nomi (Masalan: Katta kartoshka)")
+    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Narxi (UZS)")
+    is_active = models.BooleanField(default=True, verbose_name="Aktiv")
+    
+    class Meta:
+        verbose_name = "Qo'shimcha"
+        verbose_name_plural = "Qo'shimchalar"
+        ordering = ['name']
+    
+    def __str__(self):
+        return f"{self.name} (+{self.price} UZS)"
