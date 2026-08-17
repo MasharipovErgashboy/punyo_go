@@ -32,6 +32,21 @@ class CategoryAdmin(admin.ModelAdmin):
     )
     readonly_fields = ('image_base64',)
 
+    def has_add_permission(self, request):
+        if not request.user.is_superuser:
+            return False
+        return super().has_add_permission(request)
+
+    def has_change_permission(self, request, obj=None):
+        if not request.user.is_superuser:
+            return False
+        return super().has_change_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        if not request.user.is_superuser:
+            return False
+        return super().has_delete_permission(request, obj)
+
     class Media:
         js = ('products/admin_translate.js',)
 

@@ -75,37 +75,107 @@ class UserProfileAdmin(UserAdmin):
         return super().has_delete_permission(request, obj)
 
 
+from restaurants.models import Restaurant
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
+
+class RestaurantAdminUserCreationForm(UserCreationForm):
+    restaurant = forms.ModelChoiceField(
+        queryset=Restaurant.objects.all(),
+        required=True,
+        label="Qaysi restoranga admin qilasiz?"
+    )
+
+    class Meta(UserCreationForm.Meta):
+        model = RestaurantAdminUser
+        fields = ('username', 'first_name', 'last_name', 'phone_number')
+
+    def save(self, commit=True):
+        user = super().save(commit=commit)
+        if commit:
+            rest = self.cleaned_data.get('restaurant')
+            rest.admin_user = user
+            rest.save()
+        return user
+
+
+class RestaurantAdminUserChangeForm(UserChangeForm):
+    restaurant = forms.ModelChoiceField(
+        queryset=Restaurant.objects.all(),
+        required=False,
+        label="Restoran"
+    )
+
+    class Meta:
+        model = RestaurantAdminUser
+        fields = ('username', 'first_name', 'last_name', 'phone_number')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            rest = getattr(self.instance, 'managed_restaurants', None)
+            if rest and rest.exists():
+                self.fields['restaurant'].initial = rest.first()
+
+    def save(self, commit=True):
+        user = super().save(commit=commit)
+        if commit:
+            rest = self.cleaned_data.get('restaurant')
+            old_rest = user.managed_restaurants.first()
+            if old_rest and old_rest != rest:
+                old_rest.admin_user = None
+                old_rest.save()
+            if rest:
+                rest.admin_user = user
+                rest.save()
+        return user
+
+
 @admin.register(RestaurantAdminUser)
 class RestaurantAdminUserAdmin(UserAdmin):
-    add_form = UserProfileCreationForm
-    form = UserProfileChangeForm
+    add_form = RestaurantAdminUserCreationForm
+    form = RestaurantAdminUserChangeForm
     
-    list_display = ('username', 'first_name', 'last_name', 'phone_number')
+    list_display = ('username', 'first_name', 'last_name', 'phone_number', 'get_restaurant')
     search_fields = ('username', 'first_name', 'last_name', 'phone_number')
     list_per_page = 15
     
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        ('Shaxsiy ma\'lumotlar', {'fields': ('first_name', 'last_name', 'phone_number')}),
+        ('Shaxsiy ma\'lumotlar', {'fields': ('first_name', 'last_name', 'phone_number', 'restaurant')}),
     )
 
     add_fieldsets = (
         ('Yangi admin yaratish', {
             'classes': ('wide',),
-            'fields': ('username', 'password1', 'password2', 'first_name', 'last_name', 'phone_number'),
+            'fields': ('username', 'password1', 'password2', 'first_name', 'last_name', 'phone_number', 'restaurant'),
         }),
     )
 
+    @admin.display(description="Restoran")
+    def get_restaurant(self, obj):
+        rest = obj.managed_restaurants.first()
+        return rest.name if rest else "-"
+
     def get_queryset(self, request):
-        # Return users that are staff but NOT superusers
         qs = super().get_queryset(request)
         return qs.filter(is_staff=True, is_superuser=False)
 
     def save_model(self, request, obj, form, change):
-        # Automatically make them staff so they can log into the admin panel
         if getattr(obj, 'is_staff', None) is not True:
             obj.is_staff = True
         super().save_model(request, obj, form, change)
+        
+        # Assign permissions so they only see specific parts of the admin panel
+        if not obj.is_superuser:
+            permissions_codenames = [
+                'view_category',
+                'add_product', 'change_product', 'delete_product', 'view_product',
+                'add_productaddon', 'change_productaddon', 'delete_productaddon', 'view_productaddon',
+                'change_order', 'view_order',
+            ]
+            perms = Permission.objects.filter(codename__in=permissions_codenames)
+            obj.user_permissions.add(*perms)
 
 
 @admin.register(Customer)
