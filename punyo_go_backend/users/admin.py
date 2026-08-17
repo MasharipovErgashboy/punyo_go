@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django import forms
 from django.db.models import Q
-from .models import UserProfile, Customer
+from .models import UserProfile, Customer, RestaurantAdminUser
 from about_us.models import Notification, About, NotificationRead
 
 
@@ -73,6 +73,39 @@ class UserProfileAdmin(UserAdmin):
         if obj and obj.is_superuser and not request.user.is_superuser:
             return False
         return super().has_delete_permission(request, obj)
+
+
+@admin.register(RestaurantAdminUser)
+class RestaurantAdminUserAdmin(UserAdmin):
+    add_form = UserProfileCreationForm
+    form = UserProfileChangeForm
+    
+    list_display = ('username', 'first_name', 'last_name', 'phone_number')
+    search_fields = ('username', 'first_name', 'last_name', 'phone_number')
+    list_per_page = 15
+    
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        ('Shaxsiy ma\'lumotlar', {'fields': ('first_name', 'last_name', 'phone_number')}),
+    )
+
+    add_fieldsets = (
+        ('Yangi admin yaratish', {
+            'classes': ('wide',),
+            'fields': ('username', 'password1', 'password2', 'first_name', 'last_name', 'phone_number'),
+        }),
+    )
+
+    def get_queryset(self, request):
+        # Return users that are staff but NOT superusers
+        qs = super().get_queryset(request)
+        return qs.filter(is_staff=True, is_superuser=False)
+
+    def save_model(self, request, obj, form, change):
+        # Automatically make them staff so they can log into the admin panel
+        if getattr(obj, 'is_staff', None) is not True:
+            obj.is_staff = True
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(Customer)

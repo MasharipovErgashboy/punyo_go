@@ -54,6 +54,7 @@ JAZZMIN_SETTINGS = {
         "restaurants.Restaurant": "fas fa-utensils",
         "users": "fas fa-users",
         "users.UserProfile": "fas fa-user-shield",
+        "users.RestaurantAdminUser": "fas fa-user-tie",
         "users.Customer": "fas fa-user",
         "products": "fas fa-box",
         "products.Category": "fas fa-tags",

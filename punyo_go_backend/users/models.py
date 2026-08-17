@@ -43,4 +43,12 @@ class Customer(UserProfile):
         return name
 
 
+class RestaurantAdminUser(UserProfile):
+    """Proxy model for Restaurant Admins"""
+    class Meta:
+        proxy = True
+        verbose_name = "Restoran Admini"
+        verbose_name_plural = "Restoran Adminlari"
+
+
 
