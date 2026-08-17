@@ -34,6 +34,7 @@ ALLOWED_HOSTS = [
     "0.0.0.0",
     "punyogo.uz",
     "www.punyogo.uz",
+    "admin.punyogo.uz",
     "89.39.95.251",
     ".loca.lt",
     ".onrender.com",
