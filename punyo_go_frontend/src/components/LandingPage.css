@@ -4,7 +4,7 @@
   --bg-color: #0f172a;
   --bg-secondary: #1e293b;
   --text-main: #f8fafc;
-  --text-muted: #94a3b8;
+  --text-muted: #cbd5e1; /* Brighter for readability */
   --border-color: rgba(255, 255, 255, 0.1);
   --glass-bg: rgba(30, 41, 59, 0.7);
 }
@@ -21,7 +21,7 @@
   color: var(--text-main);
   min-height: 100vh;
   overflow-x: hidden;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .landing-container {
@@ -37,9 +37,9 @@ h1, h2, h3 {
 }
 
 h1 {
-  font-size: 3.5rem;
+  font-size: 4rem;
   margin-bottom: 1.5rem;
-  background: linear-gradient(to right, #ffffff, #94a3b8);
+  background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -52,8 +52,12 @@ h2 {
 
 h3 {
   font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.8rem;
   color: #fff;
+}
+
+p {
+  color: var(--text-muted);
 }
 
 .subtitle {
@@ -61,6 +65,43 @@ h3 {
   color: var(--text-muted);
   margin-bottom: 2rem;
 }
+
+ul {
+  color: var(--text-muted);
+}
+
+/* Animations Scroll Classes */
+.animate-on-scroll {
+  opacity: 0;
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fade-in-up {
+  transform: translateY(40px);
+}
+
+.fade-in-left {
+  transform: translateX(-40px);
+}
+
+.fade-in-right {
+  transform: translateX(40px);
+}
+
+.scale-in {
+  transform: scale(0.9);
+}
+
+.visible {
+  opacity: 1;
+  transform: translate(0) scale(1);
+}
+
+/* Delay modifiers */
+.delay-1 { transition-delay: 0.1s; }
+.delay-2 { transition-delay: 0.2s; }
+.delay-3 { transition-delay: 0.3s; }
+.delay-4 { transition-delay: 0.4s; }
 
 /* Buttons */
 .btn-primary {
@@ -82,7 +123,7 @@ h3 {
 
 .btn-primary:hover {
   background-color: var(--primary-dark);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   box-shadow: 0 20px 25px -5px rgba(250, 204, 21, 0.5);
 }
 
@@ -104,6 +145,7 @@ h3 {
 .btn-secondary:hover {
   background-color: var(--bg-secondary);
   border-color: var(--text-muted);
+  transform: translateY(-3px);
 }
 
 /* Sections */
@@ -138,8 +180,8 @@ section {
 .hero-features {
   display: flex;
   justify-content: center;
-  gap: 2rem;
-  margin: 3rem 0;
+  gap: 1.5rem;
+  margin: 3.5rem 0;
   flex-wrap: wrap;
 }
 
@@ -147,13 +189,20 @@ section {
   background: var(--glass-bg);
   backdrop-filter: blur(10px);
   border: 1px solid var(--border-color);
-  padding: 0.75rem 1.5rem;
+  padding: 0.8rem 1.5rem;
   border-radius: 9999px;
   font-weight: 600;
+  color: var(--text-main);
   display: flex;
   align-items: center;
   gap: 0.5rem;
   animation: float 6s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+.feature-pill:hover {
+  border-color: var(--primary-color);
+  transform: scale(1.05);
 }
 
 .feature-pill:nth-child(2) { animation-delay: 1s; }
@@ -162,7 +211,7 @@ section {
 
 @keyframes float {
   0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+  50% { transform: translateY(-8px); }
   100% { transform: translateY(0px); }
 }
 
@@ -199,20 +248,21 @@ section {
   border: 1px solid var(--border-color);
   border-radius: 24px;
   padding: 2.5rem;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   overflow: hidden;
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(250, 204, 21, 0.3);
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+  transform: translateY(-8px) scale(1.02);
+  border-color: rgba(250, 204, 21, 0.4);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
 .card-icon {
-  font-size: 3rem;
+  font-size: 3.5rem;
   margin-bottom: 1.5rem;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
 }
 
 /* Specific Sections */
@@ -225,24 +275,30 @@ section {
 }
 
 .step-number {
-  font-size: 4rem;
+  font-size: 5rem;
   font-weight: 900;
-  color: rgba(250, 204, 21, 0.1);
+  color: rgba(250, 204, 21, 0.08);
   position: absolute;
-  top: 10px;
-  right: 20px;
+  top: -10px;
+  right: 15px;
   z-index: 0;
+  transition: color 0.3s;
+}
+
+.step-card:hover .step-number {
+  color: rgba(250, 204, 21, 0.2);
 }
 
 .category-pill {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  padding: 1rem;
+  padding: 1.2rem;
   border-radius: 16px;
   text-align: center;
   font-weight: 600;
   font-size: 1.1rem;
-  transition: all 0.2s;
+  color: var(--text-main);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
 }
 
@@ -250,7 +306,8 @@ section {
   background: rgba(250, 204, 21, 0.1);
   border-color: var(--primary-color);
   color: var(--primary-color);
-  transform: scale(1.05);
+  transform: scale(1.08) translateY(-5px);
+  box-shadow: 0 10px 25px rgba(250, 204, 21, 0.2);
 }
 
 .telegram-mockup {
@@ -259,15 +316,25 @@ section {
   padding: 1.5rem;
   border: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.telegram-mockup::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 4px;
+  background: var(--primary-color);
 }
 
 .tg-message {
   background: #2b5278;
   color: #fff;
-  padding: 1rem;
+  padding: 1.2rem;
   border-radius: 12px 12px 12px 0;
   margin-bottom: 1rem;
-  max-width: 80%;
+  max-width: 85%;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
 }
 
 .tg-button {
@@ -276,22 +343,19 @@ section {
   text-align: center;
   border-radius: 8px;
   margin-top: 0.5rem;
-  font-weight: 500;
+  font-weight: 600;
+  transition: all 0.2s;
+  cursor: pointer;
 }
 
-.level-card {
-  text-align: center;
-  padding: 2rem;
-}
-
-.level-icon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
+.tg-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 }
 
 .footer {
   background: var(--bg-secondary);
-  padding: 4rem 0 2rem;
+  padding: 5rem 0 2rem;
   border-top: 1px solid var(--border-color);
   margin-top: 4rem;
 }
@@ -304,7 +368,7 @@ section {
 }
 
 .footer-logo {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 900;
   color: var(--primary-color);
   margin-bottom: 1rem;
@@ -313,6 +377,7 @@ section {
 .footer-links h4 {
   margin-bottom: 1.5rem;
   color: #fff;
+  font-size: 1.2rem;
 }
 
 .footer-links ul {
@@ -320,7 +385,7 @@ section {
 }
 
 .footer-links li {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.8rem;
 }
 
 .footer-links a {
@@ -342,34 +407,54 @@ section {
 
 .cta-banner {
   background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-  border-radius: 24px;
-  padding: 4rem;
+  border-radius: 30px;
+  padding: 5rem 3rem;
   text-align: center;
   color: #000;
+  box-shadow: 0 25px 50px -12px rgba(250, 204, 21, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-banner::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%; width: 200%; height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%);
+  animation: rotate 10s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes rotate {
+  100% { transform: rotate(360deg); }
 }
 
 .cta-banner h2 {
   color: #000;
+  font-size: 3rem;
 }
 
 .cta-banner .subtitle {
   color: rgba(0, 0, 0, 0.8);
+  font-size: 1.3rem;
 }
 
 .cta-banner .btn-primary {
   background: #000;
   color: var(--primary-color);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+  font-size: 1.2rem;
+  padding: 1.2rem 3rem;
 }
 
 .cta-banner .btn-primary:hover {
   background: #111;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
 }
 
 /* Media Queries */
 @media (max-width: 992px) {
-  h1 { font-size: 3rem; }
+  h1 { font-size: 3.2rem; }
   .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
   .grid-2 { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
@@ -380,7 +465,8 @@ section {
   h2 { font-size: 2rem; }
   section { padding: 4rem 0; }
   .hero-actions { flex-direction: column; }
-  .feature-pill { font-size: 0.9rem; padding: 0.5rem 1rem; }
+  .feature-pill { font-size: 0.95rem; padding: 0.6rem 1.2rem; }
   .grid-3, .grid-4 { grid-template-columns: 1fr; }
-  .cta-banner { padding: 2rem; }
+  .cta-banner { padding: 3rem 1.5rem; }
+  .cta-banner h2 { font-size: 2.2rem; }
 }
