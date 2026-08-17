@@ -69,10 +69,16 @@ function App() {
     }, [theme]);
 
     useEffect(() => {
-        if (telegram) {
-            telegram.ready();
-            telegram.expand();
-            telegram.MainButton.hide();
+        const isTelegramApp = Boolean(telegram?.initData || new URLSearchParams(window.location.search).get('tid'));
+        
+        if (telegram && isTelegramApp) {
+            try {
+                telegram.ready();
+                telegram.expand();
+                if (telegram.MainButton) telegram.MainButton.hide();
+            } catch (e) {
+                console.error("Telegram init error:", e);
+            }
 
             // Fetch user language
             const fetchLang = async () => {

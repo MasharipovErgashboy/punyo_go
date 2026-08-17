@@ -40,15 +40,19 @@ const LandingPage = () => {
             </p>
             
             <div className="hero-features animate-on-scroll scale-in delay-2">
-              <div className="feature-pill">🍔 Ovqat buyurtma qiling</div>
-              <div className="feature-pill">🛵 Tez yetkazib bering</div>
-              <div className="feature-pill">🏪 Mahalliy biznesni kashf qiling</div>
-              <div className="feature-pill">📱 Telegram orqali boshqaring</div>
+              <div className="feature-pill"><span className="icon">🍔</span> <span>Ovqat buyurtma qiling</span></div>
+              <div className="feature-pill"><span className="icon">🛵</span> <span>Tez yetkazib bering</span></div>
+              <div className="feature-pill"><span className="icon">🏪</span> <span>Mahalliy biznesni kashf qiling</span></div>
+              <div className="feature-pill"><span className="icon">📱</span> <span>Telegram orqali boshqaring</span></div>
             </div>
 
             <div className="hero-actions animate-on-scroll fade-in-up delay-3">
-              <button onClick={handleOpenApp} className="btn-primary">🟡 Punyo GO'ni ochish</button>
-              <button onClick={handleOpenApp} className="btn-secondary">⚪ Biznesni qo‘shish</button>
+              <button onClick={handleOpenApp} className="btn-primary">
+                <span style={{marginRight: '8px', fontSize: '1.2rem'}}>🟡</span> Punyo GO'ni ochish
+              </button>
+              <button onClick={handleOpenApp} className="btn-secondary">
+                <span style={{marginRight: '8px', fontSize: '1.2rem'}}>⚪</span> Biznesni qo‘shish
+              </button>
             </div>
             
             <p className="animate-on-scroll fade-in-up delay-4" style={{marginTop: '3rem'}}>
