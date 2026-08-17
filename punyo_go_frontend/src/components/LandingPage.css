@@ -27,7 +27,7 @@ body:has(.landing-page) {
   background-color: var(--bg-color);
   color: var(--text-main);
   min-height: 100vh;
-  /* overflow-x: hidden removed to fix double scrollbar */
+  overflow-x: hidden;
   line-height: 1.7;
 }
 
@@ -38,43 +38,35 @@ body:has(.landing-page) {
 }
 
 /* Typography */
-h1, h2, h3 {
+.landing-page h1, .landing-page h2, .landing-page h3 {
   font-weight: 800;
   line-height: 1.2;
+  color: #ffffff !important;
 }
 
-h1 {
+.landing-page h1 {
   font-size: 4rem;
   margin-bottom: 1.5rem;
-  background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
-h2 {
+.landing-page h2 {
   font-size: 2.5rem;
   margin-bottom: 1rem;
-  color: #fff;
 }
 
-h3 {
+.landing-page h3 {
   font-size: 1.5rem;
   margin-bottom: 0.8rem;
-  color: #fff;
 }
 
-p {
-  color: var(--text-muted);
+.landing-page p, .landing-page ul {
+  color: #cbd5e1 !important;
 }
 
-.subtitle {
+.landing-page .subtitle {
   font-size: 1.25rem;
-  color: var(--text-muted);
+  color: #cbd5e1 !important;
   margin-bottom: 2rem;
-}
-
-ul {
-  color: var(--text-muted);
 }
 
 /* Animations Scroll Classes */
@@ -173,7 +165,8 @@ section {
   top: 10%;
   left: 50%;
   transform: translateX(-50%);
-  width: 600px;
+  width: 100%;
+  max-width: 600px;
   height: 600px;
   background: radial-gradient(circle, rgba(250, 204, 21, 0.15) 0%, rgba(15, 23, 42, 0) 70%);
   z-index: 0;
