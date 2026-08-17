@@ -33,10 +33,11 @@ const RestaurantList = ({ language }) => {
             <div className="restaurant-scroll">
                 {restaurants.map((rest, idx) => {
                     // Generate pseudo random rating/reviews/distance for visual matching since DB doesn't have them yet
-                    const rating = (4.0 + (rest.id.charCodeAt(0) % 10) / 10).toFixed(1);
-                    const reviews = 50 + (rest.id.charCodeAt(1) % 200);
-                    const distance = (1.0 + (rest.id.charCodeAt(2) % 40) / 10).toFixed(1);
-                    const timeMin = 15 + (rest.id.charCodeAt(0) % 20);
+                    const idStr = String(rest.id);
+                    const rating = (4.0 + (idStr.charCodeAt(0) % 10) / 10).toFixed(1);
+                    const reviews = 50 + (idStr.charCodeAt(idStr.length > 1 ? 1 : 0) % 200);
+                    const distance = (1.0 + (idStr.charCodeAt(idStr.length > 2 ? 2 : 0) % 40) / 10).toFixed(1);
+                    const timeMin = 15 + (idStr.charCodeAt(0) % 20);
                     const timeMax = timeMin + 10;
 
                     return (

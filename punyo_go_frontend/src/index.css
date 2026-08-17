@@ -1,43 +1,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-.app[data-theme='light'] {
-  --primary-bg: #f8fafc;
-  --header-bg: linear-gradient(135deg, #2d9da6 0%, #248b94 100%);
-  --accent-color: #f59e0b;
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --card-bg: #ffffff;
-  --border-color: rgba(0, 0, 0, 0.05);
-  --input-bg: #ffffff;
-  --input-text: #0f172a;
-  --category-hover: rgba(45, 157, 166, 0.05);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+.app {
+  --primary-bg: #0b0b0b;
+  --header-bg: #0b0b0b;
+  --accent-color: #FFCC00;
+  --text-main: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.5);
+  --card-bg: #1C1C1E;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --input-bg: #1C1C1E;
+  --input-text: #ffffff;
+  --category-hover: rgba(255, 204, 0, 0.1);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.7);
   --border-radius: 16px;
-  --brand-tezkor: #F59A07;
-  --brand-tezkor-light: #FFB74D;
-  --brand-humo: #2d9da6;
+  --brand-tezkor: #FFCC00;
+  --brand-tezkor-light: #FFE066;
+  --brand-humo: #FFFFFF;
 }
 
-.app[data-theme='dark'] {
-  --primary-bg: #0f172a;
-  --header-bg: linear-gradient(135deg, #1a1a2e 0%, #0f172a 100%);
-  --accent-color: #3b82f6;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --card-bg: #1e293b;
-  --border-color: rgba(255, 255, 255, 0.1);
-  --input-bg: #334155;
-  --input-text: #f8fafc;
-  --category-hover: rgba(59, 130, 246, 0.1);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
-  --border-radius: 16px;
-  --brand-tezkor: #4284F5;
-  --brand-tezkor-light: #64B5F6;
-  --brand-humo: #2d9da6;
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: #0b0b0b;
+  color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
