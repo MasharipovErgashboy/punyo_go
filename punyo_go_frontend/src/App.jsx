@@ -4,6 +4,7 @@ import './App.css';
 import Shop from './components/Shop';
 import Orders from './components/Orders';
 import PhoneRegistration from './components/PhoneRegistration';
+import LandingPage from './components/LandingPage';
 import { api } from './api';
 
 const RouteGuard = ({ children }) => {
@@ -104,6 +105,8 @@ function App() {
         return () => window.removeEventListener('langChange', handleLangChange);
     }, [telegram]);
 
+    const isTelegramEnvironment = Boolean(telegram?.initData || new URLSearchParams(window.location.search).get('tid'));
+
     return (
         <Router>
             <div className="app" data-theme={theme}>
@@ -111,9 +114,13 @@ function App() {
                     <Route
                         path="/"
                         element={
-                            <RouteGuard>
-                                <Shop language={language} theme={theme} toggleTheme={toggleTheme} />
-                            </RouteGuard>
+                            isTelegramEnvironment ? (
+                                <RouteGuard>
+                                    <Shop language={language} theme={theme} toggleTheme={toggleTheme} />
+                                </RouteGuard>
+                            ) : (
+                                <LandingPage />
+                            )
                         }
                     />
                     <Route
