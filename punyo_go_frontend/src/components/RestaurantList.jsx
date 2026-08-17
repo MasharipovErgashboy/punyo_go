@@ -37,8 +37,6 @@ const RestaurantList = ({ language }) => {
                     // Generate pseudo random rating/reviews/distance for visual matching since DB doesn't have them yet
                     const idStr = String(rest.id);
                     const rating = (4.0 + (idStr.charCodeAt(0) % 10) / 10).toFixed(1);
-                    const reviews = 50 + (idStr.charCodeAt(idStr.length > 1 ? 1 : 0) % 200);
-                    const distance = (1.0 + (idStr.charCodeAt(idStr.length > 2 ? 2 : 0) % 40) / 10).toFixed(1);
                     const timeMin = 15 + (idStr.charCodeAt(0) % 20);
                     const timeMax = timeMin + 10;
 
@@ -46,15 +44,19 @@ const RestaurantList = ({ language }) => {
                         <div key={rest.id} className="restaurant-card">
                             <div className="restaurant-image-wrapper">
                                 <img src={api.getImageUrl(rest.image)} alt={rest.name} className="restaurant-image" />
-                                <button className="restaurant-fav-btn">♡</button>
+                                <button className="restaurant-fav-btn">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                    </svg>
+                                </button>
                             </div>
                             <div className="restaurant-info">
                                 <h3>{rest.name}</h3>
                                 <div className="restaurant-rating">
-                                    <span className="star">⭐</span> {rating} <span className="reviews">({reviews})</span>
+                                    <span className="star">⭐</span> {rating}
                                 </div>
                                 <div className="restaurant-meta">
-                                    {timeMin}-{timeMax} {language === 'ru' ? 'мин' : 'daqiqa'} • {distance} km
+                                    {timeMin}-{timeMax} {language === 'ru' ? 'мин' : 'daqiqa'}
                                 </div>
                             </div>
                         </div>

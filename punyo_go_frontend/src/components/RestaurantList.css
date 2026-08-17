@@ -1,57 +1,62 @@
 .restaurant-section {
-    margin: 20px 0;
-    padding-left: 20px;
+    padding: 0 0 20px 0;
 }
 
 .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
-    padding-right: 20px;
+    padding: 0 20px;
+    margin-bottom: 12px;
 }
 
 .section-header h2 {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
+    color: var(--text-main);
     margin: 0;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    gap: 5px;
 }
 
 .view-all {
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 13px;
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 500;
     cursor: pointer;
 }
 
 .restaurant-scroll {
     display: flex;
-    gap: 15px;
     overflow-x: auto;
-    padding-bottom: 10px;
-    scrollbar-width: none; /* Firefox */
+    gap: 12px;
+    padding: 5px 20px;
+    -webkit-overflow-scrolling: touch;
 }
 
 .restaurant-scroll::-webkit-scrollbar {
-    display: none; /* Safari/Chrome */
+    display: none;
 }
 
 .restaurant-card {
-    min-width: 220px;
-    background: #1C1C1E;
+    min-width: 130px;
+    max-width: 130px;
+    background: var(--card-bg);
     border-radius: 16px;
+    border: 1px solid var(--border-color);
     overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     display: flex;
     flex-direction: column;
 }
 
+.restaurant-card:active {
+    transform: scale(0.98);
+}
+
 .restaurant-image-wrapper {
     position: relative;
-    height: 130px;
     width: 100%;
+    height: 110px;
 }
 
 .restaurant-image {
@@ -62,46 +67,60 @@
 
 .restaurant-fav-btn {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background: transparent;
+    top: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
     border: none;
-    color: #fff;
-    font-size: 20px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
     cursor: pointer;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    padding: 0;
+}
+
+.restaurant-fav-btn svg {
+    width: 16px;
+    height: 16px;
 }
 
 .restaurant-info {
-    padding: 12px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 .restaurant-info h3 {
-    margin: 0 0 5px 0;
-    font-size: 15px;
+    margin: 0 0 4px 0;
+    font-size: 14px;
     font-weight: 600;
-    color: #fff;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .restaurant-rating {
-    font-size: 13px;
-    color: #fff;
     display: flex;
     align-items: center;
-    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-main);
     margin-bottom: 4px;
 }
 
 .restaurant-rating .star {
-    color: #FFCC00;
+    color: var(--accent-color);
+    margin-right: 4px;
     font-size: 11px;
 }
 
-.restaurant-rating .reviews {
-    color: rgba(255, 255, 255, 0.5);
-}
-
 .restaurant-meta {
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.5);
+    font-size: 11px;
+    color: var(--text-muted);
 }
