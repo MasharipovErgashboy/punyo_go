@@ -127,16 +127,16 @@ const LandingPage = () => {
           <p className="subtitle animate-on-scroll fade-in-up delay-1" style={{textAlign: 'center'}}>Punyo GO'da turli xil mahsulot va xizmatlarni bitta joydan toping.</p>
           
           <div className="grid-4 animate-on-scroll scale-in delay-2" style={{marginTop: '3rem'}}>
-            <div className="category-pill">🍔 Burgerlar</div>
-            <div className="category-pill">🍕 Pizza</div>
-            <div className="category-pill">🌯 Lavash</div>
-            <div className="category-pill">🍗 Chicken</div>
-            <div className="category-pill">🍣 Sushi</div>
-            <div className="category-pill">🥤 Ichimliklar</div>
-            <div className="category-pill">🍰 Shirinliklar</div>
-            <div className="category-pill">🌸 Gullar</div>
-            <div className="category-pill">🍎 Mevalar</div>
-            <div className="category-pill">🛒 Mahsulotlar</div>
+            <div className="category-pill" onClick={handleOpenApp}>🍔 Burgerlar</div>
+            <div className="category-pill" onClick={handleOpenApp}>🍕 Pizza</div>
+            <div className="category-pill" onClick={handleOpenApp}>🌯 Lavash</div>
+            <div className="category-pill" onClick={handleOpenApp}>🍗 Chicken</div>
+            <div className="category-pill" onClick={handleOpenApp}>🍣 Sushi</div>
+            <div className="category-pill" onClick={handleOpenApp}>🥤 Ichimliklar</div>
+            <div className="category-pill" onClick={handleOpenApp}>🍰 Shirinliklar</div>
+            <div className="category-pill" onClick={handleOpenApp}>🌸 Gullar</div>
+            <div className="category-pill" onClick={handleOpenApp}>🍎 Mevalar</div>
+            <div className="category-pill" onClick={handleOpenApp}>🛒 Mahsulotlar</div>
           </div>
           <p className="animate-on-scroll fade-in-up delay-3" style={{textAlign: 'center', marginTop: '2.5rem'}}>Va bu hali boshlanishi.</p>
         </section>
