@@ -196,6 +196,21 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+    max-height: 220px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+/* Custom scrollbar for addons list */
+.addons-list::-webkit-scrollbar {
+    width: 4px;
+}
+.addons-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+.addons-list::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 4px;
 }
 
 .addon-item {
