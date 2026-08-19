@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../api';
 import './RestaurantList.css';
 
-const RestaurantList = ({ language, isFullView, onBack, onShowAll }) => {
+const RestaurantList = ({ language, isFullView, onBack, onShowAll, onSelectRestaurant }) => {
     const [restaurants, setRestaurants] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -40,7 +40,7 @@ const RestaurantList = ({ language, isFullView, onBack, onShowAll }) => {
                         const timeMax = timeMin + 10;
 
                         return (
-                            <div key={rest.id} className="restaurant-card">
+                            <div key={rest.id} className="restaurant-card" onClick={() => onSelectRestaurant && onSelectRestaurant(rest)}>
                                 <div className="restaurant-image-wrapper">
                                     <img src={api.getImageUrl(rest.image)} alt={rest.name} className="restaurant-image" />
                                     <button className="restaurant-fav-btn">
@@ -82,7 +82,7 @@ const RestaurantList = ({ language, isFullView, onBack, onShowAll }) => {
                     const timeMax = timeMin + 10;
 
                     return (
-                        <div key={rest.id} className="restaurant-card">
+                        <div key={rest.id} className="restaurant-card" onClick={() => onSelectRestaurant && onSelectRestaurant(rest)}>
                             <div className="restaurant-image-wrapper">
                                 <img src={api.getImageUrl(rest.image)} alt={rest.name} className="restaurant-image" />
                                 <button className="restaurant-fav-btn">

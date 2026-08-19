@@ -6,6 +6,7 @@ import SearchBar from './SearchBar';
 import CategorySection from './CategorySection';
 import PromoBanner from './PromoBanner';
 import RestaurantList from './RestaurantList';
+import RestaurantDetail from './RestaurantDetail';
 import BottomNav from './BottomNav';
 import Sidebar from './Sidebar';
 import AuthDrawer from './AuthDrawer';
@@ -32,6 +33,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
     const [categories, setCategories] = useState([]);
     const [allProducts, setAllProducts] = useState([]); // For search in all products
     const [selectedCategory, setSelectedCategory] = useState(null);
+    const [selectedRestaurant, setSelectedRestaurant] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
     const [view, setView] = useState(() => {
@@ -567,6 +569,31 @@ const Shop = ({ language, theme, toggleTheme }) => {
                     language={language} 
                     isFullView={true} 
                     onBack={() => setView('home')} 
+                    onSelectRestaurant={(rest) => {
+                        setSelectedRestaurant(rest);
+                        setView('restaurant_detail');
+                    }}
+                />
+            );
+        }
+
+        if (view === 'restaurant_detail' && selectedRestaurant) {
+            return (
+                <RestaurantDetail
+                    restaurant={selectedRestaurant}
+                    language={language}
+                    onBack={() => {
+                        setSelectedRestaurant(null);
+                        setView('home');
+                    }}
+                    onProductClick={(p) => {
+                        if (p.addons && p.addons.length > 0) {
+                            setPendingProduct(p);
+                            setIsAuthDrawerOpen(true);
+                        } else {
+                            setSelectedProduct(p);
+                        }
+                    }}
                 />
             );
         }
@@ -726,6 +753,10 @@ const Shop = ({ language, theme, toggleTheme }) => {
                 <RestaurantList 
                     language={language} 
                     onShowAll={() => setView('all_restaurants')} 
+                    onSelectRestaurant={(rest) => {
+                        setSelectedRestaurant(rest);
+                        setView('restaurant_detail');
+                    }}
                 />
 
                 <div className="featured-sections">

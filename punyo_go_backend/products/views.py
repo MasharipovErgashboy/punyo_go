@@ -59,3 +59,20 @@ def get_all_products(request):
     products = Product.objects.filter(is_active=True).order_by('order', 'name')
     serializer = ProductSerializer(products, many=True, context={'request': request})
     return Response(serializer.data)
+
+
+@extend_schema(
+    summary="Get products by restaurant",
+    description="Returns list of active products for a specific restaurant",
+    responses={200: ProductSerializer(many=True)}
+)
+@api_view(['GET'])
+def get_restaurant_products(request, restaurant_id):
+    """Get products by restaurant ID"""
+    products = Product.objects.filter(
+        restaurant_id=restaurant_id,
+        is_active=True
+    ).order_by('category__order', 'order', 'name')
+    
+    serializer = ProductSerializer(products, many=True, context={'request': request})
+    return Response(serializer.data)
