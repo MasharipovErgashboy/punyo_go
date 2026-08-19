@@ -289,18 +289,24 @@ const Shop = ({ language, theme, toggleTheme }) => {
         localStorage.setItem('punyo_favorites', JSON.stringify(newFavorites));
     };
 
-    const handleAddToCart = (product, quantity) => {
+    const handleAddToCart = (product, quantity, addons = []) => {
+        const addonsPrice = addons.reduce((sum, a) => sum + Number(a.price), 0);
+        const itemUniqueId = `${product.id}-${addons.map(a => a.id).sort().join('-')}`;
+        
         const newItem = {
             product_id: product.id,
+            unique_id: itemUniqueId,
             name: product.name,
             name_ru: product.name_ru,
-            price: product.price,
+            price: Number(product.price) + addonsPrice,
+            base_price: product.price,
             image: product.image,
-            quantity: quantity
+            quantity: quantity,
+            addons: addons
         };
 
         setCart(prevCart => {
-            const existingIndex = prevCart.findIndex(item => item.product_id === product.id);
+            const existingIndex = prevCart.findIndex(item => item.unique_id === itemUniqueId || (item.product_id === product.id && !item.unique_id && addons.length === 0));
             if (existingIndex > -1) {
                 const newCart = [...prevCart];
                 newCart[existingIndex].quantity += quantity;

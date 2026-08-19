@@ -172,3 +172,64 @@
 .add-to-cart-btn:active {
     transform: scale(0.97);
 }
+
+.detail-price-section {
+    margin: 16px 0 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.detail-addons {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.addons-header {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.addons-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.addon-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.addon-checkbox {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.addon-checkbox.checked {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #000;
+}
+
+.addon-name {
+    flex: 1;
+    font-size: 15px;
+    color: var(--text-main);
+}
+
+.addon-price {
+    font-size: 14px;
+    color: var(--text-muted);
+}

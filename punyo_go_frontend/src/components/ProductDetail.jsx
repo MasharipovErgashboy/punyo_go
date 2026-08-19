@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { getImageUrl } from '../api';
 import './ProductDetail.css';
 
-const ProductDetail = ({ product, language, onBack, favorites = [], onToggleFavorite, onAddToCart, selectedLocation, onShowLocationPicker }) => {
+const ProductDetail = ({ product, language, onBack, favorites = [], onToggleFavorite, onAddToCart }) => {
     const [quantity, setQuantity] = useState(1);
+    const [selectedAddons, setSelectedAddons] = useState([]);
 
     const isFavorite = favorites.includes(product.id);
 
@@ -12,8 +13,19 @@ const ProductDetail = ({ product, language, onBack, favorites = [], onToggleFavo
         if (quantity > 1) setQuantity(prev => prev - 1);
     };
 
+    const handleToggleAddon = (addon) => {
+        setSelectedAddons(prev => {
+            const exists = prev.find(a => a.id === addon.id);
+            if (exists) {
+                return prev.filter(a => a.id !== addon.id);
+            } else {
+                return [...prev, addon];
+            }
+        });
+    };
+
     const handleAddToCartClick = () => {
-        onAddToCart(product, quantity);
+        onAddToCart(product, quantity, selectedAddons);
     };
 
     return (
@@ -38,16 +50,48 @@ const ProductDetail = ({ product, language, onBack, favorites = [], onToggleFavo
             </div>
 
             <div className="detail-info">
-                <div className="detail-price-section">
-                    <span className="detail-price">{product.price.toLocaleString()} UZS</span>
-                </div>
                 <h1 className="detail-name">
                     {language === 'ru' ? (product.name_ru || product.name) : product.name}
                 </h1>
+                
                 {product.description && (
                     <p className="detail-description">
                         {language === 'ru' ? (product.description_ru || product.description) : product.description}
                     </p>
+                )}
+
+                <div className="detail-price-section">
+                    <span className="detail-price">{Number(product.price).toLocaleString()} {language === 'ru' ? 'сум' : 'so\'m'}</span>
+                </div>
+
+                {product.addons && product.addons.length > 0 && (
+                    <div className="detail-addons">
+                        <div className="addons-header">
+                            {language === 'ru' ? 'Добавки' : 'Qo\'shimchalar'}
+                        </div>
+                        <div className="addons-list">
+                            {product.addons.map(addon => {
+                                const isSelected = selectedAddons.some(a => a.id === addon.id);
+                                return (
+                                    <div 
+                                        key={addon.id} 
+                                        className="addon-item"
+                                        onClick={() => handleToggleAddon(addon)}
+                                    >
+                                        <div className={`addon-checkbox ${isSelected ? 'checked' : ''}`}>
+                                            {isSelected && (
+                                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                            )}
+                                        </div>
+                                        <span className="addon-name">{addon.name}</span>
+                                        <span className="addon-price">+{Number(addon.price).toLocaleString()} {language === 'ru' ? 'сум' : 'so\'m'}</span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
                 )}
             </div>
 

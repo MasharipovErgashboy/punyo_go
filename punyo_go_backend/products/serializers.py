@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, Product
+from .models import Category, Product, ProductAddon
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -14,15 +14,27 @@ class CategorySerializer(serializers.ModelSerializer):
         return obj.products.filter(is_active=True).count()
 
 
+class ProductAddonSerializer(serializers.ModelSerializer):
+    """Product addon serializer"""
+    class Meta:
+        model = ProductAddon
+        fields = ['id', 'name', 'price']
+
+
 class ProductSerializer(serializers.ModelSerializer):
     """Product serializer"""
     category_name = serializers.CharField(source='category.name', read_only=True)
     category_name_ru = serializers.CharField(source='category.name_ru', read_only=True)
+    addons = serializers.SerializerMethodField()
     
     class Meta:
         model = Product
         fields = [
             'id', 'category', 'category_name', 'category_name_ru', 
             'name', 'name_ru', 'image', 'image_base64', 'price', 
-            'description', 'description_ru', 'order'
+            'description', 'description_ru', 'order', 'addons'
         ]
+        
+    def get_addons(self, obj):
+        addons = obj.addons.filter(is_active=True)
+        return ProductAddonSerializer(addons, many=True).data
