@@ -112,45 +112,49 @@
     border-top: 1px dashed var(--border-color);
 }
 
-.contact-item {
+.contact-row {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.contact-text {
+    display: flex;
+    align-items: center;
     gap: 8px;
     color: var(--text-main);
     font-size: 14px;
     font-weight: 500;
-    text-decoration: none;
 }
 
-.contact-item svg {
+.contact-text svg {
     color: var(--accent-color);
 }
 
-.restaurant-categories {
-    margin-bottom: 25px;
-}
-
-.category-pills {
+.btn-view-map {
     display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    padding-bottom: 5px;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    background-color: rgba(255, 204, 0, 0.15);
+    color: var(--accent-color);
+    border: 1px solid var(--accent-color);
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
 }
 
-.category-pills::-webkit-scrollbar {
-    display: none;
+.btn-view-map:active {
+    background-color: var(--accent-color);
+    color: var(--primary-bg);
 }
 
-.category-pill {
-    padding: 8px 16px;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-main);
-    white-space: nowrap;
+.restaurant-categories-grid {
+    margin: 0 -20px 25px; /* Pull margins to edge so scroll works fully */
+    padding: 0 20px;
 }
 
 .restaurant-products-section {

@@ -581,6 +581,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
             return (
                 <RestaurantDetail
                     restaurant={selectedRestaurant}
+                    categories={categories}
                     language={language}
                     onBack={() => {
                         setSelectedRestaurant(null);
