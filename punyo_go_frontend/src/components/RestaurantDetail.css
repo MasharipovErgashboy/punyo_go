@@ -103,21 +103,54 @@
     background-color: var(--border-color);
 }
 
-.restaurant-phone {
+.restaurant-contacts {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed var(--border-color);
+}
+
+.contact-item {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px dashed var(--border-color);
     color: var(--text-main);
     font-size: 14px;
     font-weight: 500;
+    text-decoration: none;
 }
 
-.restaurant-phone svg {
+.contact-item svg {
     color: var(--accent-color);
+}
+
+.restaurant-categories {
+    margin-bottom: 25px;
+}
+
+.category-pills {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+}
+
+.category-pills::-webkit-scrollbar {
+    display: none;
+}
+
+.category-pill {
+    padding: 8px 16px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-main);
+    white-space: nowrap;
 }
 
 .restaurant-products-section {

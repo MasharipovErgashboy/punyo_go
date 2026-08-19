@@ -31,6 +31,20 @@ const RestaurantDetail = ({ restaurant, language, onBack, onProductClick }) => {
     const timeMin = 15 + (idStr.charCodeAt(0) % 20);
     const timeMax = timeMin + 10;
 
+    // Extract unique categories from products
+    const uniqueCategories = [];
+    const categoryIds = new Set();
+    products.forEach(p => {
+        if (!categoryIds.has(p.category)) {
+            categoryIds.add(p.category);
+            uniqueCategories.push({
+                id: p.category,
+                name: p.category_name,
+                name_ru: p.category_name_ru
+            });
+        }
+    });
+
     return (
         <div className="restaurant-detail-view">
             <div className="restaurant-detail-header">
@@ -60,19 +74,45 @@ const RestaurantDetail = ({ restaurant, language, onBack, onProductClick }) => {
                             <span className="stat-value">{timeMin}-{timeMax} {language === 'ru' ? 'мин' : 'daqiqa'}</span>
                         </div>
                     </div>
-                    {restaurant.phone && (
-                        <div className="restaurant-phone">
-                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                            </svg>
-                            <span>{restaurant.phone}</span>
-                        </div>
-                    )}
+                    <div className="restaurant-contacts">
+                        {restaurant.location && (
+                            <a href={`https://yandex.com/maps/?text=${encodeURIComponent(restaurant.location)}`} target="_blank" rel="noopener noreferrer" className="contact-item">
+                                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                                <span>{restaurant.location}</span>
+                            </a>
+                        )}
+                        {restaurant.phone && (
+                            <div className="contact-item">
+                                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                                </svg>
+                                <span>{restaurant.phone}</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
             <div className="restaurant-products-section">
-                <div className="section-title">
+                {uniqueCategories.length > 0 && (
+                    <div className="restaurant-categories">
+                        <div className="section-title">
+                            {language === 'ru' ? 'Категории' : 'Kategoriyalar'}
+                        </div>
+                        <div className="category-pills">
+                            {uniqueCategories.map(cat => (
+                                <div key={cat.id} className="category-pill">
+                                    {language === 'ru' ? cat.name_ru : cat.name}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                <div className="section-title menu-title">
                     {language === 'ru' ? 'Меню' : 'Menyu'}
                 </div>
                 {loading ? (
