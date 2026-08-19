@@ -103,6 +103,23 @@
     background-color: var(--border-color);
 }
 
+.restaurant-phone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed var(--border-color);
+    color: var(--text-main);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.restaurant-phone svg {
+    color: var(--accent-color);
+}
+
 .restaurant-products-section {
     padding: 25px 20px 0;
 }
