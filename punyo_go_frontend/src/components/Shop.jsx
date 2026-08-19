@@ -798,22 +798,24 @@ const Shop = ({ language, theme, toggleTheme }) => {
                 </div>
             </header>
             {/* Location Selector beneath header */}
-            <div className="location-selector" onClick={() => setShowLocationPicker(true)}>
-                <span className="location-pin">
-                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="#FFCC00" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                        <circle cx="12" cy="10" r="3"></circle>
-                    </svg>
-                </span>
-                <span className="location-text">
-                    {selectedLocation ? selectedLocation.address.split(',')[0] : (language === 'ru' ? 'Выберите район' : 'Do\'stlik tumani')}
-                </span>
-                <span className="location-chevron">
-                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                </span>
-            </div>
+            {view === 'home' && (
+                <div className="location-selector" onClick={() => setShowLocationPicker(true)}>
+                    <span className="location-pin">
+                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="#FFCC00" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                    </span>
+                    <span className="location-text">
+                        {selectedLocation ? selectedLocation.address.split(',')[0] : (language === 'ru' ? 'Выберите район' : 'Do\'stlik tumani')}
+                    </span>
+                    <span className="location-chevron">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </span>
+                </div>
+            )}
 
             <main className="main-content pb-20">
                 {renderContent()}
