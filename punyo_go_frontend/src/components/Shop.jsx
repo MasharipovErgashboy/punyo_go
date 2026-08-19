@@ -561,6 +561,16 @@ const Shop = ({ language, theme, toggleTheme }) => {
             );
         }
 
+        if (view === 'all_restaurants') {
+            return (
+                <RestaurantList 
+                    language={language} 
+                    isFullView={true} 
+                    onBack={() => setView('home')} 
+                />
+            );
+        }
+
         if (view === 'category_products' && selectedCategory) {
             const itemsPerPage = 12;
             const startIndex = (categoryPage - 1) * itemsPerPage;
@@ -713,7 +723,10 @@ const Shop = ({ language, theme, toggleTheme }) => {
                     language={language}
                 />
                 
-                <RestaurantList language={language} />
+                <RestaurantList 
+                    language={language} 
+                    onShowAll={() => setView('all_restaurants')} 
+                />
 
                 <div className="featured-sections">
                     {categories.map(category => (

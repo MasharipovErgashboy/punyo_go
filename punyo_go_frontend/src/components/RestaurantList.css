@@ -124,3 +124,21 @@
     font-size: 11px;
     color: var(--text-muted);
 }
+
+.all-restaurants-view {
+    padding: 20px;
+    min-height: calc(100vh - 150px);
+}
+
+.restaurants-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.restaurants-grid .restaurant-card {
+    min-width: unset;
+    max-width: unset;
+    width: 100%;
+}
