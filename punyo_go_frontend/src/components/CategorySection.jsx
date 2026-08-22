@@ -29,7 +29,7 @@ export default function CategorySection({ category, onSelectCategory, language, 
                     {language === 'ru' ? (category.name_ru || category.name) : category.name}
                 </h2>
                 <button className="see-all-btn" onClick={() => onSelectCategory(category)}>
-                    {language === 'ru' ? 'Ещё' : 'Batafsil'} <span className="arrow">→</span>
+                    {language === 'ru' ? 'Все' : 'Barchasi'} &gt;
                 </button>
             </div>
 
