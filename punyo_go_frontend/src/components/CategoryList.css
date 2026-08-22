@@ -4,9 +4,10 @@
 }
 
 .category-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 15px 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px 16px;
+    justify-content: flex-start;
 }
 
 .category-item {
@@ -14,20 +15,22 @@
     flex-direction: column;
     align-items: center;
     cursor: pointer;
+    width: 76px;
 }
 
 .category-image-container {
-    width: 60px;
-    height: 60px;
-    background: #1C1C1E;
-    border-radius: 16px;
+    width: 70px;
+    height: 70px;
+    background: var(--card-bg, #1C1C1E);
+    border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 8px;
-    padding: 10px;
+    padding: 12px;
     box-sizing: border-box;
     transition: transform 0.2s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 .category-item:active .category-image-container {
