@@ -90,14 +90,6 @@ class RestaurantAdminUserCreationForm(UserCreationForm):
         model = RestaurantAdminUser
         fields = ('username', 'first_name', 'last_name', 'phone_number')
 
-    def save(self, commit=True):
-        user = super().save(commit=commit)
-        if commit:
-            rest = self.cleaned_data.get('restaurant')
-            rest.admin_user = user
-            rest.save()
-        return user
-
 
 class RestaurantAdminUserChangeForm(UserChangeForm):
     restaurant = forms.ModelChoiceField(
@@ -116,19 +108,6 @@ class RestaurantAdminUserChangeForm(UserChangeForm):
             rest = getattr(self.instance, 'managed_restaurants', None)
             if rest and rest.exists():
                 self.fields['restaurant'].initial = rest.first()
-
-    def save(self, commit=True):
-        user = super().save(commit=commit)
-        if commit:
-            rest = self.cleaned_data.get('restaurant')
-            old_rest = user.managed_restaurants.first()
-            if old_rest and old_rest != rest:
-                old_rest.admin_user = None
-                old_rest.save()
-            if rest:
-                rest.admin_user = user
-                rest.save()
-        return user
 
 
 @admin.register(RestaurantAdminUser)
@@ -166,6 +145,18 @@ class RestaurantAdminUserAdmin(UserAdmin):
             obj.is_staff = True
         super().save_model(request, obj, form, change)
         
+        # Link the restaurant
+        rest = form.cleaned_data.get('restaurant')
+        if change:
+            old_rest = obj.managed_restaurants.first()
+            if old_rest and old_rest != rest:
+                old_rest.admin_user = None
+                old_rest.save()
+        
+        if rest:
+            rest.admin_user = obj
+            rest.save()
+            
         # Assign permissions so they only see specific parts of the admin panel
         if not obj.is_superuser:
             permissions_codenames = [
