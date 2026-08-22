@@ -20,6 +20,7 @@ import MapPicker from './MapPicker';
 import SuccessModal from './SuccessModal';
 import Pagination from './Pagination';
 import ChatSupport from './ChatSupport';
+import Cart from './Cart';
 import { api } from '../api';
 import './CategorySection.css';
 import './ProfileEdit.css';
@@ -318,6 +319,26 @@ const Shop = ({ language, theme, toggleTheme }) => {
         setSelectedProduct(null);
         setShowCartSuccess(true);
         setTimeout(() => setShowCartSuccess(false), 3000);
+    };
+
+    const updateCartQuantity = (uniqueId, productId, delta) => {
+        setCart(prevCart => prevCart.map(item => {
+            const itemKey = item.unique_id || item.product_id;
+            const targetKey = uniqueId || productId;
+            if (itemKey === targetKey) {
+                const newQuantity = Math.max(1, item.quantity + delta);
+                return { ...item, quantity: newQuantity };
+            }
+            return item;
+        }));
+    };
+
+    const removeCartItem = (uniqueId, productId) => {
+        setCart(prevCart => prevCart.filter(item => {
+            const itemKey = item.unique_id || item.product_id;
+            const targetKey = uniqueId || productId;
+            return itemKey !== targetKey;
+        }));
     };
 
     const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -639,6 +660,19 @@ const Shop = ({ language, theme, toggleTheme }) => {
                         onPageChange={setCategoryPage}
                     />
                 </div>
+            );
+        }
+
+        if (view === 'cart') {
+            return (
+                <Cart 
+                    cart={cart}
+                    language={language}
+                    onUpdateQuantity={updateCartQuantity}
+                    onRemoveItem={removeCartItem}
+                    onCheckout={() => submitFullOrder()}
+                    onBack={() => setView('home')}
+                />
             );
         }
 
