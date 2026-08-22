@@ -615,7 +615,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
                         setView('home');
                     }}
                     onProductClick={(p) => {
-                        if (p.addons && p.addons.length > 0) {
+                        if (!currentUser || !currentUser.phone_number || currentUser.phone_number === '-') {
                             setPendingProduct(p);
                             setIsAuthDrawerOpen(true);
                         } else {
