@@ -1,64 +1,99 @@
 .my-orders-view {
     min-height: 100vh;
-    background: var(--primary-bg);
+    background: var(--bg-color, #000);
     display: flex;
     flex-direction: column;
+    padding-bottom: 90px;
+    animation: fadeInOrders 0.3s ease-out forwards;
+}
+
+@keyframes fadeInOrders {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .orders-header {
-    background: var(--card-bg);
-    padding: 20px;
     display: flex;
     align-items: center;
-    gap: 16px;
-    border-bottom: 1px solid var(--border-color);
+    padding: 20px 20px 10px;
+    background: transparent;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color, #2C2C2E);
+}
+
+.orders-back-btn {
+    background: var(--card-bg, #1C1C1E);
+    border: 1px solid var(--border-color, #2C2C2E);
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-main, #fff);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.orders-back-btn:active {
+    transform: scale(0.95);
 }
 
 .orders-header h2 {
-    font-size: 18px;
-    font-weight: 700;
     margin: 0;
-    color: var(--text-main);
+    margin-left: 16px;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-main, #fff);
 }
 
 .orders-tabs {
     display: flex;
-    background: var(--card-bg);
-    padding: 8px 20px;
-    gap: 8px;
-    border-bottom: 1px solid var(--border-color);
+    padding: 16px 20px;
+    gap: 12px;
 }
 
 .tab-btn {
     flex: 1;
-    padding: 10px;
-    border: none;
-    background: var(--primary-bg);
-    border-radius: 8px;
-    font-size: 14px;
+    padding: 12px;
+    border: 1px solid var(--border-color, #2C2C2E);
+    background: var(--card-bg, #1C1C1E);
+    border-radius: 14px;
+    font-size: 15px;
     font-weight: 600;
-    color: var(--text-muted);
+    color: var(--text-muted, #8E8E93);
     cursor: pointer;
     transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .tab-btn.active {
-    background: var(--accent-color);
-    color: white;
-}
-
-.tab-btn:hover:not(.active) {
-    background: var(--category-hover);
+    background: var(--accent-color, #FFB800);
+    color: #000;
+    border-color: var(--accent-color, #FFB800);
+    box-shadow: 0 4px 16px rgba(255, 184, 0, 0.25);
 }
 
 .orders-content {
     flex: 1;
-    padding: 20px;
+    padding: 10px 20px 20px;
 }
 
 .empty-state {
     text-align: center;
-    color: var(--text-muted);
+    color: var(--text-muted, #8E8E93);
+    margin-top: 60px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.loading-state {
+    text-align: center;
+    color: var(--text-muted, #8E8E93);
     margin-top: 40px;
 }
 
@@ -69,71 +104,92 @@
 }
 
 .order-card {
-    background: var(--card-bg);
-    border-radius: 16px;
-    padding: 16px;
-    box-shadow: var(--shadow-sm);
-    transition: background 0.3s ease;
+    background: var(--card-bg, #1C1C1E);
+    border: 1px solid var(--border-color, #2C2C2E);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
 }
 
 .order-card-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 12px;
-    padding-bottom: 8px;
-    border-bottom: 1px dashed var(--border-color);
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--border-color, #2C2C2E);
 }
 
 .order-id {
-    font-weight: 700;
-    color: var(--text-main);
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-main, #fff);
 }
 
 .order-date {
-    font-size: 12px;
-    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted, #8E8E93);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px 10px;
+    border-radius: 8px;
 }
 
 .order-items {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-bottom: 12px;
+    gap: 10px;
+    margin-bottom: 16px;
 }
 
 .order-item-row {
     display: flex;
     justify-content: space-between;
-    font-size: 14px;
-    color: var(--text-main);
+    font-size: 15px;
+    color: var(--text-main, #fff);
+    font-weight: 500;
+}
+
+.order-item-row span:last-child {
+    color: var(--text-muted, #8E8E93);
+    font-weight: 600;
 }
 
 .order-total {
     display: flex;
     justify-content: space-between;
-    padding-top: 8px;
-    border-top: 1px solid var(--border-color);
-    margin-top: 4px;
+    align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color, #2C2C2E);
+    font-size: 16px;
     font-weight: 700;
-    color: var(--text-main);
+    color: var(--text-muted, #8E8E93);
+}
+
+.order-total span:last-child {
+    font-size: 18px;
+    color: var(--accent-color, #FFB800);
 }
 
 .status-badge {
-    margin-top: 12px;
+    margin-top: 16px;
     display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 11px;
+    padding: 6px 14px;
+    border-radius: 12px;
+    font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .status-badge.pending {
-    background: #fef3c7;
-    color: #92400e;
+    background: rgba(255, 184, 0, 0.15);
+    color: #FFB800;
+    border: 1px solid rgba(255, 184, 0, 0.2);
 }
 
 .status-badge.active {
-    background: #dcfce7;
-    color: #166534;
+    background: rgba(52, 199, 89, 0.15);
+    color: #34C759;
+    border: 1px solid rgba(52, 199, 89, 0.2);
 }
