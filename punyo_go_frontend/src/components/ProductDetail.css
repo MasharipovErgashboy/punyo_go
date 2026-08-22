@@ -9,7 +9,6 @@
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    padding-bottom: 100px;
 }
 
 .detail-image-container {
@@ -58,7 +57,7 @@
 }
 
 .detail-info {
-    padding: 24px;
+    padding: 24px 24px 120px 24px; /* Added large bottom padding so content clears the fixed bottom bar */
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -196,21 +195,6 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
-    max-height: 220px;
-    overflow-y: auto;
-    padding-right: 5px;
-}
-
-/* Custom scrollbar for addons list */
-.addons-list::-webkit-scrollbar {
-    width: 4px;
-}
-.addons-list::-webkit-scrollbar-track {
-    background: transparent;
-}
-.addons-list::-webkit-scrollbar-thumb {
-    background-color: var(--border-color);
-    border-radius: 4px;
 }
 
 .addon-item {
