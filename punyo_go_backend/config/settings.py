@@ -233,3 +233,8 @@ JAZZMIN_SETTINGS["site_header"] = "Punyo Go"
 JAZZMIN_SETTINGS["welcome_sign"] = "Punyo Go Admin Paneliga xush kelibsiz"
 JAZZMIN_SETTINGS["copyright"] = "Punyo Go"
 
+
+# Telegram Bot configurations
+BOT_TOKEN = os.getenv('BOT_TOKEN', '')
+WEBAPP_URL = os.getenv('WEBAPP_URL', 'https://t.me/punyogo_bot/app')
+
