@@ -610,6 +610,8 @@ const Shop = ({ language, theme, toggleTheme }) => {
                     restaurant={selectedRestaurant}
                     categories={categories}
                     language={language}
+                    favorites={favorites}
+                    onToggleFavorite={toggleFavorite}
                     onBack={() => {
                         setSelectedRestaurant(null);
                         setView('home');

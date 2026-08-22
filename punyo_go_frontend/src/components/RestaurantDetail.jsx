@@ -3,7 +3,7 @@ import { api } from '../api';
 import ProductGrid from './ProductGrid';
 import './RestaurantDetail.css';
 
-const RestaurantDetail = ({ restaurant, categories = [], language, onBack, onProductClick }) => {
+const RestaurantDetail = ({ restaurant, categories = [], language, onBack, onProductClick, favorites, onToggleFavorite }) => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -141,6 +141,8 @@ const RestaurantDetail = ({ restaurant, categories = [], language, onBack, onPro
                         products={products} 
                         onProductClick={onProductClick} 
                         language={language}
+                        favorites={favorites}
+                        onToggleFavorite={onToggleFavorite}
                     />
                 ) : (
                     <div className="empty-products">
