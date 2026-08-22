@@ -64,7 +64,8 @@ def send_telegram_notification(product):
     with open('/tmp/telegram_debug.log', 'a') as log_f:
         log_f.write(log_msg)
 
-@receiver(post_save, sender=Product)
-def product_post_save(sender, instance, created, **kwargs):
-    if created:
-        threading.Thread(target=send_telegram_notification, args=(instance,)).start()
+# Signal is currently disabled as per request
+# @receiver(post_save, sender=Product)
+# def product_post_save(sender, instance, created, **kwargs):
+#     if created:
+#         threading.Thread(target=send_telegram_notification, args=(instance,)).start()
