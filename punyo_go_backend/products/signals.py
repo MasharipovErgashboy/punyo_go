@@ -7,10 +7,17 @@ from django.dispatch import receiver
 from .models import Product
 
 def send_telegram_notification(product):
+    import datetime
+    log_msg = f"[{datetime.datetime.now()}] Starting send_telegram_notification for product {product.id}\n"
+    
     bot_token = settings.BOT_TOKEN
     chat_id = product.restaurant.telegram_chat_id if product.restaurant else None
     
+    log_msg += f"Token: {'Set' if bot_token else 'Missing'}, Chat ID: {chat_id}\n"
+    
     if not bot_token or not chat_id:
+        with open('/tmp/telegram_debug.log', 'a') as log_f:
+            log_f.write(log_msg + "Aborting: Missing token or chat_id\n")
         return
 
     text = (
@@ -40,19 +47,24 @@ def send_telegram_notification(product):
     
     try:
         if product.image:
+            log_msg += f"Sending with image: {product.image.path}\n"
             with open(product.image.path, 'rb') as f:
-                requests.post(url, data=data, files={'photo': f}, timeout=10)
+                res = requests.post(url, data=data, files={'photo': f}, timeout=15)
         else:
-            requests.post(
+            log_msg += "Sending without image\n"
+            res = requests.post(
                 f"https://api.telegram.org/bot{bot_token}/sendMessage", 
                 data={"chat_id": chat_id, "text": text, "parse_mode": "HTML", "reply_markup": json.dumps(reply_markup)}, 
-                timeout=10
+                timeout=15
             )
+        log_msg += f"Response: {res.text}\n"
     except Exception as e:
-        print(f"Error sending Telegram notification: {e}")
+        log_msg += f"Exception: {e}\n"
+        
+    with open('/tmp/telegram_debug.log', 'a') as log_f:
+        log_f.write(log_msg)
 
 @receiver(post_save, sender=Product)
 def product_post_save(sender, instance, created, **kwargs):
     if created:
-        # Run in a separate thread so it doesn't block the admin panel UI
         threading.Thread(target=send_telegram_notification, args=(instance,)).start()
