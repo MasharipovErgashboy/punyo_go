@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import './App.css';
 import Shop from './components/Shop';
-import Orders from './components/Orders';
 import PhoneRegistration from './components/PhoneRegistration';
 import LandingPage from './components/LandingPage';
 import { api } from './api';
