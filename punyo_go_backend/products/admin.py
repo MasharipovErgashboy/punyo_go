@@ -98,7 +98,7 @@ class ProductAdmin(admin.ModelAdmin):
         return fieldsets
 
     def save_model(self, request, obj, form, change):
-        if not request.user.is_superuser and not obj.restaurant_id:
+        if not request.user.is_superuser:
             rest = request.user.managed_restaurants.first()
             if rest:
                 obj.restaurant = rest
