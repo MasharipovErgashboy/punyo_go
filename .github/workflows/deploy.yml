@@ -1,4 +1,4 @@
-name: Deploy to VPS
+name: Deploy to Production
 
 on:
   push:
@@ -10,36 +10,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Deploy to Server via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          password: ${{ secrets.SERVER_PASSWORD }}
-          script: |
-            cd /var/www/punyo_go
-            
-            echo "1. Getting latest code..."
-            git pull origin main
-            
-            echo "2. Building Frontend..."
-            cd punyo_go_frontend
-            npm install
-            npm run build
-            
-            echo "3. Updating Backend..."
-            cd ../punyo_go_backend
-            source venv/bin/activate
-            pip install -r requirements.txt
-            python manage.py migrate
-            python manage.py collectstatic --noinput
-            sudo systemctl restart punyo_backend
-            
-            echo "4. Restarting Telegram Bot..."
-            cd ../punyo_go_bot
-            pm2 restart aiogram_bot || pm2 start bot.py --name "aiogram_bot" --interpreter=../punyo_go_backend/venv/bin/python
-            
-            echo "✅ Deployment Successful!"
+    - name: Deploy to VPS
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        script: |
+          # 1. Pull latest code
+          cd /root/punyo_go
+          git stash
+          git pull origin main
+          
+          # 2. Update Backend
+          cd /root/punyo_go/punyo_go_backend
+          source venv/bin/activate
+          pip install -r requirements.txt
+          python manage.py makemigrations
+          python manage.py migrate
+          python manage.py collectstatic --noinput
+          sudo systemctl restart punyo_backend
+          
+          # 3. Update Bot
+          cd /root/punyo_go/punyo_go_bot
+          source venv/bin/activate
+          pip install -r requirements.txt
+          sudo systemctl restart punyo_bot
+          
+          # 4. Update Frontend
+          cd /root/punyo_go/punyo_go_frontend
+          npm install
+          npm run build
