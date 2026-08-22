@@ -40,7 +40,5 @@ jobs:
           pip install -r requirements.txt
           sudo systemctl restart punyo_bot
           
-          # 4. Update Frontend
-          cd /root/punyo_go/punyo_go_frontend
-          npm install
-          npm run build
+          # 4. Update Frontend (No build needed as we push dist folder)
+          sudo systemctl restart nginx
