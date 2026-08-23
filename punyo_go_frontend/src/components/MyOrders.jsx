@@ -125,17 +125,11 @@ const MyOrders = ({ user, language, onBack }) => {
                                             <div className={`step-icon ${(order.status === 'active' || order.status === 'ready') ? 'glowing-active' : (order.status === 'delivering' ? 'completed' : '')}`}>
                                                 🍳
                                             </div>
-                                            <div className="step-text">
-                                                {language === 'ru' ? 'Готовится' : 'Tayyorlanmoqda'}
-                                            </div>
                                         </div>
                                         <div className="tracking-line"></div>
                                         <div className="tracking-step">
                                             <div className={`step-icon ${order.status === 'delivering' ? 'glowing-active' : 'inactive'}`}>
                                                 🛵
-                                            </div>
-                                            <div className="step-text">
-                                                {language === 'ru' ? 'В пути' : 'Yetkazib berilmoqda'}
                                             </div>
                                         </div>
                                     </div>
