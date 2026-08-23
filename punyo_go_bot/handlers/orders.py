@@ -129,7 +129,7 @@ async def handle_accept_order(callback: CallbackQuery):
     ])
     
     try:
-        await callback.message.edit_text(new_text, reply_markup=keyboard)
+        await callback.message.edit_text(new_text, reply_markup=keyboard, parse_mode='HTML')
     except Exception as e:
         print(f"Error editing message: {e}")
         
@@ -147,21 +147,10 @@ async def handle_reject_order(callback: CallbackQuery):
         await callback.answer("Xatolik yuz berdi!", show_alert=True)
         return
         
-    # Edit the message to show it was rejected and remove buttons
-    new_text = callback.message.html_text + "\n\n❌ <b>Buyurtma rad etildi!</b>"
-    
-    # Optional: Keep the mini app button but remove accept/reject
-    from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-    from config import WEB_APP_SHOP_URL
-    
-    shop_url = WEB_APP_SHOP_URL if WEB_APP_SHOP_URL else "https://punyogo.uz"
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="🚀 Mini App", url=shop_url)]
-    ])
-    
+    # Delete the message entirely as requested by the user
     try:
-        await callback.message.edit_text(new_text, reply_markup=keyboard)
+        await callback.message.delete()
     except Exception as e:
-        print(f"Error editing message: {e}")
+        print(f"Error deleting message: {e}")
         
-    await callback.answer("Buyurtma rad etildi!")
+    await callback.answer("Buyurtma rad etildi va xabar o'chirildi!")
