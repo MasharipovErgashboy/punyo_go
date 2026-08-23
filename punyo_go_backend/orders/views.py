@@ -79,7 +79,11 @@ def create_order(request):
                 p_name = html.escape(product.name)
                 items_list_str += f"{idx}. <b>{p_name}</b> — {quantity} dona\n"
                 
-            order.total_amount = total_amount
+            delivery_price = Decimal('0')
+            if order.restaurant and order.restaurant.delivery_price:
+                delivery_price = order.restaurant.delivery_price
+                
+            order.total_amount = total_amount + delivery_price
             order.save()
             created_orders.append(order)
             
@@ -95,6 +99,10 @@ def create_order(request):
                 addr = html.escape(order.delivery_address or 'Ko\'rsatilmagan')
                 notes = html.escape(order.notes or 'Yo\'q')
 
+                delivery_text = ""
+                if delivery_price > 0:
+                    delivery_text = f"🛵 <b>Yetkazib berish:</b> {delivery_price:,.0f} UZS\n"
+
                 msg = (
                     "<b>🔔 Yangi buyurtma kelib tushdi!</b>\n\n"
                     f"🆔 <b>Buyurtma ID:</b> #{order.id}\n"
@@ -104,6 +112,8 @@ def create_order(request):
                     f"💬 <b>Izoh:</b> {notes}\n\n"
                     "📦 <b>Mahsulotlar:</b>\n"
                     f"{items_list_str}\n"
+                    f"💵 <b>Mahsulotlar summasi:</b> {total_amount:,.0f} UZS\n"
+                    f"{delivery_text}"
                     f"💰 <b>Jami summa:</b> {order.total_amount:,.0f} UZS\n\n"
                     "🚀 Buyurtmani boshqarish uchun admin panelga o'ting:\n"
                     f"🔗 <a href='{admin_link}'>Admin panelga o'tish</a>"

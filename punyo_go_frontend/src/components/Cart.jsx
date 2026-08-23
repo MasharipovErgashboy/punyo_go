@@ -4,6 +4,15 @@ import './Cart.css';
 
 const Cart = ({ cart, onUpdateQuantity, onRemoveItem, onCheckout, onBack, language }) => {
     const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    
+    const uniqueRestaurants = {};
+    cart.forEach(item => {
+        if (item.restaurant_id) {
+            uniqueRestaurants[item.restaurant_id] = Number(item.delivery_price || 0);
+        }
+    });
+    const deliveryTotal = Object.values(uniqueRestaurants).reduce((sum, fee) => sum + fee, 0);
+    const grandTotal = cartTotal + deliveryTotal;
 
     return (
         <div className="cart-view animate-fade-in">
@@ -76,9 +85,19 @@ const Cart = ({ cart, onUpdateQuantity, onRemoveItem, onCheckout, onBack, langua
                     </div>
                     
                     <div className="cart-checkout-section">
-                        <div className="cart-total-row">
+                        <div className="cart-total-details" style={{display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px'}}>
+                            <div className="cart-total-row" style={{fontSize: '14px', color: 'var(--text-muted)'}}>
+                                <span>{language === 'ru' ? 'Сумма товаров:' : 'Mahsulotlar summasi:'}</span>
+                                <span>{cartTotal.toLocaleString()} UZS</span>
+                            </div>
+                            <div className="cart-total-row" style={{fontSize: '14px', color: 'var(--text-muted)'}}>
+                                <span>{language === 'ru' ? 'Доставка:' : 'Yetkazib berish:'}</span>
+                                <span>{deliveryTotal.toLocaleString()} UZS</span>
+                            </div>
+                        </div>
+                        <div className="cart-total-row" style={{borderTop: '1px solid var(--border-color)', paddingTop: '12px'}}>
                             <span>{language === 'ru' ? 'Общая сумма:' : 'Jami summa:'}</span>
-                            <span className="cart-total-amount">{cartTotal.toLocaleString()} UZS</span>
+                            <span className="cart-total-amount">{grandTotal.toLocaleString()} UZS</span>
                         </div>
                         <button className="cart-checkout-btn" onClick={onCheckout}>
                             {language === 'ru' ? 'Оформить заказ' : 'Buyurtma berish'}

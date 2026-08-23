@@ -25,12 +25,15 @@ class ProductSerializer(serializers.ModelSerializer):
     """Product serializer"""
     category_name = serializers.CharField(source='category.name', read_only=True)
     category_name_ru = serializers.CharField(source='category.name_ru', read_only=True)
+    restaurant_name = serializers.CharField(source='restaurant.name', read_only=True, allow_null=True)
+    delivery_price = serializers.DecimalField(source='restaurant.delivery_price', max_digits=10, decimal_places=2, read_only=True, allow_null=True)
     addons = serializers.SerializerMethodField()
     
     class Meta:
         model = Product
         fields = [
-            'id', 'category', 'category_name', 'category_name_ru', 
+            'id', 'restaurant', 'restaurant_name', 'delivery_price',
+            'category', 'category_name', 'category_name_ru', 
             'name', 'name_ru', 'image', 'image_base64', 'price', 
             'description', 'description_ru', 'order', 'addons'
         ]

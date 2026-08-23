@@ -303,7 +303,9 @@ const Shop = ({ language, theme, toggleTheme }) => {
             base_price: product.price,
             image: product.image,
             quantity: quantity,
-            addons: addons
+            addons: addons,
+            restaurant_id: product.restaurant,
+            delivery_price: product.delivery_price || 0
         };
 
         setCart(prevCart => {
