@@ -3,7 +3,7 @@ import { api } from '../api';
 import './MyOrders.css';
 
 const MyOrders = ({ user, language, onBack }) => {
-    const [activeTab, setActiveTab] = useState('active'); // 'active' (Faol) or 'confirmed' (Tasdiqlangan)
+    const [activeTab, setActiveTab] = useState('active'); // 'active' (Faol), 'confirmed' (Tasdiqlangan), or 'canceled' (Rad etilgan)
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -16,10 +16,15 @@ const MyOrders = ({ user, language, onBack }) => {
         setLoading(true);
         try {
             const userId = user.telegram_user_id || user.id;
-            const data = activeTab === 'active'
-                ? await api.getActiveOrders(userId)
-                : await api.getConfirmedOrders(userId);
-            setOrders(data.orders || []);
+            let data;
+            if (activeTab === 'active') {
+                data = await api.getActiveOrders(userId);
+            } else if (activeTab === 'confirmed') {
+                data = await api.getConfirmedOrders(userId);
+            } else if (activeTab === 'canceled') {
+                data = await api.getCanceledOrders(userId);
+            }
+            setOrders(data?.orders || []);
         } catch (e) {
             console.error('Failed to fetch orders:', e);
         } finally {
@@ -48,6 +53,12 @@ const MyOrders = ({ user, language, onBack }) => {
                     onClick={() => setActiveTab('confirmed')}
                 >
                     {language === 'ru' ? 'Подтвержденные' : 'Tasdiqlangan'}
+                </button>
+                <button
+                    className={`tab-btn ${activeTab === 'canceled' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('canceled')}
+                >
+                    {language === 'ru' ? 'Отмененные' : 'Rad etilgan'}
                 </button>
             </div>
 
@@ -79,7 +90,11 @@ const MyOrders = ({ user, language, onBack }) => {
                                     <span>{parseFloat(order.total_amount).toLocaleString()} UZS</span>
                                 </div>
                                 <div className={`status-badge ${order.status}`}>
-                                    {order.status === 'pending' ? (language === 'ru' ? 'Ожидание' : 'Kutilmoqda') : (language === 'ru' ? 'Подтвержден' : 'Tasdiqlangan')}
+                                    {order.status === 'pending' 
+                                        ? (language === 'ru' ? 'Ожидание' : 'Kutilmoqda') 
+                                        : order.status === 'active' 
+                                            ? (language === 'ru' ? 'Подтвержден' : 'Tasdiqlangan')
+                                            : (language === 'ru' ? 'Отменен' : 'Rad etilgan')}
                                 </div>
                             </div>
                         ))}

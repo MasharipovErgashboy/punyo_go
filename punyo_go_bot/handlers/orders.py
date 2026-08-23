@@ -98,3 +98,70 @@ async def back_to_main_menu(message: Message, state: FSMContext):
         keyboard = get_main_menu_ru(shop_url, chat_url, orders_url)
     
     await message.answer(get_text(language, 'back_to_menu'), reply_markup=keyboard)
+
+
+from aiogram.types import CallbackQuery
+
+@router.callback_query(F.data.startswith('accept_order_'))
+async def handle_accept_order(callback: CallbackQuery):
+    """Handle order acceptance from Telegram"""
+    order_id = callback.data.split('_')[2]
+    
+    # Update status in backend
+    result = await api.update_order_status(order_id, 'active')
+    if "error" in result:
+        await callback.answer("Xatolik yuz berdi!", show_alert=True)
+        return
+        
+    # Edit the message to show it was accepted and remove buttons
+    new_text = callback.message.html_text + "\n\n✅ <b>Buyurtma tasdiqlandi!</b>"
+    
+    # Optional: Keep the mini app button but remove accept/reject
+    from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+    from config import WEB_APP_SHOP_URL
+    import re
+    
+    # Keep only the Mini App button if possible
+    # We can reconstruct a simple keyboard
+    shop_url = WEB_APP_SHOP_URL if WEB_APP_SHOP_URL else "https://punyogo.uz"
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="🚀 Mini App", url=shop_url)]
+    ])
+    
+    try:
+        await callback.message.edit_text(new_text, reply_markup=keyboard)
+    except Exception as e:
+        print(f"Error editing message: {e}")
+        
+    await callback.answer("Buyurtma tasdiqlandi!")
+
+
+@router.callback_query(F.data.startswith('reject_order_'))
+async def handle_reject_order(callback: CallbackQuery):
+    """Handle order rejection from Telegram"""
+    order_id = callback.data.split('_')[2]
+    
+    # Update status in backend
+    result = await api.update_order_status(order_id, 'canceled')
+    if "error" in result:
+        await callback.answer("Xatolik yuz berdi!", show_alert=True)
+        return
+        
+    # Edit the message to show it was rejected and remove buttons
+    new_text = callback.message.html_text + "\n\n❌ <b>Buyurtma rad etildi!</b>"
+    
+    # Optional: Keep the mini app button but remove accept/reject
+    from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+    from config import WEB_APP_SHOP_URL
+    
+    shop_url = WEB_APP_SHOP_URL if WEB_APP_SHOP_URL else "https://punyogo.uz"
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="🚀 Mini App", url=shop_url)]
+    ])
+    
+    try:
+        await callback.message.edit_text(new_text, reply_markup=keyboard)
+    except Exception as e:
+        print(f"Error editing message: {e}")
+        
+    await callback.answer("Buyurtma rad etildi!")

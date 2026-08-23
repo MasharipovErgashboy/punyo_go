@@ -13,6 +13,8 @@ from products.models import Product
 from decimal import Decimal
 import traceback
 import html
+import json
+from django.conf import settings
 
 @api_view(['POST'])
 @transaction.atomic
@@ -107,9 +109,22 @@ def create_order(request):
                     f"🔗 <a href='{admin_link}'>Admin panelga o'tish</a>"
                 )
                 
+                # Build reply markup with Accept and Reject buttons
+                reply_markup_json = json.dumps({
+                    "inline_keyboard": [
+                        [
+                            {"text": "✅ Tasdiqlash", "callback_data": f"accept_order_{order.id}"},
+                            {"text": "❌ Rad etish", "callback_data": f"reject_order_{order.id}"}
+                        ],
+                        [
+                            {"text": "🚀 Mini App", "url": settings.WEBAPP_URL} if hasattr(settings, 'WEBAPP_URL') else {"text": "🚀 Mini App", "url": "https://punyogo.uz"}
+                        ]
+                    ]
+                })
+                
                 # Send to specific restaurant chat if available
                 chat_id = order.restaurant.telegram_chat_id if order.restaurant and order.restaurant.telegram_chat_id else None
-                send_telegram_notification(msg, chat_id=chat_id)
+                send_telegram_notification(msg, chat_id=chat_id, reply_markup=reply_markup_json)
             except Exception as e:
                 print(f"DEBUG: Failed to send TG notification: {e}")
 
@@ -182,5 +197,38 @@ def test_notification(request):
             return Response({'status': 'Message sent successfully!'})
         else:
             return Response({'error': 'Failed to send message.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+def get_canceled_orders(request):
+    """Get user's canceled (Rad etilgan) orders"""
+    telegram_user_id = request.query_params.get('telegram_user_id')
+    
+    if not telegram_user_id:
+        return Response({'error': 'telegram_user_id required'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    user = get_object_or_404(UserProfile, telegram_user_id=telegram_user_id)
+    orders = Order.objects.filter(user=user, status='canceled')
+    
+    serializer = OrderSerializer(orders, many=True)
+    return Response({'orders': serializer.data})
+
+
+@api_view(['PATCH'])
+def update_order_status(request, order_id):
+    """Update order status via Bot API"""
+    try:
+        order = get_object_or_404(Order, id=order_id)
+        new_status = request.data.get('status')
+        
+        if new_status not in dict(Order.STATUS_CHOICES):
+            return Response({'error': 'Invalid status'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        order.status = new_status
+        order.save()
+        
+        return Response({'status': 'success', 'order_id': order.id, 'new_status': new_status})
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

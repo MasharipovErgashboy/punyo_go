@@ -101,6 +101,11 @@ export const api = {
         return response.json();
     },
 
+    async getCanceledOrders(telegramUserId) {
+        const response = await fetchWithBypass(`${API_BASE_URL}/orders/canceled/?telegram_user_id=${telegramUserId}`);
+        return response.json();
+    },
+
     async updateUser(telegramUserId, data) {
         const response = await fetchWithBypass(`${API_BASE_URL}/users/me/`, {
             method: 'PATCH',

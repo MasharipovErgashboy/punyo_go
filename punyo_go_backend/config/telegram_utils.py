@@ -7,7 +7,7 @@ import urllib.error
 
 logger = logging.getLogger(__name__)
 
-def send_telegram_notification(message, chat_id=None):
+def send_telegram_notification(message, chat_id=None, reply_markup=None):
     """
     Sends a message to a Telegram chat/group using the bot token.
     Uses BOT_TOKEN and TELEGRAM_CHAT_ID from environment variables.
@@ -36,6 +36,9 @@ def send_telegram_notification(message, chat_id=None):
         'disable_web_page_preview': True
     }
     
+    if reply_markup:
+        data['reply_markup'] = reply_markup
+        
     try:
         req = urllib.request.Request(url)
         req.add_header('Content-Type', 'application/json; charset=utf-8')

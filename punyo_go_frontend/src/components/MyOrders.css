@@ -193,3 +193,9 @@
     color: #34C759;
     border: 1px solid rgba(52, 199, 89, 0.2);
 }
+
+.status-badge.canceled {
+    background: rgba(255, 59, 48, 0.15);
+    color: #FF3B30;
+    border: 1px solid rgba(255, 59, 48, 0.2);
+}

@@ -81,3 +81,10 @@ class APIService:
             "message": message,
         }
         return await self._request('POST', '/chat/send/', data)
+        
+    async def update_order_status(self, order_id: int, status: str) -> Dict:
+        """Update order status"""
+        data = {
+            "status": status,
+        }
+        return await self._request('PATCH', f'/orders/{order_id}/status/', data)
