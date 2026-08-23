@@ -174,12 +174,40 @@ async def handle_accept_delivery(callback: CallbackQuery):
     user_mention = callback.from_user.mention_html()
     new_text = callback.message.html_text + f"\n\n✅ <b>Qabul qilindi:</b> {user_mention}"
     
+    from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+    
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="🏁 Buyurtma topshirildi", callback_data=f"finish_delivery_{order_id}")]
+    ])
+    
     try:
-        await callback.message.edit_text(new_text, parse_mode='HTML')
+        await callback.message.edit_text(new_text, reply_markup=keyboard, parse_mode='HTML')
     except Exception as e:
         print(f"Error editing message: {e}")
         
     await callback.answer("Buyurtma sizga biriktirildi!")
+
+
+@router.callback_query(F.data.startswith('finish_delivery_'))
+async def handle_finish_delivery(callback: CallbackQuery):
+    """Handle delivery completion by driver"""
+    order_id = callback.data.split('_')[2]
+    
+    # Update status in backend to completed
+    result = await api.update_order_status(order_id, 'completed')
+    if "error" in result:
+        await callback.answer("Xatolik yuz berdi!", show_alert=True)
+        return
+        
+    new_text = callback.message.html_text + "\n\n🏁 <b>Buyurtma muvaffaqiyatli topshirildi!</b>"
+    
+    try:
+        # Edit text and remove the inline keyboard
+        await callback.message.edit_text(new_text, reply_markup=None, parse_mode='HTML')
+    except Exception as e:
+        print(f"Error editing message: {e}")
+        
+    await callback.answer("Buyurtma yakunlandi!")
 
 
 @router.callback_query(F.data.startswith('reject_order_'))
