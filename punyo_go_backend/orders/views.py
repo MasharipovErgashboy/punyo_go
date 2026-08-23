@@ -175,7 +175,7 @@ def get_confirmed_orders(request):
         return Response({'error': 'telegram_user_id required'}, status=status.HTTP_400_BAD_REQUEST)
     
     user = get_object_or_404(UserProfile, telegram_user_id=telegram_user_id)
-    orders = Order.objects.filter(user=user, status='active')
+    orders = Order.objects.filter(user=user, status__in=['active', 'ready', 'delivering'])
     
     serializer = OrderSerializer(orders, many=True)
     return Response({'orders': serializer.data})
@@ -240,11 +240,12 @@ def update_order_status(request, order_id):
         order.status = new_status
         order.save()
         
-        # If the order is newly accepted (active) and there is a delivery channel configured
-        if new_status == 'active' and old_status != 'active':
+        # If the order is newly marked as ready for delivery
+        if new_status == 'ready' and old_status != 'ready':
             if order.restaurant and order.restaurant.telegram_delivery_chat_id:
                 try:
                     import urllib.parse
+                    import json
                     from config.telegram_utils import send_telegram_notification
                     
                     delivery_chat_id = order.restaurant.telegram_delivery_chat_id
@@ -285,7 +286,13 @@ def update_order_status(request, order_id):
                         f"📍 <a href='{cust_map_link}'>Mijoz manzilini xaritada ochish</a>\n"
                     )
                     
-                    send_telegram_notification(msg, chat_id=delivery_chat_id)
+                    reply_markup_json = json.dumps({
+                        "inline_keyboard": [
+                            [{"text": "✅ Tasdiqlash", "callback_data": f"accept_delivery_{order.id}"}]
+                        ]
+                    })
+                    
+                    send_telegram_notification(msg, chat_id=delivery_chat_id, reply_markup=reply_markup_json)
                 except Exception as e:
                     print(f"DEBUG: Failed to send delivery notification: {e}")
         

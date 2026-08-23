@@ -8,6 +8,8 @@ class Order(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Kutilmoqda'),
         ('active', 'Faol'),
+        ('ready', 'Yetkazishga tayyor'),
+        ('delivering', 'Yetkazib berilmoqda'),
         ('completed', 'Yakunlandi'),
         ('canceled', 'Bekor qilindi'),
     ]

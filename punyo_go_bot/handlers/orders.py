@@ -113,17 +113,41 @@ async def handle_accept_order(callback: CallbackQuery):
         await callback.answer("Xatolik yuz berdi!", show_alert=True)
         return
         
-    # Edit the message to show it was accepted and remove buttons
-    new_text = callback.message.html_text + "\n\n✅ <b>Buyurtma tasdiqlandi!</b>"
+    # Edit the message to show it was accepted and add Call Delivery button
+    new_text = callback.message.html_text + "\n\n✅ <b>Buyurtma tasdiqlandi! (Tayyorlanmoqda)</b>"
     
-    # Optional: Keep the mini app button but remove accept/reject
+    from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+    
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="🛵 Dastavkachini chaqirish", callback_data=f"call_delivery_{order_id}")]
+    ])
+    
+    try:
+        await callback.message.edit_text(new_text, reply_markup=keyboard, parse_mode='HTML')
+    except Exception as e:
+        print(f"Error editing message: {e}")
+        
+    await callback.answer("Buyurtma tasdiqlandi!")
+
+
+@router.callback_query(F.data.startswith('call_delivery_'))
+async def handle_call_delivery(callback: CallbackQuery):
+    """Handle calling delivery driver"""
+    order_id = callback.data.split('_')[2]
+    
+    # Update status in backend to ready
+    result = await api.update_order_status(order_id, 'ready')
+    if "error" in result:
+        await callback.answer("Xatolik yuz berdi!", show_alert=True)
+        return
+        
+    # Edit the message to show delivery was called
+    new_text = callback.message.html_text + "\n\n🛵 <i>Dastavkachiga xabar yuborildi. Kutilmoqda...</i>"
+    
     from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
     from config import WEB_APP_SHOP_URL
-    import re
-    
-    # Keep only the Mini App button if possible
-    # We can reconstruct a simple keyboard
     shop_url = WEB_APP_SHOP_URL if WEB_APP_SHOP_URL else "https://punyogo.uz"
+    
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="🚀 Mini App", url=shop_url)]
     ])
@@ -133,7 +157,29 @@ async def handle_accept_order(callback: CallbackQuery):
     except Exception as e:
         print(f"Error editing message: {e}")
         
-    await callback.answer("Buyurtma tasdiqlandi!")
+    await callback.answer("Dastavkachiga xabar ketdi!")
+
+
+@router.callback_query(F.data.startswith('accept_delivery_'))
+async def handle_accept_delivery(callback: CallbackQuery):
+    """Handle delivery acceptance by driver"""
+    order_id = callback.data.split('_')[2]
+    
+    # Update status in backend to delivering
+    result = await api.update_order_status(order_id, 'delivering')
+    if "error" in result:
+        await callback.answer("Xatolik yuz berdi!", show_alert=True)
+        return
+        
+    user_mention = callback.from_user.mention_html()
+    new_text = callback.message.html_text + f"\n\n✅ <b>Qabul qilindi:</b> {user_mention}"
+    
+    try:
+        await callback.message.edit_text(new_text, parse_mode='HTML')
+    except Exception as e:
+        print(f"Error editing message: {e}")
+        
+    await callback.answer("Buyurtma sizga biriktirildi!")
 
 
 @router.callback_query(F.data.startswith('reject_order_'))

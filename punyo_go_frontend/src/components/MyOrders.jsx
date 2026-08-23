@@ -7,6 +7,8 @@ const MyOrders = ({ user, language, onBack }) => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const [expandedOrder, setExpandedOrder] = useState(null);
+
     useEffect(() => {
         fetchOrders();
     }, [activeTab]);
@@ -29,6 +31,14 @@ const MyOrders = ({ user, language, onBack }) => {
             console.error('Failed to fetch orders:', e);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const toggleOrder = (orderId) => {
+        if (expandedOrder === orderId) {
+            setExpandedOrder(null);
+        } else {
+            setExpandedOrder(orderId);
         }
     };
 
@@ -89,13 +99,47 @@ const MyOrders = ({ user, language, onBack }) => {
                                     <span>{language === 'ru' ? 'Итого:' : 'Jami:'}</span>
                                     <span>{parseFloat(order.total_amount).toLocaleString()} UZS</span>
                                 </div>
-                                <div className={`status-badge ${order.status}`}>
-                                    {order.status === 'pending' 
-                                        ? (language === 'ru' ? 'Ожидание' : 'Kutilmoqda') 
-                                        : order.status === 'active' 
-                                            ? (language === 'ru' ? 'Подтвержден' : 'Tasdiqlangan')
-                                            : (language === 'ru' ? 'Отменен' : 'Rad etilgan')}
+                                
+                                <div className="order-card-footer">
+                                    <div className={`status-badge ${order.status}`}>
+                                        {order.status === 'pending' 
+                                            ? (language === 'ru' ? 'Ожидание' : 'Kutilmoqda') 
+                                            : order.status === 'active' || order.status === 'ready'
+                                                ? (language === 'ru' ? 'Подтвержден' : 'Tasdiqlangan')
+                                                : order.status === 'delivering'
+                                                    ? (language === 'ru' ? 'Доставляется' : 'Yetkazilmoqda')
+                                                    : (language === 'ru' ? 'Отменен' : 'Rad etilgan')}
+                                    </div>
+                                    
+                                    {activeTab === 'confirmed' && (
+                                        <button className="view-order-btn" onClick={() => toggleOrder(order.id)}>
+                                            {language === 'ru' ? 'Смотреть' : 'Ko\'rish'}
+                                            <svg className={expandedOrder === order.id ? 'rotated' : ''} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                        </button>
+                                    )}
                                 </div>
+
+                                {expandedOrder === order.id && activeTab === 'confirmed' && (
+                                    <div className="order-tracking-container animate-fade-in">
+                                        <div className="tracking-step">
+                                            <div className={`step-icon ${(order.status === 'active' || order.status === 'ready') ? 'glowing-active' : (order.status === 'delivering' ? 'completed' : '')}`}>
+                                                🍳
+                                            </div>
+                                            <div className="step-text">
+                                                {language === 'ru' ? 'Готовится' : 'Tayyorlanmoqda'}
+                                            </div>
+                                        </div>
+                                        <div className="tracking-line"></div>
+                                        <div className="tracking-step">
+                                            <div className={`step-icon ${order.status === 'delivering' ? 'glowing-active' : 'inactive'}`}>
+                                                🛵
+                                            </div>
+                                            <div className="step-text">
+                                                {language === 'ru' ? 'В пути' : 'Yetkazib berilmoqda'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
