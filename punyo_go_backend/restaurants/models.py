@@ -25,6 +25,13 @@ class Restaurant(models.Model):
     location = models.CharField(max_length=255, verbose_name="Joylashuvi")
     phone = models.CharField(max_length=20, verbose_name="Telefon raqami")
     delivery_price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Yetkazib berish narxi (UZS)")
+    telegram_delivery_chat_id = models.CharField(
+        max_length=100, 
+        blank=True, 
+        null=True, 
+        verbose_name="Dostavka uchun Telegram Kanal/Guruh ID",
+        help_text="Tasdiqlangan buyurtmalar shu kanalga yuboriladi (masalan: -100123456789)"
+    )
     is_active = models.BooleanField(default=True, verbose_name="Aktiv")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaratilgan vaqt")
     

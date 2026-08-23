@@ -23,8 +23,8 @@ class RestaurantAdmin(admin.ModelAdmin):
         ('Aloqa va Manzil', {
             'fields': ('location', 'phone')
         }),
-        ('Moliyaviy', {
-            'fields': ('delivery_price',)
+        ('Yetkazib berish', {
+            'fields': ('delivery_price', 'telegram_delivery_chat_id')
         }),
         ('Tizim', {
             'fields': ('created_at',),

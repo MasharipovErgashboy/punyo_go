@@ -232,12 +232,62 @@ def update_order_status(request, order_id):
     try:
         order = get_object_or_404(Order, id=order_id)
         new_status = request.data.get('status')
+        old_status = order.status
         
         if new_status not in dict(Order.STATUS_CHOICES):
             return Response({'error': 'Invalid status'}, status=status.HTTP_400_BAD_REQUEST)
             
         order.status = new_status
         order.save()
+        
+        # If the order is newly accepted (active) and there is a delivery channel configured
+        if new_status == 'active' and old_status != 'active':
+            if order.restaurant and order.restaurant.telegram_delivery_chat_id:
+                try:
+                    import urllib.parse
+                    from config.telegram_utils import send_telegram_notification
+                    
+                    delivery_chat_id = order.restaurant.telegram_delivery_chat_id
+                    
+                    # Formatting data
+                    cust_phone = order.phone_number or "Kiritilmagan"
+                    rest_phone = order.restaurant.phone or "Kiritilmagan"
+                    
+                    # Yandex Maps link for Restaurant
+                    encoded_rest_location = urllib.parse.quote(order.restaurant.location or "")
+                    rest_map_link = f"https://yandex.com/maps/?text={encoded_rest_location}"
+                    
+                    # Yandex Maps link for Customer
+                    if order.latitude and order.longitude:
+                        cust_map_link = f"https://yandex.com/maps/?pt={order.longitude},{order.latitude}&z=16&l=map"
+                    else:
+                        encoded_cust_address = urllib.parse.quote(order.delivery_address or "")
+                        cust_map_link = f"https://yandex.com/maps/?text={encoded_cust_address}"
+                    
+                    items_list_str = ""
+                    for idx, item in enumerate(order.items.all(), 1):
+                        p_name = html.escape(item.product.name)
+                        items_list_str += f"{idx}. <b>{p_name}</b> — {item.quantity} dona\n"
+                    
+                    msg = (
+                        "<b>🚀 YETKAZIB BERISH UCHUN YANGI BUYURTMA</b>\n\n"
+                        f"🆔 <b>Buyurtma ID:</b> #{order.id}\n"
+                        f"💰 <b>Jami summa:</b> {order.total_amount:,.0f} UZS\n\n"
+                        "📦 <b>Mahsulotlar:</b>\n"
+                        f"{items_list_str}\n"
+                        "🏪 <b>Restoran:</b>\n"
+                        f"Nomi: {html.escape(order.restaurant.name)}\n"
+                        f"Tel: <code>{rest_phone}</code>\n"
+                        f"📍 <a href='{rest_map_link}'>Restoran manzilini xaritada ochish</a>\n\n"
+                        "👤 <b>Mijoz:</b>\n"
+                        f"Mijoz tel: <code>{cust_phone}</code>\n"
+                        f"Manzil: {html.escape(order.delivery_address or 'Ko\'rsatilmagan')}\n"
+                        f"📍 <a href='{cust_map_link}'>Mijoz manzilini xaritada ochish</a>\n"
+                    )
+                    
+                    send_telegram_notification(msg, chat_id=delivery_chat_id)
+                except Exception as e:
+                    print(f"DEBUG: Failed to send delivery notification: {e}")
         
         return Response({'status': 'success', 'order_id': order.id, 'new_status': new_status})
     except Exception as e:
