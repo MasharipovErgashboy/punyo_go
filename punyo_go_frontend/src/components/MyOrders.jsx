@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../api';
 import './MyOrders.css';
 
-const MyOrders = ({ user, language, onBack, unreadCounts, onMarkAsRead }) => {
+const MyOrders = ({ user, language, onBack, unreadCounts, onMarkAsRead, cachedOrders }) => {
     const [activeTab, setActiveTab] = useState('active'); // 'active' (Faol), 'confirmed' (Tasdiqlangan), or 'canceled' (Rad etilgan)
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -11,7 +11,7 @@ const MyOrders = ({ user, language, onBack, unreadCounts, onMarkAsRead }) => {
 
     useEffect(() => {
         fetchOrders();
-    }, [activeTab]);
+    }, [activeTab, cachedOrders]);
 
     useEffect(() => {
         if (!loading && onMarkAsRead && orders.length > 0) {
@@ -21,6 +21,22 @@ const MyOrders = ({ user, language, onBack, unreadCounts, onMarkAsRead }) => {
 
     const fetchOrders = async () => {
         if (!user) return;
+        
+        if (cachedOrders) {
+            // Filter locally for instant loading
+            let filtered = [];
+            if (activeTab === 'active') {
+                filtered = cachedOrders.filter(o => o.status === 'pending');
+            } else if (activeTab === 'confirmed') {
+                filtered = cachedOrders.filter(o => ['active', 'ready', 'delivering'].includes(o.status));
+            } else if (activeTab === 'canceled') {
+                filtered = cachedOrders.filter(o => o.status === 'canceled');
+            }
+            setOrders(filtered);
+            setLoading(false);
+            return;
+        }
+
         setLoading(true);
         try {
             const userId = user.telegram_user_id || user.id;

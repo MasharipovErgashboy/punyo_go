@@ -84,6 +84,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
     // Unread orders state
     const [unreadOrderCounts, setUnreadOrderCounts] = useState({ active: 0, confirmed: 0, canceled: 0 });
     const [totalUnreadOrders, setTotalUnreadOrders] = useState(0);
+    const [allUserOrders, setAllUserOrders] = useState(null);
 
     useEffect(() => {
         if (!currentUser) return;
@@ -93,6 +94,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
                 const userId = currentUser.telegram_user_id || currentUser.id;
                 const data = await api.getOrders(userId);
                 if (data && data.orders) {
+                    setAllUserOrders(data.orders);
                     const savedStr = localStorage.getItem('punyo_last_seen_orders') || '{}';
                     const lastSeenStatuses = JSON.parse(savedStr);
                     
@@ -617,72 +619,6 @@ const Shop = ({ language, theme, toggleTheme }) => {
             );
         }
 
-        if (searchQuery) {
-            return (
-                <div className="search-results">
-                    <div className="category-title" style={{ marginBottom: '20px' }}>
-                        <span className="back-btn" onClick={() => setSearchQuery('')}>←</span>
-                        {language === 'ru' ? 'РЕЗУЛЬТАТЫ ПОИСКА' : 'QIDIRUV NATIJALARI'}
-                    </div>
-                    
-                    {filteredCategories.length > 0 && (
-                        <div className="search-section" style={{ marginBottom: '20px' }}>
-                            <h3 style={{ margin: '0 20px 15px', fontSize: '18px', color: '#fff', fontWeight: '600' }}>
-                                {language === 'ru' ? 'Категории' : 'Kategoriyalar'}
-                            </h3>
-                            <div className="category-grid">
-                                {filteredCategories.map(cat => (
-                                    <div key={cat.id} className="category-item" onClick={() => {
-                                        setSelectedCategory(cat);
-                                        setSearchQuery('');
-                                    }}>
-                                        <div className="category-image-container">
-                                            {cat.image_base64 || cat.image ? (
-                                                <img src={cat.image_base64 || cat.image} alt={cat.name} />
-                                            ) : (
-                                                <div className="placeholder-image"></div>
-                                            )}
-                                        </div>
-                                        <span className="category-name">{language === 'ru' ? (cat.name_ru || cat.name) : cat.name}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {filteredProducts.length > 0 && (
-                        <div className="search-section">
-                            <h3 style={{ margin: '0 20px 15px', fontSize: '18px', color: '#fff', fontWeight: '600' }}>
-                                {language === 'ru' ? 'Продукты' : 'Mahsulotlar'}
-                            </h3>
-                            <ProductGrid
-                                products={filteredProducts}
-                                language={language}
-                                favorites={favorites}
-                                onToggleFavorite={toggleFavorite}
-                                onProductClick={(p) => {
-                                    if (!currentUser || !currentUser.phone_number || currentUser.phone_number === '-') {
-                                        setPendingProduct(p);
-                                        setIsAuthDrawerOpen(true);
-                                    } else {
-                                        setSelectedProduct(p);
-                                    }
-                                }}
-                            />
-                        </div>
-                    )}
-                    
-                    {filteredCategories.length === 0 && filteredProducts.length === 0 && (
-                        <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(255,255,255,0.5)' }}>
-                            <svg style={{ marginBottom: '16px', opacity: 0.5 }} width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                            <p style={{ fontSize: '16px' }}>{language === 'ru' ? 'Ничего не найдено' : 'Hech narsa topilmadi'}</p>
-                            <p style={{ fontSize: '14px', marginTop: '8px' }}>{language === 'ru' ? 'Попробуйте изменить запрос' : 'Boshqa so\'z kiritib ko\'ring'}</p>
-                        </div>
-                    )}
-                </div>
-            );
-        }
-
         if (view === 'all_categories') {
             return (
                 <div className="all-categories-view">
@@ -830,6 +766,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
                         onBack={() => setView('home')}
                         unreadCounts={unreadOrderCounts}
                         onMarkAsRead={handleMarkOrdersAsRead}
+                        cachedOrders={allUserOrders}
                     />
                 );
             }
@@ -887,7 +824,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
                             />
                         </>
                     ) : (
-                        <div className="empty-favorites">
+                            <div className="empty-favorites">
                             <div className="empty-favorites-icon">❤️</div>
                             <h3>{language === 'ru' ? 'Здесь пока пусто...' : 'Bu yer hozircha bo\'sh...'}</h3>
                             <p>{language === 'ru' ? 'У вас пока нет избранных товаров. Добавьте то, что вам понравилось!' : 'Sizda hozircha sevimlilar yo\'q. O\'zingizga yoqqan mahsulotlarni qo\'shing!'}</p>
@@ -904,44 +841,110 @@ const Shop = ({ language, theme, toggleTheme }) => {
         return (
             <div className="home-content">
                 <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} language={language} />
-                <PromoBanner language={language} />
-                <CategoryList
-                    categories={categories}
-                    selectedCategory={null}
-                    onSelectCategory={setSelectedCategory}
-                    onShowAllCategories={() => setView('all_categories')}
-                    language={language}
-                />
                 
-                <RestaurantList 
-                    language={language} 
-                    onShowAll={() => setView('all_restaurants')} 
-                    onSelectRestaurant={(rest) => {
-                        setSelectedRestaurant(rest);
-                        setView('restaurant_detail');
-                    }}
-                />
+                {searchQuery ? (
+                    <div className="search-results">
+                        <div className="category-title" style={{ marginBottom: '20px' }}>
+                            <span className="back-btn" onClick={() => setSearchQuery('')}>←</span>
+                            {language === 'ru' ? 'РЕЗУЛЬТАТЫ ПОИСКА' : 'QIDIRUV NATIJALARI'}
+                        </div>
+                        
+                        {filteredCategories.length > 0 && (
+                            <div className="search-section" style={{ marginBottom: '20px' }}>
+                                <h3 style={{ margin: '0 20px 15px', fontSize: '18px', color: '#fff', fontWeight: '600' }}>
+                                    {language === 'ru' ? 'Категории' : 'Kategoriyalar'}
+                                </h3>
+                                <div className="category-grid">
+                                    {filteredCategories.map(cat => (
+                                        <div key={cat.id} className="category-item" onClick={() => {
+                                            setSelectedCategory(cat);
+                                            setSearchQuery('');
+                                        }}>
+                                            <div className="category-image-container">
+                                                {cat.image_base64 || cat.image ? (
+                                                    <img src={cat.image_base64 || api.getImageUrl(cat.image)} alt={cat.name} />
+                                                ) : (
+                                                    <div className="placeholder-image"></div>
+                                                )}
+                                            </div>
+                                            <span className="category-name">{language === 'ru' ? (cat.name_ru || cat.name) : cat.name}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
-                <div className="featured-sections">
-                    {categories.map(category => (
-                        <CategorySection
-                            key={category.id}
-                            category={category}
-                            language={language}
+                        {filteredProducts.length > 0 && (
+                            <div className="search-section">
+                                <h3 style={{ margin: '0 20px 15px', fontSize: '18px', color: '#fff', fontWeight: '600' }}>
+                                    {language === 'ru' ? 'Продукты' : 'Mahsulotlar'}
+                                </h3>
+                                <ProductGrid
+                                    products={filteredProducts}
+                                    language={language}
+                                    favorites={favorites}
+                                    onToggleFavorite={toggleFavorite}
+                                    onProductClick={(p) => {
+                                        if (!currentUser || !currentUser.phone_number || currentUser.phone_number === '-') {
+                                            setPendingProduct(p);
+                                            setIsAuthDrawerOpen(true);
+                                        } else {
+                                            setSelectedProduct(p);
+                                        }
+                                    }}
+                                />
+                            </div>
+                        )}
+                        
+                        {filteredCategories.length === 0 && filteredProducts.length === 0 && (
+                            <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(255,255,255,0.5)' }}>
+                                <svg style={{ marginBottom: '16px', opacity: 0.5 }} width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                <p style={{ fontSize: '16px' }}>{language === 'ru' ? 'Ничего не найдено' : 'Hech narsa topilmadi'}</p>
+                                <p style={{ fontSize: '14px', marginTop: '8px' }}>{language === 'ru' ? 'Попробуйте изменить запрос' : 'Boshqa so\'z kiritib ko\'ring'}</p>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <>
+                        <PromoBanner language={language} />
+                        <CategoryList
+                            categories={categories}
+                            selectedCategory={null}
                             onSelectCategory={setSelectedCategory}
-                            favorites={favorites}
-                            onToggleFavorite={toggleFavorite}
-                            onProductClick={(p) => {
-                                if (!currentUser || !currentUser.phone_number || currentUser.phone_number === '-') {
-                                    setPendingProduct(p);
-                                    setIsAuthDrawerOpen(true);
-                                } else {
-                                    setSelectedProduct(p);
-                                }
+                            onShowAllCategories={() => setView('all_categories')}
+                            language={language}
+                        />
+                        
+                        <RestaurantList 
+                            language={language} 
+                            onShowAll={() => setView('all_restaurants')} 
+                            onSelectRestaurant={(rest) => {
+                                setSelectedRestaurant(rest);
+                                setView('restaurant_detail');
                             }}
                         />
-                    ))}
-                </div>
+                        
+                        <div className="featured-sections">
+                            {categories.map(category => (
+                                <CategorySection
+                                    key={category.id}
+                                    category={category}
+                                    language={language}
+                                    favorites={favorites}
+                                    onToggleFavorite={toggleFavorite}
+                                    onProductClick={(p) => {
+                                        if (!currentUser || !currentUser.phone_number || currentUser.phone_number === '-') {
+                                            setPendingProduct(p);
+                                            setIsAuthDrawerOpen(true);
+                                        } else {
+                                            setSelectedProduct(p);
+                                        }
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    </>
+                )}
             </div>
         );
     };
