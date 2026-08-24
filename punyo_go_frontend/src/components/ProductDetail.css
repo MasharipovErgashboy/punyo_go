@@ -77,6 +77,19 @@
     line-height: 1.4;
 }
 
+.detail-restaurant {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.detail-restaurant .restaurant-icon {
+    font-size: 16px;
+}
+
 .detail-description {
     font-size: 15px;
     color: var(--text-muted);

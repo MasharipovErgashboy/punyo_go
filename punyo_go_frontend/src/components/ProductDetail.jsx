@@ -54,6 +54,12 @@ const ProductDetail = ({ product, language, onBack, favorites = [], onToggleFavo
                     {language === 'ru' ? (product.name_ru || product.name) : product.name}
                 </h1>
                 
+                {product.restaurant_name && (
+                    <div className="detail-restaurant">
+                        <span className="restaurant-icon">🏪</span> {product.restaurant_name}
+                    </div>
+                )}
+                
                 {product.description && (
                     <p className="detail-description">
                         {language === 'ru' ? (product.description_ru || product.description) : product.description}

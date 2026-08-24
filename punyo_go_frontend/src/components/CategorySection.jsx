@@ -58,6 +58,9 @@ export default function CategorySection({ category, onSelectCategory, language, 
                                 <h3 className="product-name">
                                     {language === 'ru' ? (product.name_ru || product.name) : product.name}
                                 </h3>
+                                {product.restaurant_name && (
+                                    <p className="product-restaurant">{product.restaurant_name}</p>
+                                )}
                                 <p className="product-price">{product.price.toLocaleString()} UZS</p>
                             </div>
                         </div>

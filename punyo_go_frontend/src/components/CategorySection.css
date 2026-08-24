@@ -102,3 +102,13 @@
     box-shadow: var(--shadow-sm);
     font-size: 18px;
 }
+
+.horizontal-product-card .product-restaurant {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin: 2px 0 0 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
