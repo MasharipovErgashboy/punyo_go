@@ -131,7 +131,7 @@ class ProductAddon(models.Model):
         verbose_name="Mahsulot"
     )
     name = models.CharField(max_length=100, verbose_name="Qo'shimcha nomi (Masalan: Katta kartoshka)")
-    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Narxi (UZS)")
+    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Narxi (UZS)", default=0, blank=True, null=True)
     is_active = models.BooleanField(default=True, verbose_name="Aktiv")
     
     class Meta:
