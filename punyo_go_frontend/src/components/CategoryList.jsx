@@ -3,8 +3,8 @@ import './CategoryList.css';
 import { api } from '../api';
 
 const CategoryList = ({ categories, selectedCategory, onSelectCategory, onShowAllCategories, language }) => {
-    // Only show max 12 categories on the home page as per 4x3 grid in screenshot
-    const displayCategories = categories.slice(0, 12);
+    // Only show max 15 categories on the home page with horizontal scroll
+    const displayCategories = categories.slice(0, 15);
 
     return (
         <div className="category-section">

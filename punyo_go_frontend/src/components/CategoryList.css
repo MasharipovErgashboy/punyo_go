@@ -1,13 +1,19 @@
 .category-section {
     margin: 20px 0;
-    padding: 0 20px;
+    padding: 0;
 }
 
 .category-grid {
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px 16px;
-    justify-content: flex-start;
+    overflow-x: auto;
+    gap: 16px;
+    padding: 0 20px 8px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+}
+
+.category-grid::-webkit-scrollbar {
+    display: none;
 }
 
 .category-item {
@@ -16,6 +22,8 @@
     align-items: center;
     cursor: pointer;
     width: 76px;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
 }
 
 .category-image-container {
