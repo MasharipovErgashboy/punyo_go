@@ -592,6 +592,11 @@ const Shop = ({ language, theme, toggleTheme }) => {
         return matchesSearch;
     });
 
+    const filteredCategories = categories.filter(category => {
+        const name = language === 'ru' ? (category.name_ru || category.name) : category.name;
+        return name.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+
     if (loading) {
         return <div className="loading">{language === 'ru' ? 'Загрузка...' : 'Yuklanmoqda...'}</div>;
     }
@@ -615,23 +620,65 @@ const Shop = ({ language, theme, toggleTheme }) => {
         if (searchQuery) {
             return (
                 <div className="search-results">
-                    <div className="category-title">
+                    <div className="category-title" style={{ marginBottom: '20px' }}>
+                        <span className="back-btn" onClick={() => setSearchQuery('')}>←</span>
                         {language === 'ru' ? 'РЕЗУЛЬТАТЫ ПОИСКА' : 'QIDIRUV NATIJALARI'}
                     </div>
-                    <ProductGrid
-                        products={filteredProducts}
-                        language={language}
-                        favorites={favorites}
-                        onToggleFavorite={toggleFavorite}
-                        onProductClick={(p) => {
-                            if (!currentUser || !currentUser.phone_number || currentUser.phone_number === '-') {
-                                setPendingProduct(p);
-                                setIsAuthDrawerOpen(true);
-                            } else {
-                                setSelectedProduct(p);
-                            }
-                        }}
-                    />
+                    
+                    {filteredCategories.length > 0 && (
+                        <div className="search-section" style={{ marginBottom: '20px' }}>
+                            <h3 style={{ margin: '0 20px 15px', fontSize: '18px', color: '#fff', fontWeight: '600' }}>
+                                {language === 'ru' ? 'Категории' : 'Kategoriyalar'}
+                            </h3>
+                            <div className="category-grid">
+                                {filteredCategories.map(cat => (
+                                    <div key={cat.id} className="category-item" onClick={() => {
+                                        setSelectedCategory(cat);
+                                        setSearchQuery('');
+                                    }}>
+                                        <div className="category-image">
+                                            {cat.image_base64 || cat.image ? (
+                                                <img src={cat.image_base64 || cat.image} alt={cat.name} />
+                                            ) : (
+                                                <div className="placeholder-image"></div>
+                                            )}
+                                        </div>
+                                        <span className="category-name">{language === 'ru' ? (cat.name_ru || cat.name) : cat.name}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {filteredProducts.length > 0 && (
+                        <div className="search-section">
+                            <h3 style={{ margin: '0 20px 15px', fontSize: '18px', color: '#fff', fontWeight: '600' }}>
+                                {language === 'ru' ? 'Продукты' : 'Mahsulotlar'}
+                            </h3>
+                            <ProductGrid
+                                products={filteredProducts}
+                                language={language}
+                                favorites={favorites}
+                                onToggleFavorite={toggleFavorite}
+                                onProductClick={(p) => {
+                                    if (!currentUser || !currentUser.phone_number || currentUser.phone_number === '-') {
+                                        setPendingProduct(p);
+                                        setIsAuthDrawerOpen(true);
+                                    } else {
+                                        setSelectedProduct(p);
+                                    }
+                                }}
+                            />
+                        </div>
+                    )}
+                    
+                    {filteredCategories.length === 0 && filteredProducts.length === 0 && (
+                        <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(255,255,255,0.5)' }}>
+                            <svg style={{ marginBottom: '16px', opacity: 0.5 }} width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <p style={{ fontSize: '16px' }}>{language === 'ru' ? 'Ничего не найдено' : 'Hech narsa topilmadi'}</p>
+                            <p style={{ fontSize: '14px', marginTop: '8px' }}>{language === 'ru' ? 'Попробуйте изменить запрос' : 'Boshqa so\'z kiritib ko\'ring'}</p>
+                        </div>
+                    )}
                 </div>
             );
         }
