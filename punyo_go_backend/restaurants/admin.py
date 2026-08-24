@@ -21,7 +21,7 @@ class RestaurantAdmin(admin.ModelAdmin):
             'fields': ('image', 'image_preview_large')
         }),
         ('Aloqa va Manzil', {
-            'fields': ('location', 'phone')
+            'fields': ('location', 'location_url', 'phone')
         }),
         ('Yetkazib berish', {
             'fields': ('delivery_price', 'telegram_delivery_chat_id')

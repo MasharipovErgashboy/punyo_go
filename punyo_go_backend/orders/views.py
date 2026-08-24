@@ -255,8 +255,11 @@ def update_order_status(request, order_id):
                     rest_phone = order.restaurant.phone or "Kiritilmagan"
                     
                     # Yandex Maps link for Restaurant
-                    encoded_rest_location = urllib.parse.quote(order.restaurant.location or "")
-                    rest_map_link = f"https://yandex.com/maps/?text={encoded_rest_location}"
+                    if order.restaurant.location_url:
+                        rest_map_link = order.restaurant.location_url
+                    else:
+                        encoded_rest_location = urllib.parse.quote(order.restaurant.location or "")
+                        rest_map_link = f"https://yandex.com/maps/?text={encoded_rest_location}"
                     
                     # Yandex Maps link for Customer
                     if order.latitude and order.longitude:

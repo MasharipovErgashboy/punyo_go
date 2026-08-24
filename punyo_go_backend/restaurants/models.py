@@ -23,6 +23,7 @@ class Restaurant(models.Model):
     name = models.CharField(max_length=200, verbose_name="Restoran nomi")
     image = models.ImageField(upload_to='restaurants/', verbose_name="Restoran rasmi")
     location = models.CharField(max_length=255, verbose_name="Joylashuvi")
+    location_url = models.URLField(max_length=500, blank=True, null=True, verbose_name="Joylashuv Linki (Xarita)", help_text="Ixtiyoriy: Yandex/Google Maps linkini kiriting")
     phone = models.CharField(max_length=20, verbose_name="Telefon raqami")
     delivery_price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Yetkazib berish narxi (UZS)")
     telegram_delivery_chat_id = models.CharField(
