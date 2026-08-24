@@ -319,6 +319,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
         });
 
         setSelectedProduct(null);
+        setView('cart');
         setShowCartSuccess(true);
         setTimeout(() => setShowCartSuccess(false), 3000);
     };
