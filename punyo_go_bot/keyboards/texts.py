@@ -3,7 +3,7 @@
 MESSAGES = {
     'uz': {
         'welcome': "Assalomu Aleykum {name}, Punyo Go botiga xush kelibsiz!",
-        'choose_action': "Quyidagilardan birini tanlang:",
+        'choose_action': "Buyurtma berish uchun ilovani oching:",
         'language_changed': "✅ Til o'zgartirildi",
         'language_select': "Tilni tanlang:",
         'phone_required': "Chat ishlatish uchun telefon raqamingizni yuboring:",

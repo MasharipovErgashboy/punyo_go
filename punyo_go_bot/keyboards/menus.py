@@ -7,7 +7,7 @@ def get_main_menu_uz(shop_url: str, chat_url: str, orders_url: str):
     """Main menu keyboard in Uzbek with 1 button"""
     keyboard = [
         [
-            KeyboardButton(text="📱 Ilovani ochish", web_app=WebAppInfo(url=shop_url))
+            KeyboardButton(text="🌐 Ilovani oching", web_app=WebAppInfo(url=shop_url))
         ]
     ]
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
@@ -46,7 +46,7 @@ def get_main_menu_ru(shop_url: str, chat_url: str, orders_url: str):
     """Main menu keyboard in Russian with 1 button"""
     keyboard = [
         [
-            KeyboardButton(text="📱 Открыть приложение", web_app=WebAppInfo(url=shop_url))
+            KeyboardButton(text="🌐 Открыть приложение", web_app=WebAppInfo(url=shop_url))
         ]
     ]
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
