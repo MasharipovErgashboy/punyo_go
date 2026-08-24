@@ -124,6 +124,13 @@ const Shop = ({ language, theme, toggleTheme }) => {
     }, [currentUser, view]);
 
     const handleMarkOrdersAsRead = (tabName, ordersInTab) => {
+        // Clear UI badge immediately for responsiveness
+        setUnreadOrderCounts(prev => {
+            const newCounts = { ...prev, [tabName]: 0 };
+            setTotalUnreadOrders(newCounts.active + newCounts.confirmed + newCounts.canceled);
+            return newCounts;
+        });
+
         if (!ordersInTab || ordersInTab.length === 0) return;
         
         const savedStr = localStorage.getItem('punyo_last_seen_orders') || '{}';
@@ -139,13 +146,6 @@ const Shop = ({ language, theme, toggleTheme }) => {
         
         if (changed) {
             localStorage.setItem('punyo_last_seen_orders', JSON.stringify(lastSeenStatuses));
-            
-            // Update counts in UI immediately without waiting for next poll
-            setUnreadOrderCounts(prev => {
-                const newCounts = { ...prev, [tabName]: 0 };
-                setTotalUnreadOrders(newCounts.active + newCounts.confirmed + newCounts.canceled);
-                return newCounts;
-            });
         }
     };
 
@@ -636,7 +636,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
                                         setSelectedCategory(cat);
                                         setSearchQuery('');
                                     }}>
-                                        <div className="category-image">
+                                        <div className="category-image-container">
                                             {cat.image_base64 || cat.image ? (
                                                 <img src={cat.image_base64 || cat.image} alt={cat.name} />
                                             ) : (
