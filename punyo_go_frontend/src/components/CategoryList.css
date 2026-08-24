@@ -29,7 +29,7 @@
 .category-image-container {
     width: 70px;
     height: 70px;
-    background: var(--card-bg, #1C1C1E);
+    background: #ffffff;
     border-radius: 20px;
     display: flex;
     align-items: center;
