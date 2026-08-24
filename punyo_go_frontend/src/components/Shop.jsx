@@ -81,6 +81,74 @@ const Shop = ({ language, theme, toggleTheme }) => {
     const [unreadCount, setUnreadCount] = useState(0);
     const [aboutData, setAboutData] = useState(null);
 
+    // Unread orders state
+    const [unreadOrderCounts, setUnreadOrderCounts] = useState({ active: 0, confirmed: 0, canceled: 0 });
+    const [totalUnreadOrders, setTotalUnreadOrders] = useState(0);
+
+    useEffect(() => {
+        if (!currentUser) return;
+        
+        const fetchOrderUpdates = async () => {
+            try {
+                const userId = currentUser.telegram_user_id || currentUser.id;
+                const data = await api.getOrders(userId);
+                if (data && data.orders) {
+                    const savedStr = localStorage.getItem('punyo_last_seen_orders') || '{}';
+                    const lastSeenStatuses = JSON.parse(savedStr);
+                    
+                    let counts = { active: 0, confirmed: 0, canceled: 0 };
+                    let totalUnread = 0;
+                    
+                    data.orders.forEach(order => {
+                        const lastStatus = lastSeenStatuses[order.id];
+                        if (lastStatus !== order.status) {
+                            if (order.status === 'pending') counts.active++;
+                            else if (order.status === 'canceled') counts.canceled++;
+                            else counts.confirmed++; // active, ready, delivering
+                            
+                            totalUnread++;
+                        }
+                    });
+                    
+                    setUnreadOrderCounts(counts);
+                    setTotalUnreadOrders(totalUnread);
+                }
+            } catch (e) {
+                console.error("Polling error", e);
+            }
+        };
+        
+        fetchOrderUpdates();
+        const intervalId = setInterval(fetchOrderUpdates, 10000);
+        return () => clearInterval(intervalId);
+    }, [currentUser, view]);
+
+    const handleMarkOrdersAsRead = (tabName, ordersInTab) => {
+        if (!ordersInTab || ordersInTab.length === 0) return;
+        
+        const savedStr = localStorage.getItem('punyo_last_seen_orders') || '{}';
+        const lastSeenStatuses = JSON.parse(savedStr);
+        let changed = false;
+        
+        ordersInTab.forEach(order => {
+            if (lastSeenStatuses[order.id] !== order.status) {
+                lastSeenStatuses[order.id] = order.status;
+                changed = true;
+            }
+        });
+        
+        if (changed) {
+            localStorage.setItem('punyo_last_seen_orders', JSON.stringify(lastSeenStatuses));
+            
+            // Update counts in UI immediately without waiting for next poll
+            setUnreadOrderCounts(prev => {
+                const newCounts = { ...prev, [tabName]: 0 };
+                setTotalUnreadOrders(newCounts.active + newCounts.confirmed + newCounts.canceled);
+                return newCounts;
+            });
+        }
+    };
+
     useEffect(() => {
         loadAboutData();
     }, []);
@@ -709,10 +777,12 @@ const Shop = ({ language, theme, toggleTheme }) => {
         if (view === 'my_orders') {
             if (currentUser) {
                 return (
-                    <MyOrders
-                        user={currentUser}
-                        language={language}
+                    <MyOrders 
+                        user={currentUser} 
+                        language={language} 
                         onBack={() => setView('home')}
+                        unreadCounts={unreadOrderCounts}
+                        onMarkAsRead={handleMarkOrdersAsRead}
                     />
                 );
             }
@@ -909,6 +979,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
                     }
                 }} 
                 language={language} 
+                unreadOrdersCount={totalUnreadOrders}
             />
 
             {showCartSuccess && (

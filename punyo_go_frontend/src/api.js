@@ -87,7 +87,7 @@ export const api = {
 
     // Orders
     async getOrders(telegramUserId) {
-        const response = await fetchWithBypass(`${API_BASE_URL}/orders/?telegram_user_id=${telegramUserId}`);
+        const response = await fetchWithBypass(`${API_BASE_URL}/orders/all/?telegram_user_id=${telegramUserId}`);
         return response.json();
     },
 

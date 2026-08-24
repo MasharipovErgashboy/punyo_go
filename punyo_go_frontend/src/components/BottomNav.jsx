@@ -1,7 +1,7 @@
 import React from 'react';
 import './BottomNav.css';
 
-const BottomNav = ({ currentView, onViewChange, language }) => {
+const BottomNav = ({ currentView, onViewChange, language, unreadOrdersCount = 0 }) => {
     return (
         <div className="bottom-nav">
             <div 
@@ -29,6 +29,7 @@ const BottomNav = ({ currentView, onViewChange, language }) => {
                         <line x1="16" y1="17" x2="8" y2="17"></line>
                         <polyline points="10 9 9 9 8 9"></polyline>
                     </svg>
+                    {unreadOrdersCount > 0 && <span className="bottom-nav-badge">{unreadOrdersCount}</span>}
                 </div>
                 <span>{language === 'ru' ? 'Заказы' : 'Buyurtmalar'}</span>
             </div>

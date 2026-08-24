@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../api';
 import './MyOrders.css';
 
-const MyOrders = ({ user, language, onBack }) => {
+const MyOrders = ({ user, language, onBack, unreadCounts, onMarkAsRead }) => {
     const [activeTab, setActiveTab] = useState('active'); // 'active' (Faol), 'confirmed' (Tasdiqlangan), or 'canceled' (Rad etilgan)
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -12,6 +12,12 @@ const MyOrders = ({ user, language, onBack }) => {
     useEffect(() => {
         fetchOrders();
     }, [activeTab]);
+
+    useEffect(() => {
+        if (!loading && onMarkAsRead && orders.length > 0) {
+            onMarkAsRead(activeTab, orders);
+        }
+    }, [loading, orders, activeTab, onMarkAsRead]);
 
     const fetchOrders = async () => {
         if (!user) return;
@@ -57,18 +63,21 @@ const MyOrders = ({ user, language, onBack }) => {
                     onClick={() => setActiveTab('active')}
                 >
                     {language === 'ru' ? 'Активные' : 'Faol'}
+                    {unreadCounts?.active > 0 && <span className="tab-badge">{unreadCounts.active}</span>}
                 </button>
                 <button
                     className={`tab-btn ${activeTab === 'confirmed' ? 'active' : ''}`}
                     onClick={() => setActiveTab('confirmed')}
                 >
                     {language === 'ru' ? 'Подтвержденные' : 'Tasdiqlangan'}
+                    {unreadCounts?.confirmed > 0 && <span className="tab-badge">{unreadCounts.confirmed}</span>}
                 </button>
                 <button
                     className={`tab-btn ${activeTab === 'canceled' ? 'active' : ''}`}
                     onClick={() => setActiveTab('canceled')}
                 >
                     {language === 'ru' ? 'Отмененные' : 'Rad etilgan'}
+                    {unreadCounts?.canceled > 0 && <span className="tab-badge">{unreadCounts.canceled}</span>}
                 </button>
             </div>
 
