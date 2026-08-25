@@ -14,14 +14,16 @@ const MyOrders = ({ user, language, onBack, unreadCounts, onMarkAsRead, cachedOr
     }, [activeTab, cachedOrders]);
 
     useEffect(() => {
-        if (!loading && onMarkAsRead && orders.length > 0) {
-            onMarkAsRead(activeTab, orders);
+        if (!loading && onMarkAsRead) {
+            onMarkAsRead(activeTab);
         }
-    }, [loading, orders, activeTab, onMarkAsRead]);
+    }, [loading, activeTab, onMarkAsRead]);
 
     const fetchOrders = async () => {
         if (!user) return;
         
+        let shouldFetch = true;
+
         if (cachedOrders) {
             // Filter locally for instant loading
             let filtered = [];
@@ -34,25 +36,27 @@ const MyOrders = ({ user, language, onBack, unreadCounts, onMarkAsRead, cachedOr
             }
             setOrders(filtered);
             setLoading(false);
-            return;
+            shouldFetch = false; // Trust cached orders if they exist to prevent flickering
         }
 
-        setLoading(true);
-        try {
-            const userId = user.telegram_user_id || user.id;
-            let data;
-            if (activeTab === 'active') {
-                data = await api.getActiveOrders(userId);
-            } else if (activeTab === 'confirmed') {
-                data = await api.getConfirmedOrders(userId);
-            } else if (activeTab === 'canceled') {
-                data = await api.getCanceledOrders(userId);
+        if (shouldFetch) {
+            setLoading(true);
+            try {
+                const userId = user.telegram_user_id || user.id;
+                let data;
+                if (activeTab === 'active') {
+                    data = await api.getActiveOrders(userId);
+                } else if (activeTab === 'confirmed') {
+                    data = await api.getConfirmedOrders(userId);
+                } else if (activeTab === 'canceled') {
+                    data = await api.getCanceledOrders(userId);
+                }
+                setOrders(data?.orders || []);
+            } catch (e) {
+                console.error('Failed to fetch orders:', e);
+            } finally {
+                setLoading(false);
             }
-            setOrders(data?.orders || []);
-        } catch (e) {
-            console.error('Failed to fetch orders:', e);
-        } finally {
-            setLoading(false);
         }
     };
 

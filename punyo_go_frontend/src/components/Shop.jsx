@@ -125,7 +125,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
         return () => clearInterval(intervalId);
     }, [currentUser, view]);
 
-    const handleMarkOrdersAsRead = (tabName, ordersInTab) => {
+    const handleMarkOrdersAsRead = (tabName) => {
         // Clear UI badge immediately for responsiveness
         setUnreadOrderCounts(prev => {
             const newCounts = { ...prev, [tabName]: 0 };
@@ -133,14 +133,19 @@ const Shop = ({ language, theme, toggleTheme }) => {
             return newCounts;
         });
 
-        if (!ordersInTab || ordersInTab.length === 0) return;
+        if (!allUserOrders || allUserOrders.length === 0) return;
         
         const savedStr = localStorage.getItem('punyo_last_seen_orders') || '{}';
         const lastSeenStatuses = JSON.parse(savedStr);
         let changed = false;
         
-        ordersInTab.forEach(order => {
-            if (lastSeenStatuses[order.id] !== order.status) {
+        allUserOrders.forEach(order => {
+            let matchesTab = false;
+            if (tabName === 'active' && order.status === 'pending') matchesTab = true;
+            else if (tabName === 'confirmed' && ['active', 'ready', 'delivering'].includes(order.status)) matchesTab = true;
+            else if (tabName === 'canceled' && order.status === 'canceled') matchesTab = true;
+
+            if (matchesTab && lastSeenStatuses[order.id] !== order.status) {
                 lastSeenStatuses[order.id] = order.status;
                 changed = true;
             }
