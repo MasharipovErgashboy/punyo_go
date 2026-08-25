@@ -125,9 +125,6 @@ def create_order(request):
                         [
                             {"text": "✅ Tasdiqlash", "callback_data": f"accept_order_{order.id}"},
                             {"text": "❌ Rad etish", "callback_data": f"reject_order_{order.id}"}
-                        ],
-                        [
-                            {"text": "🚀 Mini App", "url": settings.WEBAPP_URL} if hasattr(settings, 'WEBAPP_URL') else {"text": "🚀 Mini App", "url": "https://punyogo.uz"}
                         ]
                     ]
                 })
