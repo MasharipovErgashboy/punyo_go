@@ -133,7 +133,11 @@ const Shop = ({ language, theme, toggleTheme }) => {
             return newCounts;
         });
 
-        if (!allUserOrders || allUserOrders.length === 0) return;
+        if (!allUserOrders || allUserOrders.length === 0) {
+            // Force clear ghost notifications if user actually has no orders
+            localStorage.removeItem('punyo_last_seen_orders');
+            return;
+        }
         
         const savedStr = localStorage.getItem('punyo_last_seen_orders') || '{}';
         const lastSeenStatuses = JSON.parse(savedStr);
@@ -145,8 +149,9 @@ const Shop = ({ language, theme, toggleTheme }) => {
             else if (tabName === 'confirmed' && ['active', 'ready', 'delivering'].includes(order.status)) matchesTab = true;
             else if (tabName === 'canceled' && order.status === 'canceled') matchesTab = true;
 
-            if (matchesTab && lastSeenStatuses[order.id] !== order.status) {
-                lastSeenStatuses[order.id] = order.status;
+            const id = String(order.id);
+            if (matchesTab && lastSeenStatuses[id] !== order.status) {
+                lastSeenStatuses[id] = order.status;
                 changed = true;
             }
         });

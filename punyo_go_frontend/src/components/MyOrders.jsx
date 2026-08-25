@@ -22,41 +22,23 @@ const MyOrders = ({ user, language, onBack, unreadCounts, onMarkAsRead, cachedOr
     const fetchOrders = async () => {
         if (!user) return;
         
-        let shouldFetch = true;
-
-        if (cachedOrders) {
-            // Filter locally for instant loading
-            let filtered = [];
+        setLoading(true);
+        try {
+            const userId = user.telegram_user_id || user.id;
+            let data;
             if (activeTab === 'active') {
-                filtered = cachedOrders.filter(o => o.status === 'pending');
+                data = await api.getActiveOrders(userId);
             } else if (activeTab === 'confirmed') {
-                filtered = cachedOrders.filter(o => ['active', 'ready', 'delivering'].includes(o.status));
+                data = await api.getConfirmedOrders(userId);
             } else if (activeTab === 'canceled') {
-                filtered = cachedOrders.filter(o => o.status === 'canceled');
+                data = await api.getCanceledOrders(userId);
             }
-            setOrders(filtered);
+            setOrders(data?.orders || []);
+        } catch (e) {
+            console.error('Failed to fetch orders:', e);
+            setOrders([]);
+        } finally {
             setLoading(false);
-            shouldFetch = false; // Trust cached orders if they exist to prevent flickering
-        }
-
-        if (shouldFetch) {
-            setLoading(true);
-            try {
-                const userId = user.telegram_user_id || user.id;
-                let data;
-                if (activeTab === 'active') {
-                    data = await api.getActiveOrders(userId);
-                } else if (activeTab === 'confirmed') {
-                    data = await api.getConfirmedOrders(userId);
-                } else if (activeTab === 'canceled') {
-                    data = await api.getCanceledOrders(userId);
-                }
-                setOrders(data?.orders || []);
-            } catch (e) {
-                console.error('Failed to fetch orders:', e);
-            } finally {
-                setLoading(false);
-            }
         }
     };
 
