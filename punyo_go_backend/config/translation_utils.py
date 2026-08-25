@@ -1,14 +1,14 @@
-import translators as ts
+from deep_translator import MyMemoryTranslator
 
 def translate_uz_to_ru(text):
     """
-    Translates text from Uzbek to Russian using Bing Translator.
+    Translates text from Uzbek to Russian using MyMemory Translator.
     """
     if not text:
         return ""
     try:
         # Uzbek to Russian
-        translated = ts.translate_text(text, translator='bing', from_language='uz', to_language='ru')
+        translated = MyMemoryTranslator(source='uz-UZ', target='ru-RU').translate(text)
         return translated
     except Exception as e:
         print(f"Translation error: {e}")
