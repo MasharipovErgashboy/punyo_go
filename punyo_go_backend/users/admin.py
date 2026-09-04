@@ -258,4 +258,3 @@ class AdvertisementAdmin(admin.ModelAdmin):
     list_display = ('id', 'is_active', 'order', 'created_at')
     list_editable = ('is_active', 'order')
     list_filter = ('is_active', 'created_at')
-    search_fields = ('id',)
