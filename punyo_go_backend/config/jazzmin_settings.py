@@ -64,6 +64,7 @@ JAZZMIN_SETTINGS = {
         "about_us": "fas fa-info-circle",
         "about_us.About": "fas fa-address-card",
         "about_us.Notification": "fas fa-bell",
+        "about_us.Advertisement": "fas fa-images",
     },
     
     # Order for apps

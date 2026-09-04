@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django import forms
 from django.db.models import Q
 from .models import UserProfile, Customer, RestaurantAdminUser
-from about_us.models import Notification, About, NotificationRead
+from about_us.models import Notification, About, NotificationRead, Advertisement
 
 
 class UserProfileCreationForm(UserCreationForm):
@@ -251,3 +251,11 @@ class AboutAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return super().has_delete_permission(request, obj)
+
+
+@admin.register(Advertisement)
+class AdvertisementAdmin(admin.ModelAdmin):
+    list_display = ('id', 'is_active', 'order', 'created_at')
+    list_editable = ('is_active', 'order')
+    list_filter = ('is_active', 'created_at')
+    search_fields = ('id',)

@@ -1,26 +1,54 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Pagination } from 'swiper/modules';
+import { api } from '../api';
+import 'swiper/css';
+import 'swiper/css/pagination';
 import './PromoBanner.css';
 
-const PromoBanner = ({ language }) => {
+const PromoBanner = () => {
+    const [banners, setBanners] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchBanners = async () => {
+            try {
+                const data = await api.getAdvertisements();
+                if (data && Array.isArray(data)) {
+                    setBanners(data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch banners", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchBanners();
+    }, []);
+
+    if (loading || banners.length === 0) {
+        return null;
+    }
+
     return (
-        <div className="promo-banner-container">
-            <div className="promo-banner">
-                <div className="promo-content">
-                    <h3>{language === 'ru' ? 'БЕСПЛАТНАЯ ДОСТАВКА' : 'BEPUL YETKAZIB BERISH'}</h3>
-                    <p>{language === 'ru' ? 'На заказы свыше 30 000 сум' : '30 000 so\'mdan yuqori buyurtmalarga'}</p>
-                </div>
-                <div className="promo-image">
-                    {/* Placeholder for scooter image, using emoji for now, or you can use a real image */}
-                    <span className="scooter-icon">🛵</span>
-                </div>
-                <button className="promo-close">×</button>
-            </div>
-            <div className="promo-pagination">
-                <span className="dot active"></span>
-                <span className="dot"></span>
-                <span className="dot"></span>
-                <span className="dot"></span>
-            </div>
+        <div className="promo-banner-container custom-swiper-container">
+            <Swiper
+                modules={[Autoplay, Pagination]}
+                spaceBetween={10}
+                slidesPerView={1}
+                autoplay={{ delay: 3000, disableOnInteraction: false }}
+                pagination={{ clickable: true, el: '.promo-pagination' }}
+                loop={banners.length > 1}
+                className="promo-swiper"
+            >
+                {banners.map((banner) => (
+                    <SwiperSlide key={banner.id}>
+                        <div className="promo-slide" style={{ backgroundImage: `url(${banner.image})` }}>
+                        </div>
+                    </SwiperSlide>
+                ))}
+            </Swiper>
+            <div className="promo-pagination swiper-pagination-custom"></div>
         </div>
     );
 };

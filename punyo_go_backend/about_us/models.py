@@ -56,3 +56,20 @@ class About(models.Model):
 
     def __str__(self):
         return "Shop Information"
+
+
+class Advertisement(models.Model):
+    """Swiper advertisements for Mini App"""
+    image = models.ImageField(upload_to='advertisements/', help_text="Upload the banner image here (16:9 or similar ratio)")
+    is_active = models.BooleanField(default=True, help_text="Uncheck to hide this banner")
+    order = models.IntegerField(default=0, help_text="Order in the slider (lower comes first)")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'about_us_advertisement'
+        verbose_name = "Reklama (swiper)"
+        verbose_name_plural = "Reklamalar (swiper)"
+        ordering = ['order', '-created_at']
+
+    def __str__(self):
+        return f"Banner #{self.id} (Order: {self.order})"

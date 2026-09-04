@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import UserProfile
-from about_us.models import Notification, NotificationRead, About
+from about_us.models import Notification, NotificationRead, About, Advertisement
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -47,3 +47,8 @@ class AboutSerializer(serializers.ModelSerializer):
     class Meta:
         model = About
         fields = ['phone_number', 'email', 'address', 'address_uz', 'address_ru']
+
+class AdvertisementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Advertisement
+        fields = ['id', 'image', 'order']

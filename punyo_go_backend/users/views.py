@@ -294,3 +294,14 @@ def get_about(request):
         })
     serializer = AboutSerializer(about)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+def get_advertisements(request):
+    """Get active advertisements for swiper"""
+    from about_us.models import Advertisement
+    from .serializers import AdvertisementSerializer
+    
+    ads = Advertisement.objects.filter(is_active=True).order_by('order', '-created_at')
+    serializer = AdvertisementSerializer(ads, many=True)
+    return Response(serializer.data)

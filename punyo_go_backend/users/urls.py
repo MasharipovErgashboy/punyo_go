@@ -9,4 +9,5 @@ urlpatterns = [
     path('notifications/', views.get_notifications, name='get_notifications'),
     path('notifications/mark-read/', views.mark_notification_as_read, name='mark_notification_as_read'),
     path('about/', views.get_about, name='get_about'),
+    path('advertisements/', views.get_advertisements, name='get_advertisements'),
 ]

@@ -141,6 +141,11 @@ export const api = {
         return response.json();
     },
 
+    async getAdvertisements() {
+        const response = await fetchWithBypass(`${API_BASE_URL}/users/advertisements/`);
+        return response.json();
+    },
+
     async createOrder(orderData) {
         const response = await fetchWithBypass(`${API_BASE_URL}/orders/create/`, {
             method: 'POST',
