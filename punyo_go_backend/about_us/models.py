@@ -58,9 +58,12 @@ class About(models.Model):
         return "Shop Information"
 
 
+from django.core.exceptions import ValidationError
+
 class Advertisement(models.Model):
     """Swiper advertisements for Mini App"""
-    image = models.ImageField(upload_to='advertisements/', help_text="Upload the banner image here (16:9 or similar ratio)")
+    image = models.ImageField(upload_to='advertisements/', blank=True, null=True, help_text="Upload the banner image here (16:9 or similar ratio)")
+    video = models.FileField(upload_to='advertisements/videos/', blank=True, null=True, help_text="Upload a video banner (mp4, webm). You must provide EITHER an image OR a video.")
     is_active = models.BooleanField(default=True, help_text="Uncheck to hide this banner")
     order = models.IntegerField(default=0, help_text="Order in the slider (lower comes first)")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -70,6 +73,12 @@ class Advertisement(models.Model):
         verbose_name = "Reklama (swiper)"
         verbose_name_plural = "Reklamalar (swiper)"
         ordering = ['order', '-created_at']
+
+    def clean(self):
+        if self.image and self.video:
+            raise ValidationError("Siz faqat rasm yoki faqat video yuklashingiz kerak, ikkalasini birdaniga emas.")
+        if not self.image and not self.video:
+            raise ValidationError("Iltimos, rasm yoki video yuklang.")
 
     def __str__(self):
         return f"Banner #{self.id} (Order: {self.order})"

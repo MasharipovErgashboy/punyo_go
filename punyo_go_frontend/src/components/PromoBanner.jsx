@@ -43,8 +43,21 @@ const PromoBanner = () => {
             >
                 {banners.map((banner) => (
                     <SwiperSlide key={banner.id}>
-                        <div className="promo-slide" style={{ backgroundImage: `url(${banner.image})` }}>
-                        </div>
+                        {banner.video ? (
+                            <div className="promo-slide video-slide">
+                                <video 
+                                    src={banner.video} 
+                                    autoPlay 
+                                    loop 
+                                    muted 
+                                    playsInline 
+                                    className="promo-video"
+                                />
+                            </div>
+                        ) : (
+                            <div className="promo-slide" style={{ backgroundImage: `url(${banner.image})` }}>
+                            </div>
+                        )}
                     </SwiperSlide>
                 ))}
             </Swiper>
