@@ -142,3 +142,4 @@
     max-width: unset;
     width: 100%;
 }
+.empty-restaurants-alert { text-align: center; padding: 40px 20px; color: #666; background: #fff; border-radius: 16px; margin: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); } .empty-icon { font-size: 48px; margin-bottom: 15px; } .empty-restaurants-alert h3 { margin: 0 0 10px 0; color: #333; font-size: 18px; } .empty-restaurants-alert p { margin: 0; font-size: 14px; line-height: 1.5; }

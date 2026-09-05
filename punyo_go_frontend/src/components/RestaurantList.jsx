@@ -27,7 +27,15 @@ const RestaurantList = ({ language, isFullView, onBack, onShowAll, onSelectResta
     }, []);
 
     if (loading) return null;
-    if (restaurants.length === 0) return null;
+    if (restaurants.length === 0) {
+        return (
+            <div className="empty-restaurants-alert">
+                <div className="empty-icon">📍</div>
+                <h3>{language === 'ru' ? 'В вашем районе нет заведений' : 'Sizning tumaningiz bo\'yicha restoran topilmadi'}</h3>
+                <p>{language === 'ru' ? 'К сожалению, в выбранном вами районе пока нет доступных ресторанов.' : 'Kechirasiz, siz tanlagan tumanda hozircha faol restoranlar yo\'q.'}</p>
+            </div>
+        );
+    }
 
     if (isFullView) {
         return (
@@ -73,7 +81,7 @@ const RestaurantList = ({ language, isFullView, onBack, onShowAll, onSelectResta
     return (
         <div className="restaurant-section">
             <div className="section-header">
-                <h2>{language === 'ru' ? 'Популярные места' : 'Mashhur joylar'} 🔥</h2>
+                <h2>{language === 'ru' ? 'Популярные места в районе' : 'Tuman bo\'yicha mashhur joylar'} 🔥</h2>
                 <span className="view-all" onClick={onShowAll}>{language === 'ru' ? 'Все' : 'Barchasi'} &gt;</span>
             </div>
             
