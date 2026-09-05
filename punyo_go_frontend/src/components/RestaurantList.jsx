@@ -9,7 +9,11 @@ const RestaurantList = ({ language, isFullView, onBack, onShowAll, onSelectResta
     useEffect(() => {
         const fetchRestaurants = async () => {
             try {
-                const data = await api.getRestaurants();
+                const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+                const urlParams = new URLSearchParams(window.location.search);
+                const telegramUserId = tgUser?.id || urlParams.get('tid');
+
+                const data = await api.getRestaurants(telegramUserId);
                 // Django REST framework with pagination returns { count, next, previous, results: [...] }
                 const results = data.results !== undefined ? data.results : (Array.isArray(data) ? data : []);
                 setRestaurants(results);

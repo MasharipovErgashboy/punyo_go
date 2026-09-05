@@ -2,12 +2,14 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 
+from .constants import DISTRICT_CHOICES
 
 class UserProfile(AbstractUser):
     """User profile model for storing telegram user info and phone number"""
     telegram_user_id = models.BigIntegerField(unique=True, db_index=True, null=True, blank=True)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     language = models.CharField(max_length=10, default='uz')
+    district = models.CharField(max_length=50, choices=DISTRICT_CHOICES, blank=True, null=True, verbose_name="Tuman")
     
     # We use username for internal django auth (maybe telegram_id as username)
     # first_name, last_name are already in AbstractUser

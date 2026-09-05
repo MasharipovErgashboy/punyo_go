@@ -12,6 +12,13 @@ def get_main_menu_uz(shop_url: str, chat_url: str, orders_url: str):
     ]
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
 
+def get_district_menu():
+    """Initial menu before district is selected"""
+    keyboard = [
+        [KeyboardButton(text="📍 Tumaningizni tanlang")]
+    ]
+    return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
+
 
 def get_language_selection_uz():
     """Language selection keyboard"""

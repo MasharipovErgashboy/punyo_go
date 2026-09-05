@@ -5,7 +5,7 @@ from about_us.models import Notification, NotificationRead, About, Advertisement
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ['id', 'telegram_user_id', 'username', 'first_name', 'last_name', 'phone_number', 'language', 'is_staff']
+        fields = ['id', 'telegram_user_id', 'username', 'first_name', 'last_name', 'phone_number', 'language', 'district', 'is_staff']
 
 class TelegramLoginSerializer(serializers.Serializer):
     telegram_user_id = serializers.IntegerField()

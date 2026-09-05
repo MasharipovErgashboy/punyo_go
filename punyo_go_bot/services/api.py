@@ -58,6 +58,13 @@ class APIService:
         }
         return await self._request('PATCH', '/users/language/', data)
     
+    async def update_district(self, telegram_user_id: int, district: str) -> Dict:
+        """Update user district preference"""
+        data = {
+            "telegram_user_id": telegram_user_id,
+            "district": district,
+        }
+        return await self._request('PATCH', '/users/me/', data)
     async def verify_phone(self, telegram_user_id: int, phone: str) -> Dict:
         """Verify and save user phone number"""
         data = {

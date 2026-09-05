@@ -137,6 +137,9 @@ def get_user_info(request):
             
         if 'language' in request.data:
             user.language = request.data['language']
+            
+        if 'district' in request.data:
+            user.district = request.data['district']
         
         if 'phone_number' in request.data:
             user.phone_number = request.data['phone_number']

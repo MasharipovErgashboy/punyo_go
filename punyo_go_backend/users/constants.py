@@ -1,0 +1,15 @@
+DISTRICT_CHOICES = [
+    ("Arnasoy", "Arnasoy tumani"),
+    ("Baxmal", "Baxmal tumani"),
+    ("Do'stlik", "Do'stlik tumani"),
+    ("Forish", "Forish tumani"),
+    ("G'allaorol", "G'allaorol tumani"),
+    ("Jizzax shahri", "Jizzax shahri"),
+    ("Mirzacho'l", "Mirzacho'l tumani"),
+    ("Paxtakor", "Paxtakor tumani"),
+    ("Sharof Rashidov", "Sharof Rashidov tumani"),
+    ("Yangiobod", "Yangiobod tumani"),
+    ("Zafarobod", "Zafarobod tumani"),
+    ("Zarbdor", "Zarbdor tumani"),
+    ("Zomin", "Zomin tumani"),
+]
