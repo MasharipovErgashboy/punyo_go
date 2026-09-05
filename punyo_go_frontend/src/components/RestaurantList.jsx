@@ -26,13 +26,31 @@ const RestaurantList = ({ language, isFullView, onBack, onShowAll, onSelectResta
         fetchRestaurants();
     }, []);
 
+    const handleFetchAll = async () => {
+        try {
+            setLoading(true);
+            const data = await api.getRestaurants(); // No userId
+            const results = data.results !== undefined ? data.results : (Array.isArray(data) ? data : []);
+            setRestaurants(results);
+        } catch (error) {
+            console.error("Error fetching all restaurants:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     if (loading) return null;
     if (restaurants.length === 0) {
         return (
             <div className="empty-restaurants-alert">
-                <div className="empty-icon">📍</div>
+                <div className="empty-icon-wrapper">
+                    <span className="empty-icon">📍</span>
+                </div>
                 <h3>{language === 'ru' ? 'В вашем районе нет заведений' : 'Sizning tumaningiz bo\'yicha restoran topilmadi'}</h3>
                 <p>{language === 'ru' ? 'К сожалению, в выбранном вами районе пока нет доступных ресторанов.' : 'Kechirasiz, siz tanlagan tumanda hozircha faol restoranlar yo\'q.'}</p>
+                <button className="empty-alert-btn" onClick={handleFetchAll}>
+                    {language === 'ru' ? 'Понятно (Показать все)' : 'Tushunarli (Barchasini ko\'rish)'}
+                </button>
             </div>
         );
     }
