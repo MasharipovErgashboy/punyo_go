@@ -704,10 +704,6 @@ const Shop = ({ language, theme, toggleTheme }) => {
         }
 
         if (view === 'category_products' && selectedCategory) {
-            const itemsPerPage = 12;
-            const startIndex = (categoryPage - 1) * itemsPerPage;
-            const paginatedProducts = filteredProducts.slice(startIndex, startIndex + itemsPerPage);
-
             return (
                 <div className="detail-view">
                     <div className="category-title">
@@ -717,7 +713,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
                             : selectedCategory?.name?.toUpperCase()}
                     </div>
                     <ProductGrid
-                        products={paginatedProducts}
+                        products={filteredProducts}
                         language={language}
                         favorites={favorites}
                         onToggleFavorite={toggleFavorite}
@@ -729,12 +725,6 @@ const Shop = ({ language, theme, toggleTheme }) => {
                                 setSelectedProduct(p);
                             }
                         }}
-                    />
-                    <Pagination
-                        currentPage={categoryPage}
-                        totalItems={filteredProducts.length}
-                        itemsPerPage={itemsPerPage}
-                        onPageChange={setCategoryPage}
                     />
                 </div>
             );
@@ -811,9 +801,6 @@ const Shop = ({ language, theme, toggleTheme }) => {
 
         if (view === 'favorites') {
             const favoriteProducts = allProducts.filter(p => favorites.includes(p.id));
-            const itemsPerPage = 10;
-            const startIndex = (favoritesPage - 1) * itemsPerPage;
-            const paginatedFavorites = favoriteProducts.slice(startIndex, startIndex + itemsPerPage);
 
             return (
                 <div className="favorites-view">
@@ -824,7 +811,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
                     {favoriteProducts.length > 0 ? (
                         <>
                             <ProductGrid
-                                products={paginatedFavorites}
+                                products={favoriteProducts}
                                 language={language}
                                 favorites={favorites}
                                 onToggleFavorite={toggleFavorite}
@@ -836,12 +823,6 @@ const Shop = ({ language, theme, toggleTheme }) => {
                                         setSelectedProduct(p);
                                     }
                                 }}
-                            />
-                            <Pagination
-                                currentPage={favoritesPage}
-                                totalItems={favoriteProducts.length}
-                                itemsPerPage={itemsPerPage}
-                                onPageChange={setFavoritesPage}
                             />
                         </>
                     ) : (
