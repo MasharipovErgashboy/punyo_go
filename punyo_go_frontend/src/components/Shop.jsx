@@ -575,9 +575,15 @@ const Shop = ({ language, theme, toggleTheme }) => {
         }
     };
 
+    const getTelegramUserId = () => {
+        const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+        const urlParams = new URLSearchParams(window.location.search);
+        return tgUser?.id || urlParams.get('tid');
+    };
+
     const loadAllProducts = async () => {
         try {
-            const data = await api.getAllProducts();
+            const data = await api.getAllProducts(getTelegramUserId());
             setAllProducts(data);
         } catch (error) {
             console.error('Error loading all products:', error);
@@ -586,7 +592,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
 
     const loadCategoryProducts = async (categoryId) => {
         try {
-            const data = await api.getCategoryProducts(categoryId);
+            const data = await api.getCategoryProducts(categoryId, getTelegramUserId());
             // Also update allProducts pool if needed, or just set filtered view
             // For now, we use allProducts as the source for search and favorites
         } catch (error) {

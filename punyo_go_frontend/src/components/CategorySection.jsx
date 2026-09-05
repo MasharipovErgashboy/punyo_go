@@ -9,7 +9,10 @@ export default function CategorySection({ category, onSelectCategory, language, 
     useEffect(() => {
         const loadProducts = async () => {
             try {
-                const data = await api.getCategoryProducts(category.id);
+                const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+                const urlParams = new URLSearchParams(window.location.search);
+                const tid = tgUser?.id || urlParams.get('tid');
+                const data = await api.getCategoryProducts(category.id, tid);
                 setProducts(data.slice(0, 15));
                 setLoading(false);
             } catch (error) {

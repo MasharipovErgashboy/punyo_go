@@ -51,8 +51,11 @@ export const api = {
         return response.json();
     },
 
-    async getCategoryProducts(categoryId) {
-        const response = await fetchWithBypass(`${API_BASE_URL}/products/category/${categoryId}/products/`);
+    async getCategoryProducts(categoryId, telegramUserId) {
+        const url = telegramUserId 
+            ? `${API_BASE_URL}/products/category/${categoryId}/products/?telegram_user_id=${telegramUserId}`
+            : `${API_BASE_URL}/products/category/${categoryId}/products/`;
+        const response = await fetchWithBypass(url);
         return response.json();
     },
 
@@ -61,8 +64,11 @@ export const api = {
         return response.json();
     },
 
-    async getAllProducts() {
-        const response = await fetchWithBypass(`${API_BASE_URL}/products/all/`);
+    async getAllProducts(telegramUserId) {
+        const url = telegramUserId
+            ? `${API_BASE_URL}/products/all/?telegram_user_id=${telegramUserId}`
+            : `${API_BASE_URL}/products/all/`;
+        const response = await fetchWithBypass(url);
         return response.json();
     },
 

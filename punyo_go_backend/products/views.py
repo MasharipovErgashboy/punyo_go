@@ -46,8 +46,16 @@ def get_category_products(request, category_id):
         is_active=True
     ).order_by('order', 'name')
     
+    telegram_user_id = request.query_params.get('telegram_user_id')
+    if telegram_user_id:
+        user = UserProfile.objects.filter(telegram_user_id=telegram_user_id).first()
+        if user and user.district:
+            products = products.filter(restaurant__location=user.district)
+    
     serializer = ProductSerializer(products, many=True, context={'request': request})
     return Response(serializer.data)
+from users.models import UserProfile
+
 @extend_schema(
     summary="Get all active products",
     description="Returns list of all active products",
@@ -57,6 +65,13 @@ def get_category_products(request, category_id):
 def get_all_products(request):
     """Get all active products"""
     products = Product.objects.filter(is_active=True).order_by('order', 'name')
+    
+    telegram_user_id = request.query_params.get('telegram_user_id')
+    if telegram_user_id:
+        user = UserProfile.objects.filter(telegram_user_id=telegram_user_id).first()
+        if user and user.district:
+            products = products.filter(restaurant__location=user.district)
+            
     serializer = ProductSerializer(products, many=True, context={'request': request})
     return Response(serializer.data)
 
