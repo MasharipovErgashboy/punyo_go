@@ -2,16 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../api';
 import './RestaurantList.css';
 
-const RestaurantList = ({ language, isFullView, onBack, onShowAll, onSelectRestaurant }) => {
+const RestaurantList = ({ language, isFullView, onBack, onShowAll, onSelectRestaurant, useGlobalData, onEnableGlobalData }) => {
     const [restaurants, setRestaurants] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchRestaurants = async () => {
             try {
-                const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
-                const urlParams = new URLSearchParams(window.location.search);
-                const telegramUserId = tgUser?.id || urlParams.get('tid');
+                let telegramUserId = null;
+                if (!useGlobalData) {
+                    const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+                    const urlParams = new URLSearchParams(window.location.search);
+                    telegramUserId = tgUser?.id || urlParams.get('tid');
+                }
 
                 const data = await api.getRestaurants(telegramUserId);
                 // Django REST framework with pagination returns { count, next, previous, results: [...] }
@@ -27,6 +30,9 @@ const RestaurantList = ({ language, isFullView, onBack, onShowAll, onSelectResta
     }, []);
 
     const handleFetchAll = async () => {
+        if (onEnableGlobalData) {
+            onEnableGlobalData();
+        }
         try {
             setLoading(true);
             const data = await api.getRestaurants(); // No userId

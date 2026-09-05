@@ -2,16 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { api, getImageUrl } from '../api';
 import './CategorySection.css';
 
-export default function CategorySection({ category, onSelectCategory, language, favorites = [], onToggleFavorite, onProductClick }) {
+export default function CategorySection({ category, onSelectCategory, language, favorites = [], onToggleFavorite, onProductClick, useGlobalData }) {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const loadProducts = async () => {
             try {
-                const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
-                const urlParams = new URLSearchParams(window.location.search);
-                const tid = tgUser?.id || urlParams.get('tid');
+                let tid = null;
+                if (!useGlobalData) {
+                    const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+                    const urlParams = new URLSearchParams(window.location.search);
+                    tid = tgUser?.id || urlParams.get('tid');
+                }
                 const data = await api.getCategoryProducts(category.id, tid);
                 setProducts(data.slice(0, 15));
                 setLoading(false);

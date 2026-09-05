@@ -60,6 +60,10 @@ const Shop = ({ language, theme, toggleTheme }) => {
         }
         return null;
     });
+    
+    const [useGlobalData, setUseGlobalData] = useState(() => {
+        return localStorage.getItem('punyo_use_global_data') === 'true';
+    });
     const [favorites, setFavorites] = useState(() => {
         const saved = localStorage.getItem('punyo_favorites');
         return saved ? JSON.parse(saved) : [];
@@ -576,6 +580,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
     };
 
     const getTelegramUserId = () => {
+        if (useGlobalData) return null;
         const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
         const urlParams = new URLSearchParams(window.location.search);
         return tgUser?.id || urlParams.get('tid');
@@ -932,7 +937,15 @@ const Shop = ({ language, theme, toggleTheme }) => {
                         />
                         
                         <RestaurantList 
-                            language={language} 
+                            language={language}
+                            useGlobalData={useGlobalData}
+                            onEnableGlobalData={() => {
+                                setUseGlobalData(true);
+                                localStorage.setItem('punyo_use_global_data', 'true');
+                                // Reload products
+                                loadAllProducts();
+                                loadCategories();
+                            }}
                             onShowAll={() => setView('all_restaurants')} 
                             onSelectRestaurant={(rest) => {
                                 setSelectedRestaurant(rest);
@@ -946,6 +959,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
                                     key={category.id}
                                     category={category}
                                     language={language}
+                                    useGlobalData={useGlobalData}
                                     favorites={favorites}
                                     onToggleFavorite={toggleFavorite}
                                     onProductClick={(p) => {
