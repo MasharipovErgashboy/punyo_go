@@ -1010,9 +1010,9 @@ const Shop = ({ language, theme, toggleTheme }) => {
                     </button>
                 </div>
             </header>
-            {/* Location Selector beneath header */}
+            {/* Location Display beneath header */}
             {view === 'home' && (
-                <div className="location-selector" onClick={() => setShowLocationPicker(true)}>
+                <div className="location-selector">
                     <span className="location-pin">
                         <svg viewBox="0 0 24 24" width="18" height="18" stroke="#FFCC00" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
@@ -1020,12 +1020,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
                         </svg>
                     </span>
                     <span className="location-text">
-                        {selectedLocation ? selectedLocation.address.split(',')[0] : (language === 'ru' ? 'Выберите район' : 'Do\'stlik tumani')}
-                    </span>
-                    <span className="location-chevron">
-                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
+                        {currentUser?.district || (language === 'ru' ? 'Район не выбран' : 'Tuman tanlanmagan')}
                     </span>
                 </div>
             )}
