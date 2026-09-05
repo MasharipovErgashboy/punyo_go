@@ -81,7 +81,7 @@ const RestaurantList = ({ language, isFullView, onBack, onShowAll, onSelectResta
     return (
         <div className="restaurant-section">
             <div className="section-header">
-                <h2>{language === 'ru' ? 'Популярные места в районе' : 'Tuman bo\'yicha mashhur joylar'} 🔥</h2>
+                <h2>{language === 'ru' ? 'Популярные места' : 'Mashhur joylar'} 🔥</h2>
                 <span className="view-all" onClick={onShowAll}>{language === 'ru' ? 'Все' : 'Barchasi'} &gt;</span>
             </div>
             
