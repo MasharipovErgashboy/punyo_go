@@ -45,24 +45,25 @@ def telegram_login(request):
         if data.get('first_name'): user.first_name = data['first_name']
         if data.get('last_name'): user.last_name = data['last_name']
         user.save()
-        created = False
     else:
         # Try to find by username (bot often uses telegram_{id} or actual username)
         username = data.get('username')
-        user = UserProfile.objects.filter(telegram_user_id=telegram_user_id).first()
+        user = UserProfile.objects.filter(username=username).first() if username else None
         
         if not user:
-            print(f"DEBUG: User {telegram_user_id} not found in telegram_login. Returning dummy success for bot compatibility.")
-            # Return a dummy object that looks like a user to satisfy the old bot code
-            return Response({
-                'telegram_user_id': telegram_user_id,
-                'username': data.get('username') or f"user_{telegram_user_id}",
-                'first_name': data.get('first_name') or '',
-                'language': 'uz',
-                'is_registered': False # Flag for future use
-            }, status=status.HTTP_200_OK)
-        
-        created = False
+            # CREATE THE USER! We need them in the DB to save their district and language
+            print(f"DEBUG: Creating new user {telegram_user_id} in telegram_login.")
+            user = UserProfile.objects.create(
+                telegram_user_id=telegram_user_id,
+                username=data.get('username') or f"user_{telegram_user_id}",
+                first_name=data.get('first_name') or 'User',
+                last_name=data.get('last_name') or '',
+                language='uz'
+            )
+        else:
+            # Found by username, link telegram_user_id
+            user.telegram_user_id = telegram_user_id
+            user.save()
     
     return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
 
@@ -87,15 +88,24 @@ def get_user_info(request):
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
     if not user:
-        print(f"DEBUG: User {telegram_user_id} not found in get_user_info. Returning dummy success.")
-        return Response({
-            'telegram_user_id': telegram_user_id,
-            'first_name': 'Guest',
-            'phone_number': '',
-            'language': 'uz',
-            'is_registered': False
-        }, status=status.HTTP_200_OK)
-    
+        if request.method == 'PATCH':
+            print(f"DEBUG: Creating user {telegram_user_id} in get_user_info for PATCH.")
+            user = UserProfile.objects.create(
+                telegram_user_id=telegram_user_id,
+                username=f"user_{telegram_user_id}",
+                first_name='Guest',
+                language='uz'
+            )
+        else:
+            print(f"DEBUG: User {telegram_user_id} not found in get_user_info. Returning dummy success.")
+            return Response({
+                'telegram_user_id': telegram_user_id,
+                'first_name': 'Guest',
+                'phone_number': '',
+                'language': 'uz',
+                'is_registered': False
+            }, status=status.HTTP_200_OK)
+            
     created = False
     
     # If the user is staff, we don't allow the Mini App to update their profile info
