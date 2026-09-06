@@ -181,15 +181,28 @@ def phone_verify(request):
 
     # Strategy: Explicitly use update_or_create by telegram_user_id if valid
     if telegram_user_id and int(telegram_user_id) > 0:
-        user, created = UserProfile.objects.update_or_create(
-            telegram_user_id=telegram_user_id,
-            defaults={
-                'phone_number': phone_number,
-                'first_name': data.get('first_name') or 'User',
-                'last_name': data.get('last_name', ''),
-                'username': data.get('username') or f"user_{telegram_user_id}"
-            }
-        )
+        base_username = data.get('username') or f"user_{telegram_user_id}"
+        try:
+            user, created = UserProfile.objects.update_or_create(
+                telegram_user_id=telegram_user_id,
+                defaults={
+                    'phone_number': phone_number,
+                    'first_name': data.get('first_name') or 'User',
+                    'last_name': data.get('last_name', ''),
+                    'username': base_username
+                }
+            )
+        except Exception as e:
+            # If username is taken, try again with telegram_user_id appended
+            user, created = UserProfile.objects.update_or_create(
+                telegram_user_id=telegram_user_id,
+                defaults={
+                    'phone_number': phone_number,
+                    'first_name': data.get('first_name') or 'User',
+                    'last_name': data.get('last_name', ''),
+                    'username': f"{base_username}_{telegram_user_id}"
+                }
+            )
         print(f"DEBUG: update_or_create result for ID {telegram_user_id}: created={created}")
     else:
         # Fallback for ID=0 (should be rare now with our Bot URL update)
@@ -203,12 +216,21 @@ def phone_verify(request):
             user.save()
             print(f"DEBUG: Found and updated user for phone registration without ID: {user.username}")
         else:
-            print(f"DEBUG: Creating new user for phone registration without ID: {phone_number}")
-            user = UserProfile.objects.create(
-                phone_number=phone_number,
-                username=data.get('username') or f"phone_{phone_number.replace('+', '')}",
-                first_name=data.get('first_name') or 'User'
-            )
+            base_username = data.get('username') or f"phone_{phone_number.replace('+', '')}"
+            import uuid
+            try:
+                print(f"DEBUG: Creating new user for phone registration without ID: {phone_number}")
+                user = UserProfile.objects.create(
+                    phone_number=phone_number,
+                    username=base_username,
+                    first_name=data.get('first_name') or 'User'
+                )
+            except Exception as e:
+                user = UserProfile.objects.create(
+                    phone_number=phone_number,
+                    username=f"{base_username}_{str(uuid.uuid4())[:8]}",
+                    first_name=data.get('first_name') or 'User'
+                )
 
     # 4. Final Updates
     user.phone_number = phone_number
@@ -216,9 +238,16 @@ def phone_verify(request):
         user.first_name = data['first_name']
     if 'last_name' in data:
         user.last_name = data['last_name']
-    if 'username' in data and (user.username.startswith('user_') or user.username == ''):
+    if 'username' in data and (user.username.startswith('user_') or user.username.startswith('phone_') or user.username == ''):
         user.username = data['username']
-    user.save()
+        
+    try:
+        user.save()
+    except Exception as e:
+        # Final safety net for username uniqueness
+        import uuid
+        user.username = f"{user.username}_{user.telegram_user_id or str(uuid.uuid4())[:8]}"
+        user.save()
 
     # Protect staff accounts
     if user.is_staff:
