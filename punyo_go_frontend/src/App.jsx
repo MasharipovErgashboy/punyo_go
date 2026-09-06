@@ -74,9 +74,15 @@ function App() {
             try {
                 telegram.ready();
                 telegram.expand();
+                if (typeof telegram.disableVerticalSwipes === 'function') {
+                    telegram.disableVerticalSwipes();
+                }
                 if (telegram.MainButton) telegram.MainButton.hide();
                 // Force expand for iOS which sometimes ignores the first call
-                setTimeout(() => telegram.expand(), 100);
+                setTimeout(() => {
+                    telegram.expand();
+                    if (typeof telegram.disableVerticalSwipes === 'function') telegram.disableVerticalSwipes();
+                }, 100);
                 setTimeout(() => telegram.expand(), 500);
                 setTimeout(() => telegram.expand(), 1000);
             } catch (e) {
