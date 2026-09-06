@@ -14,6 +14,17 @@ const fetchWithBypass = async (url, options = {}) => {
         if (!response.ok) {
             const errorText = await response.text();
             console.error(`API Error (${response.status}):`, errorText);
+            try {
+                const errorJson = JSON.parse(errorText);
+                if (errorJson.error) {
+                    throw new Error(errorJson.error);
+                }
+            } catch (e) {
+                // If it's already an Error (from throw above), re-throw it
+                if (e.message && e.message !== 'Unexpected token' && !e.message.includes('JSON')) {
+                    throw e;
+                }
+            }
             throw new Error(`Server error: ${response.status}`);
         }
         return response;
