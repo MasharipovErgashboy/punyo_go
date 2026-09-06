@@ -71,3 +71,13 @@ body {
     justify-content: center;
     height: 24px;
 }
+
+/* Hide Bottom Nav and expand checkout space when virtual keyboard is open */
+@media (max-height: 550px) {
+    .bottom-nav {
+        display: none !important;
+    }
+    body {
+        padding-bottom: 0 !important;
+    }
+}

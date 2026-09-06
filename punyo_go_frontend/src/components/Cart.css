@@ -212,7 +212,16 @@
     border-top: 1px solid var(--border-color, #2C2C2E);
     padding: 16px 20px 24px;
     box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
-    z-index: 9;
+    z-index: 12;
+    max-height: calc(100vh - 70px);
+    overflow-y: auto;
+}
+
+@media (max-height: 550px) {
+    .cart-checkout-section {
+        bottom: 0;
+        max-height: 100vh;
+    }
 }
 
 .cart-total-row {
