@@ -43,7 +43,7 @@ const Cart = ({ cart, onUpdateQuantity, onRemoveItem, onCheckout, onBack, langua
     };
 
     return (
-        <div className="cart-view animate-fade-in">
+        <div className="cart-view">
             <div className="category-title cart-header">
                 <span className="back-btn" onClick={onBack}>←</span>
                 {language === 'ru' ? 'КОРЗИНА' : 'SAVATCHA'}
