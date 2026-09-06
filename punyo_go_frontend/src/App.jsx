@@ -70,14 +70,21 @@ function App() {
     useEffect(() => {
         const isTelegramApp = telegram && telegram.platform && telegram.platform !== 'unknown';
         
-        if (telegram && (isTelegramApp || new URLSearchParams(window.location.search).get('tid'))) {
+        if (telegram) {
             try {
                 telegram.ready();
                 telegram.expand();
                 if (telegram.MainButton) telegram.MainButton.hide();
+                // Force expand for iOS which sometimes ignores the first call
+                setTimeout(() => telegram.expand(), 100);
+                setTimeout(() => telegram.expand(), 500);
+                setTimeout(() => telegram.expand(), 1000);
             } catch (e) {
                 console.error("Telegram init error:", e);
             }
+        }
+
+        if (telegram && (isTelegramApp || new URLSearchParams(window.location.search).get('tid'))) {
 
             // Fetch user language
             const fetchLang = async () => {
