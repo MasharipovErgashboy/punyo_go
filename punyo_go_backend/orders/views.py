@@ -10,11 +10,33 @@ from .serializers import OrderSerializer
 
 from django.db import transaction
 from products.models import Product
+from .models import Order, OrderItem, PromoCode
 from decimal import Decimal
 import traceback
 import html
 import json
 from django.conf import settings
+
+@api_view(['POST'])
+def validate_promo(request):
+    code = request.data.get('code', '').strip()
+    if not code:
+        return Response({'error': 'Promokod kiritilmagan'}, status=status.HTTP_400_BAD_REQUEST)
+        
+    promo = PromoCode.objects.filter(code=code, is_active=True).first()
+    
+    if not promo:
+        return Response({'error': 'Promokod eskirgan yoki xato'}, status=status.HTTP_400_BAD_REQUEST)
+        
+    if promo.times_used >= promo.usage_limit:
+        promo.is_active = False
+        promo.save()
+        return Response({'error': 'Promokod eskirgan'}, status=status.HTTP_400_BAD_REQUEST)
+        
+    return Response({
+        'discount_percent': promo.discount_percent,
+        'message': 'Chegirma berildi'
+    })
 
 @api_view(['POST'])
 @transaction.atomic
@@ -49,6 +71,16 @@ def create_order(request):
                 'quantity': int(item.get('quantity', 1))
             })
             
+        # Validate promo code if provided
+        promo_code = data.get('promo_code', '').strip()
+        valid_promo = None
+        if promo_code:
+            valid_promo = PromoCode.objects.filter(code=promo_code, is_active=True).first()
+            if valid_promo and valid_promo.times_used < valid_promo.usage_limit:
+                pass # valid
+            else:
+                valid_promo = None
+
         created_orders = []
         for restaurant_id, items in restaurant_items.items():
             order = Order.objects.create(
@@ -83,7 +115,15 @@ def create_order(request):
             if order.restaurant and order.restaurant.delivery_price:
                 delivery_price = order.restaurant.delivery_price
                 
-            order.total_amount = total_amount + delivery_price
+            sub_total = total_amount + delivery_price
+            discount_amount = Decimal('0')
+            
+            if valid_promo:
+                discount_amount = sub_total * (Decimal(valid_promo.discount_percent) / Decimal('100'))
+                order.promo_code = valid_promo
+                order.discount_amount = discount_amount
+                
+            order.total_amount = sub_total - discount_amount
             order.save()
             created_orders.append(order)
             
@@ -102,6 +142,11 @@ def create_order(request):
                 delivery_text = ""
                 if delivery_price > 0:
                     delivery_text = f"🛵 <b>Yetkazib berish:</b> {delivery_price:,.0f} UZS\n"
+                    
+                promo_text = ""
+                if valid_promo:
+                    promo_text = f"🎟 <b>Promokod:</b> {valid_promo.code} (-{valid_promo.discount_percent}%)\n"
+                    promo_text += f"📉 <b>Chegirma:</b> -{discount_amount:,.0f} UZS\n"
 
                 msg = (
                     "<b>🔔 Yangi buyurtma kelib tushdi!</b>\n\n"
@@ -114,6 +159,7 @@ def create_order(request):
                     f"{items_list_str}\n"
                     f"💵 <b>Mahsulotlar summasi:</b> {total_amount:,.0f} UZS\n"
                     f"{delivery_text}"
+                    f"{promo_text}"
                     f"💰 <b>Jami summa:</b> {order.total_amount:,.0f} UZS\n\n"
                     "🚀 Buyurtmani boshqarish uchun admin panelga o'ting:\n"
                     f"🔗 <a href='{admin_link}'>Admin panelga o'tish</a>"
@@ -134,6 +180,12 @@ def create_order(request):
                 send_telegram_notification(msg, chat_id=chat_id, reply_markup=reply_markup_json)
             except Exception as e:
                 print(f"DEBUG: Failed to send TG notification: {e}")
+
+        if valid_promo:
+            valid_promo.times_used += 1
+            if valid_promo.times_used >= valid_promo.usage_limit:
+                valid_promo.is_active = False
+            valid_promo.save()
 
         # Return the first created order to satisfy frontend
         if created_orders:

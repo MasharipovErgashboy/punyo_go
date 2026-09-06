@@ -8,5 +8,6 @@ urlpatterns = [
     path('canceled/', views.get_canceled_orders, name='canceled-orders'),
     path('<int:order_id>/status/', views.update_order_status, name='update-order-status'),
     path('create/', views.create_order, name='create-order'),
+    path('validate-promo/', views.validate_promo, name='validate-promo'),
     path('test-notification/', views.test_notification, name='test-notification'),
 ]

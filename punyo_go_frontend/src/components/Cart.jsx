@@ -1,8 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { api } from '../api';
 import './Cart.css';
 
 const Cart = ({ cart, onUpdateQuantity, onRemoveItem, onCheckout, onBack, language }) => {
+    const [promoInput, setPromoInput] = useState('');
+    const [appliedPromo, setAppliedPromo] = useState(null);
+    const [discountPercent, setDiscountPercent] = useState(0);
+    const [promoMessage, setPromoMessage] = useState('');
+    const [promoError, setPromoError] = useState('');
+    const [isApplyingPromo, setIsApplyingPromo] = useState(false);
+
     const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     
     const uniqueRestaurants = {};
@@ -12,7 +19,28 @@ const Cart = ({ cart, onUpdateQuantity, onRemoveItem, onCheckout, onBack, langua
         }
     });
     const deliveryTotal = Object.values(uniqueRestaurants).reduce((sum, fee) => sum + fee, 0);
-    const grandTotal = cartTotal + deliveryTotal;
+    const subTotal = cartTotal + deliveryTotal;
+    const discountAmount = subTotal * (discountPercent / 100);
+    const grandTotal = subTotal - discountAmount;
+
+    const handleApplyPromo = async () => {
+        if (!promoInput.trim()) return;
+        setIsApplyingPromo(true);
+        setPromoError('');
+        setPromoMessage('');
+        try {
+            const data = await api.validatePromoCode(promoInput.trim());
+            setAppliedPromo(promoInput.trim());
+            setDiscountPercent(data.discount_percent);
+            setPromoMessage(data.message || (language === 'ru' ? 'Скидка применена!' : 'Chegirma berildi!'));
+        } catch (err) {
+            setPromoError(err.message || 'Xatolik');
+            setAppliedPromo(null);
+            setDiscountPercent(0);
+        } finally {
+            setIsApplyingPromo(false);
+        }
+    };
 
     return (
         <div className="cart-view animate-fade-in">
@@ -85,6 +113,28 @@ const Cart = ({ cart, onUpdateQuantity, onRemoveItem, onCheckout, onBack, langua
                     </div>
                     
                     <div className="cart-checkout-section">
+                        <div className="promo-code-section" style={{marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '8px'}}>
+                            <div style={{display: 'flex', gap: '8px'}}>
+                                <input 
+                                    type="text" 
+                                    placeholder={language === 'ru' ? 'Промокод' : 'Promokod'}
+                                    value={promoInput}
+                                    onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                                    style={{flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--card-bg)', color: 'var(--text-main)'}}
+                                    disabled={!!appliedPromo || isApplyingPromo}
+                                />
+                                <button 
+                                    onClick={handleApplyPromo}
+                                    disabled={!promoInput.trim() || !!appliedPromo || isApplyingPromo}
+                                    style={{padding: '10px 16px', borderRadius: '8px', background: appliedPromo ? 'var(--success-color, #4CAF50)' : 'var(--accent-color)', color: '#000', border: 'none', fontWeight: 'bold'}}
+                                >
+                                    {isApplyingPromo ? '...' : (appliedPromo ? '✓' : (language === 'ru' ? 'Применить' : 'Tasdiqlash'))}
+                                </button>
+                            </div>
+                            {promoError && <span style={{color: 'var(--error-color, #f44336)', fontSize: '12px'}}>{promoError}</span>}
+                            {promoMessage && <span style={{color: 'var(--success-color, #4CAF50)', fontSize: '12px'}}>{promoMessage}</span>}
+                        </div>
+
                         <div className="cart-total-details" style={{display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px'}}>
                             <div className="cart-total-row" style={{fontSize: '14px', color: 'var(--text-muted)'}}>
                                 <span>{language === 'ru' ? 'Сумма товаров:' : 'Mahsulotlar summasi:'}</span>
@@ -94,12 +144,25 @@ const Cart = ({ cart, onUpdateQuantity, onRemoveItem, onCheckout, onBack, langua
                                 <span>{language === 'ru' ? 'Доставка:' : 'Yetkazib berish:'}</span>
                                 <span>{deliveryTotal.toLocaleString()} UZS</span>
                             </div>
+                            {discountPercent > 0 && (
+                                <div className="cart-total-row" style={{fontSize: '14px', color: 'var(--success-color, #4CAF50)'}}>
+                                    <span>{language === 'ru' ? 'Скидка' : 'Chegirma'} ({discountPercent}%):</span>
+                                    <span>-{discountAmount.toLocaleString()} UZS</span>
+                                </div>
+                            )}
                         </div>
                         <div className="cart-total-row" style={{borderTop: '1px solid var(--border-color)', paddingTop: '12px'}}>
                             <span>{language === 'ru' ? 'Общая сумма:' : 'Jami summa:'}</span>
-                            <span className="cart-total-amount">{grandTotal.toLocaleString()} UZS</span>
+                            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
+                                {discountPercent > 0 && (
+                                    <span style={{textDecoration: 'line-through', color: 'var(--text-muted)', fontSize: '14px'}}>
+                                        {subTotal.toLocaleString()} UZS
+                                    </span>
+                                )}
+                                <span className="cart-total-amount">{grandTotal.toLocaleString()} UZS</span>
+                            </div>
                         </div>
-                        <button className="cart-checkout-btn" onClick={onCheckout}>
+                        <button className="cart-checkout-btn" onClick={() => onCheckout(appliedPromo)}>
                             {language === 'ru' ? 'Оформить заказ' : 'Buyurtma berish'}
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                         </button>

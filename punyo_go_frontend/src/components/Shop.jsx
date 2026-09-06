@@ -487,10 +487,16 @@ const Shop = ({ language, theme, toggleTheme }) => {
         }
     };
 
-    const submitFullOrder = async (providedLocation = null) => {
+    const [pendingPromoCode, setPendingPromoCode] = useState(null);
+
+    const submitFullOrder = async (providedLocation = null, promoCode = null) => {
         // 1. Check for Phone Number first
         // We consider it missing if it's null, empty, or just a dash "-"
         const hasPhone = currentUser?.phone_number && currentUser.phone_number !== '-';
+
+        if (promoCode !== null) {
+            setPendingPromoCode(promoCode);
+        }
 
         if (!hasPhone) {
             console.log('DEBUG: No valid phone number, opening AuthDrawer');
@@ -508,6 +514,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
         }
 
         const locationToUse = providedLocation;
+        const actualPromoCode = promoCode !== null ? promoCode : pendingPromoCode;
 
         if (cart.length === 0) return;
 
@@ -519,7 +526,8 @@ const Shop = ({ language, theme, toggleTheme }) => {
                 latitude: locationToUse.latitude,
                 longitude: locationToUse.longitude,
                 delivery_address: locationToUse.address,
-                phone_number: currentUser?.phone_number
+                phone_number: currentUser?.phone_number,
+                promo_code: actualPromoCode
             };
 
             const response = await api.createOrder(orderData);
@@ -737,7 +745,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
                     language={language}
                     onUpdateQuantity={updateCartQuantity}
                     onRemoveItem={removeCartItem}
-                    onCheckout={() => submitFullOrder()}
+                    onCheckout={(promo) => submitFullOrder(null, promo)}
                     onBack={() => setView('home')}
                 />
             );

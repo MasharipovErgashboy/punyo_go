@@ -155,6 +155,19 @@ export const api = {
         return response.json();
     },
 
+    async validatePromoCode(code) {
+        const response = await fetchWithBypass(`${API_BASE_URL}/orders/validate-promo/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code })
+        });
+        if (!response.ok) {
+            const data = await response.json();
+            throw new Error(data.error || 'Xatolik yuz berdi');
+        }
+        return response.json();
+    },
+
     async createOrder(orderData) {
         const response = await fetchWithBypass(`${API_BASE_URL}/orders/create/`, {
             method: 'POST',

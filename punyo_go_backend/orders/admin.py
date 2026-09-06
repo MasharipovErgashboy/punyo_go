@@ -2,13 +2,20 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.urls import reverse
-from .models import Order, OrderItem
+from .models import Order, OrderItem, PromoCode
 
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
     extra = 0
     fields = ('product', 'quantity', 'price')
     readonly_fields = ('price',)
+
+@admin.register(PromoCode)
+class PromoCodeAdmin(admin.ModelAdmin):
+    list_display = ('code', 'discount_percent', 'usage_limit', 'times_used', 'is_active', 'created_at')
+    list_filter = ('is_active', 'created_at')
+    search_fields = ('code',)
+    readonly_fields = ('times_used', 'created_at')
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
