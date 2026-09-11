@@ -2,11 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../api';
 import './RestaurantList.css';
 
-const RestaurantList = ({ language, isFullView, onBack, onShowAll, onSelectRestaurant, useGlobalData, onEnableGlobalData }) => {
+const RestaurantList = ({ language, isFullView, onBack, onShowAll, onSelectRestaurant, useGlobalData, onEnableGlobalData, customRestaurants, categoryTitle }) => {
     const [restaurants, setRestaurants] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (customRestaurants) {
+            const results = customRestaurants.results !== undefined ? customRestaurants.results : (Array.isArray(customRestaurants) ? customRestaurants : []);
+            setRestaurants(results);
+            setLoading(false);
+            return;
+        }
+
         const fetchRestaurants = async () => {
             try {
                 let telegramUserId = null;
@@ -27,7 +34,7 @@ const RestaurantList = ({ language, isFullView, onBack, onShowAll, onSelectResta
             }
         };
         fetchRestaurants();
-    }, []);
+    }, [customRestaurants, useGlobalData]);
 
     const handleFetchAll = async () => {
         if (onEnableGlobalData) {
@@ -66,7 +73,7 @@ const RestaurantList = ({ language, isFullView, onBack, onShowAll, onSelectResta
             <div className="all-restaurants-view">
                 <div className="category-title">
                     <span className="back-btn" onClick={onBack}>←</span>
-                    {language === 'ru' ? 'ВСЕ ЗАВЕДЕНИЯ' : 'BARCHA RESTORANLAR'}
+                    {categoryTitle ? categoryTitle : (language === 'ru' ? 'ВСЕ ЗАВЕДЕНИЯ' : 'BARCHA RESTORANLAR')}
                 </div>
                 <div className="restaurants-grid">
                     {restaurants.map((rest, idx) => {

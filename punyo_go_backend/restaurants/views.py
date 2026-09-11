@@ -19,4 +19,9 @@ class RestaurantViewSet(viewsets.ReadOnlyModelViewSet):
             if user and user.district:
                 queryset = queryset.filter(location=user.district)
                 
+        category_id = self.request.query_params.get('category_id')
+        if category_id:
+            # Filter restaurants that have at least one active product in this category
+            queryset = queryset.filter(products__category_id=category_id, products__is_active=True).distinct()
+                
         return queryset

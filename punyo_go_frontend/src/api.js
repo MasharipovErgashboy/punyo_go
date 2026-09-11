@@ -54,10 +54,16 @@ export const api = {
         return response.json();
     },
 
-    async getRestaurants(telegramUserId) {
-        const url = telegramUserId 
+    async getRestaurants(telegramUserId, categoryId = null) {
+        let url = telegramUserId 
             ? `${API_BASE_URL}/restaurants/?telegram_user_id=${telegramUserId}`
             : `${API_BASE_URL}/restaurants/`;
+            
+        if (categoryId) {
+            const separator = url.includes('?') ? '&' : '?';
+            url += `${separator}category_id=${categoryId}`;
+        }
+            
         const response = await fetchWithBypass(url);
         return response.json();
     },

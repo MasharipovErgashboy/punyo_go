@@ -34,6 +34,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
     const [categories, setCategories] = useState([]);
     const [allProducts, setAllProducts] = useState([]); // For search in all products
     const [selectedCategory, setSelectedCategory] = useState(null);
+    const [categoryRestaurants, setCategoryRestaurants] = useState([]);
     const [selectedRestaurant, setSelectedRestaurant] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
@@ -355,12 +356,22 @@ const Shop = ({ language, theme, toggleTheme }) => {
         }
     };
 
+    const loadCategoryRestaurants = async (categoryId) => {
+        try {
+            const userId = getTelegramUserId();
+            const data = await api.getRestaurants(userId, categoryId);
+            setCategoryRestaurants(data);
+        } catch (error) {
+            console.error('Error loading category restaurants:', error);
+        }
+    };
+
     useEffect(() => {
         if (selectedCategory) {
-            setView('category_products');
-            setCategoryPage(1); // Reset to first page
-            loadCategoryProducts(selectedCategory.id);
-        } else if (view === 'category_products' || view === 'all_categories') {
+            setView('category_restaurants');
+            setCategoryPage(1); // Reset to first page if pagination exists
+            loadCategoryRestaurants(selectedCategory.id);
+        } else if (view === 'category_restaurants' || view === 'category_restaurant_products' || view === 'category_products' || view === 'all_categories') {
             setView('home');
         }
     }, [selectedCategory]);
@@ -708,6 +719,69 @@ const Shop = ({ language, theme, toggleTheme }) => {
                         }
                     }}
                 />
+            );
+        }
+
+        if (view === 'category_restaurants' && selectedCategory) {
+            return (
+                <div style={{ paddingBottom: '80px' }}>
+                    <RestaurantList
+                        language={language}
+                        isFullView={true}
+                        customRestaurants={categoryRestaurants}
+                        categoryTitle={language === 'ru'
+                            ? (selectedCategory?.name_ru || selectedCategory?.name)?.toUpperCase()
+                            : selectedCategory?.name?.toUpperCase()}
+                        onBack={() => setSelectedCategory(null)}
+                        onSelectRestaurant={(rest) => {
+                            setSelectedRestaurant(rest);
+                            setView('category_restaurant_products');
+                        }}
+                    />
+                </div>
+            );
+        }
+
+        if (view === 'category_restaurant_products' && selectedCategory && selectedRestaurant) {
+            const restProducts = allProducts.filter(p => p.restaurant === selectedRestaurant.id && p.category === selectedCategory.id);
+            const filteredRestProducts = restProducts.filter(product => {
+                const name = language === 'ru' ? (product.name_ru || product.name) : product.name;
+                return name.toLowerCase().includes(searchQuery.toLowerCase());
+            });
+
+            return (
+                <div className="detail-view" style={{ paddingBottom: '80px' }}>
+                    <div className="category-title">
+                        <span className="back-btn" onClick={() => {
+                            setSelectedRestaurant(null);
+                            setView('category_restaurants');
+                        }}>←</span>
+                        {selectedRestaurant.name.toUpperCase()} - {language === 'ru'
+                            ? (selectedCategory?.name_ru || selectedCategory?.name)?.toUpperCase()
+                            : selectedCategory?.name?.toUpperCase()}
+                    </div>
+                    {filteredRestProducts.length > 0 ? (
+                        <ProductGrid
+                            products={filteredRestProducts}
+                            language={language}
+                            favorites={favorites}
+                            onToggleFavorite={toggleFavorite}
+                            onProductClick={(p) => {
+                                if (!currentUser || !currentUser.phone_number || currentUser.phone_number === '-') {
+                                    setPendingProduct(p);
+                                    setIsAuthDrawerOpen(true);
+                                } else {
+                                    setSelectedProduct(p);
+                                }
+                            }}
+                        />
+                    ) : (
+                        <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(255,255,255,0.5)' }}>
+                            <svg style={{ marginBottom: '16px', opacity: 0.5 }} width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <p style={{ fontSize: '16px' }}>{language === 'ru' ? 'В этом заведении пока нет блюд этой категории' : 'Ushbu restoranda bu kategoriyaga oid mahsulotlar hozircha yo\'q'}</p>
+                        </div>
+                    )}
+                </div>
             );
         }
 
