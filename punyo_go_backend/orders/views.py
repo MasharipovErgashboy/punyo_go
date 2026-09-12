@@ -19,7 +19,12 @@ from django.conf import settings
 
 @api_view(['POST'])
 def validate_promo(request):
-    code = request.data.get('code', '').strip()
+    code = request.data.get('code')
+    if code:
+        code = str(code).strip()
+    else:
+        code = ''
+        
     if not code:
         return Response({'error': 'Promokod kiritilmagan'}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -72,7 +77,12 @@ def create_order(request):
             })
             
         # Validate promo code if provided
-        promo_code = data.get('promo_code', '').strip()
+        promo_code = data.get('promo_code')
+        if promo_code:
+            promo_code = str(promo_code).strip()
+        else:
+            promo_code = ''
+            
         valid_promo = None
         if promo_code:
             valid_promo = PromoCode.objects.filter(code=promo_code, is_active=True).first()
