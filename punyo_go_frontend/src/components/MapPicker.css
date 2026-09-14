@@ -155,6 +155,11 @@
     font-size: 20px;
 }
 
+.my-location-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* Footer Section */
 .map-footer {
     padding: 24px 20px;

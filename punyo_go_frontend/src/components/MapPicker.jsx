@@ -22,6 +22,7 @@ const MapPicker = ({ onConfirm, onCancel, language }) => {
     const [coordinates, setCoordinates] = useState({ lat: 40.5288, lng: 68.0315 }); // Default: Do'stlik, Jizzax
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const [isLocationActive, setIsLocationActive] = useState(false);
 
     const onLoad = useCallback(function callback(map) {
         setMap(map);
@@ -40,7 +41,6 @@ const MapPicker = ({ onConfirm, onCancel, language }) => {
                     if (status === 'OK' && results[0]) {
                         setAddress(results[0].formatted_address);
                     } else {
-                        // Fallback to nominatim if google geocoding fails or is not enabled
                         fallbackGeocode(lat, lng);
                     }
                     setLoading(false);
@@ -70,7 +70,6 @@ const MapPicker = ({ onConfirm, onCancel, language }) => {
         }
     };
 
-    // Initial Geocode when map loads
     useEffect(() => {
         if (isLoaded) {
             updateAddress(coordinates.lat, coordinates.lng);
@@ -80,8 +79,8 @@ const MapPicker = ({ onConfirm, onCancel, language }) => {
     const handleSearch = async (e) => {
         if (e.key === 'Enter' && searchQuery) {
             setLoading(true);
+            setIsLocationActive(false);
             try {
-                // Try Google Places/Geocoding first
                 if (window.google) {
                     const geocoder = new window.google.maps.Geocoder();
                     geocoder.geocode({ address: searchQuery }, (results, status) => {
@@ -133,19 +132,24 @@ const MapPicker = ({ onConfirm, onCancel, language }) => {
 
     const handleMyLocation = () => {
         if (navigator.geolocation) {
+            setLoading(true);
             navigator.geolocation.getCurrentPosition((pos) => {
                 const newCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
                 setCoordinates(newCoords);
+                setIsLocationActive(true);
                 if (map) {
                     map.panTo(newCoords);
                     map.setZoom(16);
                 }
                 updateAddress(newCoords.lat, newCoords.lng);
+            }, () => {
+                setLoading(false);
             });
         }
     };
 
     const onMarkerDragEnd = (e) => {
+        setIsLocationActive(false);
         const lat = e.latLng.lat();
         const lng = e.latLng.lng();
         setCoordinates({ lat, lng });
@@ -153,6 +157,7 @@ const MapPicker = ({ onConfirm, onCancel, language }) => {
     };
 
     const onMapClick = (e) => {
+        setIsLocationActive(false);
         const lat = e.latLng.lat();
         const lng = e.latLng.lng();
         setCoordinates({ lat, lng });
@@ -214,7 +219,11 @@ const MapPicker = ({ onConfirm, onCancel, language }) => {
                         <button onClick={zoomIn}>+</button>
                         <button onClick={zoomOut}>−</button>
                     </div>
-                    <button className="my-location-btn" onClick={handleMyLocation}>
+                    <button 
+                        className="my-location-btn" 
+                        onClick={handleMyLocation}
+                        disabled={isLocationActive}
+                    >
                         <span className="gps-icon">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
