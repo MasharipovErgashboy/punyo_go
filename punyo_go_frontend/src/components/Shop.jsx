@@ -567,8 +567,8 @@ const Shop = ({ language, theme, toggleTheme }) => {
         } else if (id === 'orders') {
             const hasPhone = currentUser?.phone_number && currentUser.phone_number !== '' && currentUser.phone_number !== '-';
             if (hasPhone) {
+                setView('my_orders');
                 navigate('/orders' + query);
-                // setView is handled by useEffect on location change
             } else {
                 setIsAuthDrawerOpen(true);
             }
