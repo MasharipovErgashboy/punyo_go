@@ -1,125 +1,133 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 import './MapPicker.css';
 
-const MapPicker = ({ onConfirm, onCancel, language }) => {
-    const mapRef = useRef(null);
-    const mapInstance = useRef(null);
-    const markerInstance = useRef(null);
+const containerStyle = {
+  width: '100%',
+  height: '100%'
+};
 
+const libraries = ['places'];
+
+const MapPicker = ({ onConfirm, onCancel, language }) => {
+    const { isLoaded, loadError } = useJsApiLoader({
+        id: 'google-map-script',
+        googleMapsApiKey: 'AIzaSyA_2u9dzAl05PmQ48ZGoq-V4rqYt3-BUVI',
+        libraries,
+        language: language === 'ru' ? 'ru' : 'uz'
+    });
+
+    const [map, setMap] = useState(null);
     const [address, setAddress] = useState('');
     const [coordinates, setCoordinates] = useState({ lat: 40.5288, lng: 68.0315 }); // Default: Do'stlik, Jizzax
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
 
-    useEffect(() => {
-        // Ensure Leaflet is loaded
-        if (!window.L) {
-            console.error("Leaflet library not found!");
-            setAddress("Xarita kutubxonasi yuklanmadi");
-            setLoading(false);
-            return;
-        }
+    const onLoad = useCallback(function callback(map) {
+        setMap(map);
+    }, []);
 
-        if (!mapInstance.current && mapRef.current) {
-            // Initialize Leaflet Map
-            const map = window.L.map(mapRef.current, {
-                center: [coordinates.lat, coordinates.lng],
-                zoom: 15,
-                zoomControl: false,
-                attributionControl: false
-            });
+    const onUnmount = useCallback(function callback(map) {
+        setMap(null);
+    }, []);
 
-            window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-            }).addTo(map);
-
-            // Custom Purple Marker Icon
-            const purpleIcon = window.L.divIcon({
-                className: 'custom-purple-marker',
-                html: '<div class="marker-pin"></div>',
-                iconSize: [30, 30],
-                iconAnchor: [15, 30]
-            });
-
-            const marker = window.L.marker([coordinates.lat, coordinates.lng], {
-                icon: purpleIcon,
-                draggable: true
-            }).addTo(map);
-
-            mapInstance.current = map;
-            markerInstance.current = marker;
-
-            const updateAddress = async (lat, lng) => {
-                setLoading(true);
-                try {
-                    // OpenStreetMap Nominatim API for reverse geocoding
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=${language === 'ru' ? 'ru' : 'uz'}`);
-                    const data = await res.json();
-                    if (data && data.display_name) {
-                        setAddress(data.display_name);
+    const updateAddress = async (lat, lng) => {
+        setLoading(true);
+        try {
+            if (window.google) {
+                const geocoder = new window.google.maps.Geocoder();
+                geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+                    if (status === 'OK' && results[0]) {
+                        setAddress(results[0].formatted_address);
+                    } else {
+                        // Fallback to nominatim if google geocoding fails or is not enabled
+                        fallbackGeocode(lat, lng);
                     }
-                } catch (e) {
-                    console.error('Reverse geocoding error:', e);
-                    setAddress('Manzil aniqlanmadi');
-                } finally {
                     setLoading(false);
-                }
-            };
-
-            marker.on('dragend', (e) => {
-                const { lat, lng } = e.target.getLatLng();
-                setCoordinates({ lat, lng });
-                updateAddress(lat, lng);
-            });
-
-            // Handle map click to move marker
-            map.on('click', (e) => {
-                const { lat, lng } = e.latlng;
-                marker.setLatLng([lat, lng]);
-                setCoordinates({ lat, lng });
-                updateAddress(lat, lng);
-            });
-
-            // Initial geocode
-            updateAddress(coordinates.lat, coordinates.lng);
-
-            // Important: Fix for Leaflet in absolute positioned containers
-            setTimeout(() => {
-                map.invalidateSize();
-            }, 500);
-        }
-
-        return () => {
-            if (mapInstance.current) {
-                mapInstance.current.remove();
-                mapInstance.current = null;
+                });
+            } else {
+                fallbackGeocode(lat, lng);
             }
-        };
-    }, [language]);
+        } catch (e) {
+            console.error('Reverse geocoding error:', e);
+            fallbackGeocode(lat, lng);
+        }
+    };
+
+    const fallbackGeocode = async (lat, lng) => {
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=${language === 'ru' ? 'ru' : 'uz'}`);
+            const data = await res.json();
+            if (data && data.display_name) {
+                setAddress(data.display_name);
+            } else {
+                setAddress('Manzil aniqlanmadi');
+            }
+        } catch (e) {
+            setAddress('Manzil aniqlanmadi');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Initial Geocode when map loads
+    useEffect(() => {
+        if (isLoaded) {
+            updateAddress(coordinates.lat, coordinates.lng);
+        }
+    }, [isLoaded]);
 
     const handleSearch = async (e) => {
         if (e.key === 'Enter' && searchQuery) {
             setLoading(true);
             try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1&accept-language=${language === 'ru' ? 'ru' : 'uz'}`);
-                const data = await res.json();
-                if (data && data[0]) {
-                    const { lat, lon, display_name } = data[0];
-                    const newCoords = { lat: parseFloat(lat), lng: parseFloat(lon) };
-
-                    setCoordinates(newCoords);
-                    setAddress(display_name);
-
-                    if (mapInstance.current) {
-                        mapInstance.current.setView([newCoords.lat, newCoords.lng], 16);
-                        markerInstance.current.setLatLng([newCoords.lat, newCoords.lng]);
-                    }
+                // Try Google Places/Geocoding first
+                if (window.google) {
+                    const geocoder = new window.google.maps.Geocoder();
+                    geocoder.geocode({ address: searchQuery }, (results, status) => {
+                        if (status === 'OK' && results[0]) {
+                            const newCoords = {
+                                lat: results[0].geometry.location.lat(),
+                                lng: results[0].geometry.location.lng()
+                            };
+                            setCoordinates(newCoords);
+                            setAddress(results[0].formatted_address);
+                            if (map) {
+                                map.panTo(newCoords);
+                                map.setZoom(16);
+                            }
+                        } else {
+                            fallbackSearch();
+                        }
+                        setLoading(false);
+                    });
+                } else {
+                    fallbackSearch();
                 }
             } catch (err) {
-                console.error('Search error:', err);
-            } finally {
-                setLoading(false);
+                fallbackSearch();
             }
+        }
+    };
+
+    const fallbackSearch = async () => {
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1&accept-language=${language === 'ru' ? 'ru' : 'uz'}`);
+            const data = await res.json();
+            if (data && data[0]) {
+                const { lat, lon, display_name } = data[0];
+                const newCoords = { lat: parseFloat(lat), lng: parseFloat(lon) };
+                setCoordinates(newCoords);
+                setAddress(display_name);
+                if (map) {
+                    map.panTo(newCoords);
+                    map.setZoom(16);
+                }
+            }
+        } catch (e) {
+            console.error('Search error:', e);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -128,23 +136,35 @@ const MapPicker = ({ onConfirm, onCancel, language }) => {
             navigator.geolocation.getCurrentPosition((pos) => {
                 const newCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
                 setCoordinates(newCoords);
-                if (mapInstance.current) {
-                    mapInstance.current.setView([newCoords.lat, newCoords.lng], 16);
-                    markerInstance.current.setLatLng([newCoords.lat, newCoords.lng]);
+                if (map) {
+                    map.panTo(newCoords);
+                    map.setZoom(16);
                 }
-                // Update address trigger
-                if (markerInstance.current) {
-                    const { lat, lng } = markerInstance.current.getLatLng();
-                    // Call updateAddress logic manually or refactor it to a function
-                    // For brevity, we'll just fire the event if possible or just trigger the logic
-                    markerInstance.current.fire('dragend');
-                }
+                updateAddress(newCoords.lat, newCoords.lng);
             });
         }
     };
 
-    const zoomIn = () => mapInstance.current?.zoomIn();
-    const zoomOut = () => mapInstance.current?.zoomOut();
+    const onMarkerDragEnd = (e) => {
+        const lat = e.latLng.lat();
+        const lng = e.latLng.lng();
+        setCoordinates({ lat, lng });
+        updateAddress(lat, lng);
+    };
+
+    const onMapClick = (e) => {
+        const lat = e.latLng.lat();
+        const lng = e.latLng.lng();
+        setCoordinates({ lat, lng });
+        updateAddress(lat, lng);
+    };
+
+    const zoomIn = () => {
+        if (map) map.setZoom(map.getZoom() + 1);
+    };
+    const zoomOut = () => {
+        if (map) map.setZoom(map.getZoom() - 1);
+    };
 
     return (
         <div className="map-picker-overlay">
@@ -164,7 +184,31 @@ const MapPicker = ({ onConfirm, onCancel, language }) => {
                 </div>
             </div>
 
-            <div className="map-container" ref={mapRef}>
+            <div className="map-container">
+                {loadError && <div>{language === 'ru' ? 'Ошибка загрузки карты' : 'Xaritani yuklashda xatolik'}</div>}
+                {!isLoaded && !loadError && <div>{language === 'ru' ? 'Загрузка карты...' : 'Xarita yuklanmoqda...'}</div>}
+                
+                {isLoaded && (
+                    <GoogleMap
+                        mapContainerStyle={containerStyle}
+                        center={coordinates}
+                        zoom={15}
+                        onLoad={onLoad}
+                        onUnmount={onUnmount}
+                        onClick={onMapClick}
+                        options={{
+                            disableDefaultUI: true,
+                            zoomControl: false,
+                        }}
+                    >
+                        <Marker
+                            position={coordinates}
+                            draggable={true}
+                            onDragEnd={onMarkerDragEnd}
+                        />
+                    </GoogleMap>
+                )}
+
                 <div className="map-controls">
                     <div className="zoom-controls">
                         <button onClick={zoomIn}>+</button>
@@ -188,7 +232,7 @@ const MapPicker = ({ onConfirm, onCancel, language }) => {
                 <button
                     className="confirm-location-btn"
                     onClick={() => onConfirm({ ...coordinates, address })}
-                    disabled={loading}
+                    disabled={loading || !address}
                 >
                     {language === 'ru' ? 'Подтвердить' : 'Tasdiqlash'}
                 </button>
