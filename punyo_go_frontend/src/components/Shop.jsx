@@ -1043,6 +1043,15 @@ const Shop = ({ language, theme, toggleTheme }) => {
         );
     };
 
+    const getRestaurantWorkingHours = () => {
+        if (cart.length === 0) return null;
+        const product = products.find(p => p.id === cart[0].product_id);
+        if (product && product.working_hours) {
+            return product.working_hours;
+        }
+        return cart[0].working_hours || null;
+    };
+
     return (
         <div className="shop-view">
             <AuthDrawer
@@ -1133,7 +1142,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
             {showLocationPicker && (
                 <LocationPicker
                     language={language}
-                    restaurantWorkingHours={cart.length > 0 ? cart[0].working_hours : null}
+                    restaurantWorkingHours={getRestaurantWorkingHours()}
                     onCancel={() => setShowLocationPicker(false)}
                     onAutoLocation={handleAutoLocation}
                     onManualLocation={() => {
