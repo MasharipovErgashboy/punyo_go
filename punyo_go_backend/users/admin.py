@@ -164,6 +164,7 @@ class RestaurantAdminUserAdmin(UserAdmin):
                 'add_product', 'change_product', 'delete_product', 'view_product',
                 'add_productaddon', 'change_productaddon', 'delete_productaddon', 'view_productaddon',
                 'change_order', 'view_order',
+                'add_restaurantworkinghour', 'change_restaurantworkinghour', 'delete_restaurantworkinghour', 'view_restaurantworkinghour',
             ]
             perms = Permission.objects.filter(codename__in=permissions_codenames)
             obj.user_permissions.add(*perms)
