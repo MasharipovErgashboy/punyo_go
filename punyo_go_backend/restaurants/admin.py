@@ -18,6 +18,29 @@ class RestaurantWorkingHourAdmin(admin.ModelAdmin):
             kwargs["queryset"] = Restaurant.objects.filter(admin_user=request.user)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+    def has_module_permission(self, request):
+        return True
+
+    def has_view_permission(self, request, obj=None):
+        return True
+
+    def has_add_permission(self, request):
+        return True
+
+    def has_change_permission(self, request, obj=None):
+        if request.user.is_superuser:
+            return True
+        if obj and obj.restaurant.admin_user != request.user:
+            return False
+        return True
+
+    def has_delete_permission(self, request, obj=None):
+        if request.user.is_superuser:
+            return True
+        if obj and obj.restaurant.admin_user != request.user:
+            return False
+        return True
+
 @admin.register(Restaurant)
 class RestaurantAdmin(admin.ModelAdmin):
     list_display = ('name', 'admin_user', 'image_preview', 'location', 'phone', 'is_active', 'id')
