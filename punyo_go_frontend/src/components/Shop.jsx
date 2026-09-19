@@ -400,7 +400,8 @@ const Shop = ({ language, theme, toggleTheme }) => {
             quantity: quantity,
             addons: addons,
             restaurant_id: product.restaurant,
-            delivery_price: product.delivery_price || 0
+            delivery_price: product.delivery_price || 0,
+            working_hours: product.working_hours || null
         };
 
         setCart(prevCart => {
