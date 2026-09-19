@@ -1045,7 +1045,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
 
     const getRestaurantWorkingHours = () => {
         if (cart.length === 0) return null;
-        const product = products.find(p => p.id === cart[0].product_id);
+        const product = allProducts.find(p => p.id === cart[0].product_id);
         if (product && product.working_hours) {
             return product.working_hours;
         }
