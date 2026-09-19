@@ -1132,6 +1132,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
             {showLocationPicker && (
                 <LocationPicker
                     language={language}
+                    restaurantWorkingHours={cart.length > 0 ? cart[0].working_hours : null}
                     onCancel={() => setShowLocationPicker(false)}
                     onAutoLocation={handleAutoLocation}
                     onManualLocation={() => {
