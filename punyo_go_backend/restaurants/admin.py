@@ -77,8 +77,20 @@ class RestaurantAdmin(admin.ModelAdmin):
             return qs
         return qs.filter(admin_user=request.user)
 
+    def has_module_permission(self, request):
+        return True
+
+    def has_view_permission(self, request, obj=None):
+        return True
+
+    def has_add_permission(self, request):
+        # Don't let them add new restaurants
+        return request.user.is_superuser
+
     def has_change_permission(self, request, obj=None):
-        if not request.user.is_superuser and obj and obj.admin_user != request.user:
+        if request.user.is_superuser:
+            return True
+        if obj and getattr(obj, 'admin_user', None) != request.user:
             return False
         return True
 
