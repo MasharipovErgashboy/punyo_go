@@ -137,59 +137,91 @@ def create_order(request):
             order.save()
             created_orders.append(order)
             
-            # Send notification to Telegram group
-            try:
-                from config.telegram_utils import send_telegram_notification
-                
-                scheme = request.scheme
-                host = request.get_host()
-                admin_link = f"{scheme}://{host}/admin/orders/order/{order.id}/change/"
-                
-                cust_name = html.escape(f"{user.first_name} {user.last_name}")
-                addr = html.escape(order.delivery_address or 'Ko\'rsatilmagan')
-                notes = html.escape(order.notes or 'Yo\'q')
+            # Calculate if delayed
+            is_delayed = False
+            from django.utils import timezone
+            import datetime
+            from zoneinfo import ZoneInfo
 
-                delivery_text = ""
-                if delivery_price > 0:
-                    delivery_text = f"🛵 <b>Yetkazib berish:</b> {delivery_price:,.0f} UZS\n"
+            if hasattr(order.restaurant, 'working_hours'):
+                wh = order.restaurant.working_hours
+                tz = ZoneInfo('Asia/Tashkent')
+                now_tz = timezone.localtime(timezone.now(), tz)
+                current_time = now_tz.time()
+                
+                end_t = wh.end_time
+                if end_t.hour == 0 and end_t.minute == 0:
+                    end_t = datetime.time(23, 59, 59)
+                
+                if wh.start_time < end_t:
+                    if not (wh.start_time <= current_time <= end_t):
+                        is_delayed = True
+                else:
+                    if not (current_time >= wh.start_time or current_time <= end_t):
+                        is_delayed = True
+                
+                if is_delayed:
+                    send_time = now_tz.replace(hour=wh.start_time.hour, minute=wh.start_time.minute, second=0, microsecond=0)
+                    if send_time <= now_tz:
+                        send_time += datetime.timedelta(days=1)
+                    order.send_at = send_time
+                    order.is_telegram_sent = False
+                    order.save()
+
+            if not is_delayed:
+                # Send notification to Telegram group
+                try:
+                    from config.telegram_utils import send_telegram_notification
                     
-                promo_text = ""
-                if valid_promo:
-                    promo_text = f"🎟 <b>Promokod:</b> {valid_promo.code} (-{valid_promo.discount_percent}%)\n"
-                    promo_text += f"📉 <b>Chegirma:</b> -{discount_amount:,.0f} UZS\n"
+                    scheme = request.scheme
+                    host = request.get_host()
+                    admin_link = f"{scheme}://{host}/admin/orders/order/{order.id}/change/"
+                    
+                    cust_name = html.escape(f"{user.first_name} {user.last_name}")
+                    addr = html.escape(order.delivery_address or 'Ko\'rsatilmagan')
+                    notes = html.escape(order.notes or 'Yo\'q')
 
-                msg = (
-                    "<b>🔔 Yangi buyurtma kelib tushdi!</b>\n\n"
-                    f"🆔 <b>Buyurtma ID:</b> #{order.id}\n"
-                    f"👤 <b>Mijoz:</b> {cust_name}\n"
-                    f"📞 <b>Telefon:</b> <code>{order.phone_number}</code>\n"
-                    f"📍 <b>Manzil:</b> {addr}\n"
-                    f"💬 <b>Izoh:</b> {notes}\n\n"
-                    "📦 <b>Mahsulotlar:</b>\n"
-                    f"{items_list_str}\n"
-                    f"💵 <b>Mahsulotlar summasi:</b> {total_amount:,.0f} UZS\n"
-                    f"{delivery_text}"
-                    f"{promo_text}"
-                    f"💰 <b>Jami summa:</b> {order.total_amount:,.0f} UZS\n\n"
-                    "🚀 Buyurtmani boshqarish uchun admin panelga o'ting:\n"
-                    f"🔗 <a href='{admin_link}'>Admin panelga o'tish</a>"
-                )
-                
-                # Build reply markup with Accept and Reject buttons
-                reply_markup_json = json.dumps({
-                    "inline_keyboard": [
-                        [
-                            {"text": "✅ Tasdiqlash", "callback_data": f"accept_order_{order.id}"},
-                            {"text": "❌ Rad etish", "callback_data": f"reject_order_{order.id}"}
+                    delivery_text = ""
+                    if delivery_price > 0:
+                        delivery_text = f"🛵 <b>Yetkazib berish:</b> {delivery_price:,.0f} UZS\n"
+                        
+                    promo_text = ""
+                    if valid_promo:
+                        promo_text = f"🎟 <b>Promokod:</b> {valid_promo.code} (-{valid_promo.discount_percent}%)\n"
+                        promo_text += f"📉 <b>Chegirma:</b> -{discount_amount:,.0f} UZS\n"
+
+                    msg = (
+                        "<b>🔔 Yangi buyurtma kelib tushdi!</b>\n\n"
+                        f"🆔 <b>Buyurtma ID:</b> #{order.id}\n"
+                        f"👤 <b>Mijoz:</b> {cust_name}\n"
+                        f"📞 <b>Telefon:</b> <code>{order.phone_number}</code>\n"
+                        f"📍 <b>Manzil:</b> {addr}\n"
+                        f"💬 <b>Izoh:</b> {notes}\n\n"
+                        "📦 <b>Mahsulotlar:</b>\n"
+                        f"{items_list_str}\n"
+                        f"💵 <b>Mahsulotlar summasi:</b> {total_amount:,.0f} UZS\n"
+                        f"{delivery_text}"
+                        f"{promo_text}"
+                        f"💰 <b>Jami summa:</b> {order.total_amount:,.0f} UZS\n\n"
+                        "🚀 Buyurtmani boshqarish uchun admin panelga o'ting:\n"
+                        f"🔗 <a href='{admin_link}'>Admin panelga o'tish</a>"
+                    )
+                    
+                    # Build reply markup with Accept and Reject buttons
+                    reply_markup_json = json.dumps({
+                        "inline_keyboard": [
+                            [
+                                {"text": "✅ Tasdiqlash", "callback_data": f"accept_order_{order.id}"},
+                                {"text": "❌ Rad etish", "callback_data": f"reject_order_{order.id}"}
+                            ]
                         ]
-                    ]
-                })
-                
-                # Send to specific restaurant chat if available
-                chat_id = order.restaurant.telegram_chat_id if order.restaurant and order.restaurant.telegram_chat_id else None
-                send_telegram_notification(msg, chat_id=chat_id, reply_markup=reply_markup_json)
-            except Exception as e:
-                print(f"DEBUG: Failed to send TG notification: {e}")
+                    })
+                    
+                    # Send to specific restaurant chat if available
+                    chat_id = order.restaurant.telegram_chat_id if order.restaurant and order.restaurant.telegram_chat_id else None
+                    send_telegram_notification(msg, chat_id=chat_id, reply_markup=reply_markup_json)
+                except Exception as e:
+                    print(f"DEBUG: Failed to send TG notification: {e}")
 
         if valid_promo:
             valid_promo.times_used += 1

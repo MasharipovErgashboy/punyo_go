@@ -261,3 +261,71 @@
 .cart-checkout-btn:active {
     transform: scale(0.98);
 }
+
+/* Working Hours Modal */
+.working-hours-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+    padding: 20px;
+}
+
+.working-hours-modal {
+    background: var(--card-bg, #2C2C2E);
+    width: 100%;
+    max-width: 400px;
+    border-radius: 20px;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border-color, #3a3a3c);
+}
+
+.working-hours-modal h3 {
+    margin-top: 0;
+    color: var(--text-main, #fff);
+    font-size: 20px;
+    margin-bottom: 12px;
+}
+
+.working-hours-modal p {
+    color: var(--text-muted, #8E8E93);
+    font-size: 15px;
+    line-height: 1.5;
+    margin-bottom: 24px;
+}
+
+.working-hours-modal .modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.working-hours-modal .confirm-btn {
+    background: var(--brand-tezkor, #ff9800);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.working-hours-modal .cancel-btn {
+    background: transparent;
+    color: var(--text-muted, #8E8E93);
+    border: 1px solid var(--border-color, #3a3a3c);
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+}

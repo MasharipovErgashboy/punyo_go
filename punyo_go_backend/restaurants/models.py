@@ -45,3 +45,17 @@ class Restaurant(models.Model):
     
     def __str__(self):
         return self.name
+
+
+class RestaurantWorkingHour(models.Model):
+    """Working hours for a restaurant"""
+    restaurant = models.OneToOneField(Restaurant, on_delete=models.CASCADE, related_name='working_hours', verbose_name="Restoran")
+    start_time = models.TimeField(verbose_name="Ish boshlanish vaqti")
+    end_time = models.TimeField(verbose_name="Ish tugash vaqti")
+    
+    class Meta:
+        verbose_name = "Ish vaqti"
+        verbose_name_plural = "Ish vaqtlari"
+        
+    def __str__(self):
+        return f"{self.restaurant.name} ({self.start_time.strftime('%H:%M')} - {self.end_time.strftime('%H:%M')})"

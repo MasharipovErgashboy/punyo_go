@@ -50,6 +50,11 @@ class Order(models.Model):
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     phone_number = models.CharField(max_length=20, default='')
     notes = models.TextField(blank=True, default='')
+    
+    # Delayed order processing
+    send_at = models.DateTimeField(null=True, blank=True, verbose_name="Kechiktirilgan yuborish vaqti")
+    is_telegram_sent = models.BooleanField(default=True, verbose_name="Telegramga yuborildi")
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

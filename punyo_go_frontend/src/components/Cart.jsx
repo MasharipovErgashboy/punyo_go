@@ -9,6 +9,7 @@ const Cart = ({ cart, onUpdateQuantity, onRemoveItem, onCheckout, onBack, langua
     const [promoMessage, setPromoMessage] = useState('');
     const [promoError, setPromoError] = useState('');
     const [isApplyingPromo, setIsApplyingPromo] = useState(false);
+    const [showWorkingHoursModal, setShowWorkingHoursModal] = useState(false);
 
     const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     
@@ -22,6 +23,47 @@ const Cart = ({ cart, onUpdateQuantity, onRemoveItem, onCheckout, onBack, langua
     const subTotal = cartTotal + deliveryTotal;
     const discountAmount = subTotal * (discountPercent / 100);
     const grandTotal = subTotal - discountAmount;
+
+    const restaurantWorkingHours = cart.length > 0 ? cart[0].working_hours : null;
+
+    const checkWorkingHours = () => {
+        if (!restaurantWorkingHours) return true;
+        const now = new Date();
+        const currentHours = now.getHours();
+        const currentMinutes = now.getMinutes();
+        const currentTotalMinutes = currentHours * 60 + currentMinutes;
+        
+        const [startH, startM] = restaurantWorkingHours.start_time.split(':').map(Number);
+        let endH = parseInt(restaurantWorkingHours.end_time.split(':')[0]);
+        let endM = parseInt(restaurantWorkingHours.end_time.split(':')[1]);
+        
+        if (endH === 0 && endM === 0) {
+            endH = 23;
+            endM = 59;
+        }
+        
+        const startTotal = startH * 60 + startM;
+        const endTotal = endH * 60 + endM;
+        
+        if (startTotal < endTotal) {
+            return currentTotalMinutes >= startTotal && currentTotalMinutes <= endTotal;
+        } else {
+            return currentTotalMinutes >= startTotal || currentTotalMinutes <= endTotal;
+        }
+    };
+
+    const handleCheckoutClick = () => {
+        if (!checkWorkingHours()) {
+            setShowWorkingHoursModal(true);
+        } else {
+            onCheckout(appliedPromo);
+        }
+    };
+
+    const handleConfirmCheckout = () => {
+        setShowWorkingHoursModal(false);
+        onCheckout(appliedPromo);
+    };
 
     const handleApplyPromo = async () => {
         if (!promoInput.trim()) return;
@@ -162,10 +204,32 @@ const Cart = ({ cart, onUpdateQuantity, onRemoveItem, onCheckout, onBack, langua
                                 <span className="cart-total-amount">{grandTotal.toLocaleString()} UZS</span>
                             </div>
                         </div>
-                        <button className="cart-checkout-btn" onClick={() => onCheckout(appliedPromo)}>
+                        <button className="cart-checkout-btn" onClick={handleCheckoutClick}>
                             {language === 'ru' ? 'Оформить заказ' : 'Buyurtma berish'}
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                         </button>
+                    </div>
+                </div>
+            )}
+
+            {showWorkingHoursModal && restaurantWorkingHours && (
+                <div className="working-hours-modal-overlay">
+                    <div className="working-hours-modal">
+                        <h3>{language === 'ru' ? 'Внимание' : 'Ogohlantirish'}</h3>
+                        <p>
+                            {language === 'ru' 
+                                ? `Ресторан работает с ${restaurantWorkingHours.start_time} до ${restaurantWorkingHours.end_time}. Если вы сделаете заказ сейчас, он будет доставлен утром, как только ресторан откроется.`
+                                : `Restoran ish vaqti ${restaurantWorkingHours.start_time} dan ${restaurantWorkingHours.end_time} gacha. Hozir buyurtma bersangiz zakazingiz ertalab ish vaqti boshlanishi bilan yetkazib beriladi.`
+                            }
+                        </p>
+                        <div className="modal-actions">
+                            <button className="cancel-btn" onClick={() => setShowWorkingHoursModal(false)}>
+                                {language === 'ru' ? 'Отмена' : 'Bekor qilish'}
+                            </button>
+                            <button className="confirm-btn" onClick={handleConfirmCheckout}>
+                                {language === 'ru' ? 'Понятно, оформить' : 'Roziman, buyurtma berish'}
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

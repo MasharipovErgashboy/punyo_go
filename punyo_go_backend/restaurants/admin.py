@@ -1,6 +1,11 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Restaurant
+from .models import Restaurant, RestaurantWorkingHour
+
+@admin.register(RestaurantWorkingHour)
+class RestaurantWorkingHourAdmin(admin.ModelAdmin):
+    list_display = ('restaurant', 'start_time', 'end_time')
+    search_fields = ('restaurant__name',)
 
 @admin.register(Restaurant)
 class RestaurantAdmin(admin.ModelAdmin):

@@ -28,6 +28,7 @@ class ProductSerializer(serializers.ModelSerializer):
     restaurant_name = serializers.CharField(source='restaurant.name', read_only=True, allow_null=True)
     delivery_price = serializers.DecimalField(source='restaurant.delivery_price', max_digits=10, decimal_places=2, read_only=True, allow_null=True)
     addons = serializers.SerializerMethodField()
+    working_hours = serializers.SerializerMethodField()
     
     class Meta:
         model = Product
@@ -35,9 +36,17 @@ class ProductSerializer(serializers.ModelSerializer):
             'id', 'restaurant', 'restaurant_name', 'delivery_price',
             'category', 'category_name', 'category_name_ru', 
             'name', 'name_ru', 'image', 'image_base64', 'price', 
-            'description', 'description_ru', 'order', 'addons'
+            'description', 'description_ru', 'order', 'addons', 'working_hours'
         ]
         
     def get_addons(self, obj):
         addons = obj.addons.filter(is_active=True)
         return ProductAddonSerializer(addons, many=True).data
+
+    def get_working_hours(self, obj):
+        if obj.restaurant and hasattr(obj.restaurant, 'working_hours'):
+            return {
+                'start_time': obj.restaurant.working_hours.start_time.strftime('%H:%M'),
+                'end_time': obj.restaurant.working_hours.end_time.strftime('%H:%M')
+            }
+        return None
