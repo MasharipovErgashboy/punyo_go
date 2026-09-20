@@ -55,8 +55,8 @@ const LocationPicker = ({ onAutoLocation, onManualLocation, onCancel, language, 
                 <p className="location-subtitle" style={isClosed ? { color: 'var(--brand-tezkor, #ff9800)' } : {}}>
                     {isClosed ? (
                         language === 'ru'
-                            ? `Ресторан работает с ${restaurantWorkingHours.start_time} до ${restaurantWorkingHours.end_time}. Вы можете сделать заказ сейчас, и он будет доставлен сразу после открытия.`
-                            : `Bizning restoranimizni ish vaqti ${restaurantWorkingHours.start_time} dan ${restaurantWorkingHours.end_time} gacha. Buyurtma berishingiz mumkin, faqat buyurtmangiz ish boshlanishi bilanoq yetkazib beriladi.`
+                            ? `Ресторан работает с ${restaurantWorkingHours.start_time} до ${restaurantWorkingHours.end_time}.`
+                            : `Bizning restoranimizni ish vaqti ${restaurantWorkingHours.start_time} dan ${restaurantWorkingHours.end_time} gacha.`
                     ) : (
                         language === 'ru'
                             ? 'Отправьте свое местоположение, и мы быстро доставим ваш заказ!'
@@ -65,7 +65,12 @@ const LocationPicker = ({ onAutoLocation, onManualLocation, onCancel, language, 
                 </p>
 
                 <div className="location-actions">
-                    <button className="btn-primary" onClick={onManualLocation}>
+                    <button 
+                        className={`btn-primary ${isClosed ? 'disabled-btn' : ''}`} 
+                        onClick={onManualLocation}
+                        disabled={isClosed}
+                        style={isClosed ? { backgroundColor: '#888', color: '#ccc', cursor: 'not-allowed' } : {}}
+                    >
                         {language === 'ru' ? 'Указать на карте' : 'Joylashuvni belgilash'}
                     </button>
                 </div>
