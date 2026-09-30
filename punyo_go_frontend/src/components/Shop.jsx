@@ -63,6 +63,11 @@ const Shop = ({ language, theme, toggleTheme }) => {
     });
     
     const [useGlobalData, setUseGlobalData] = useState(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('tid')) {
+            localStorage.removeItem('punyo_use_global_data');
+            return false;
+        }
         return localStorage.getItem('punyo_use_global_data') === 'true';
     });
     const [favorites, setFavorites] = useState(() => {
@@ -590,7 +595,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
 
     const loadCategories = async () => {
         try {
-            const data = await api.getCategories();
+            const data = await api.getCategories(getTelegramUserId());
             setCategories(data);
             setLoading(false);
         } catch (error) {

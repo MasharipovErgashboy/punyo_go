@@ -29,6 +29,17 @@ def translate_text(request):
 def get_categories(request):
     """Get all active categories"""
     categories = Category.objects.filter(is_active=True).order_by('order', 'name')
+    
+    telegram_user_id = request.query_params.get('telegram_user_id')
+    if telegram_user_id:
+        from users.models import UserProfile
+        user = UserProfile.objects.filter(telegram_user_id=telegram_user_id).first()
+        if user and user.district:
+            categories = categories.filter(
+                products__is_active=True,
+                products__restaurant__location=user.district
+            ).distinct()
+            
     serializer = CategorySerializer(categories, many=True, context={'request': request})
     return Response(serializer.data)
 

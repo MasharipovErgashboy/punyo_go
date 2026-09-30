@@ -49,8 +49,12 @@ export const getImageUrl = (path) => {
 
 export const api = {
     getImageUrl,
-    async getCategories() {
-        const response = await fetchWithBypass(`${API_BASE_URL}/products/categories/`);
+    async getCategories(telegramUserId) {
+        let url = `${API_BASE_URL}/products/categories/`;
+        if (telegramUserId) {
+            url += `?telegram_user_id=${telegramUserId}`;
+        }
+        const response = await fetchWithBypass(url);
         return response.json();
     },
 
