@@ -26,7 +26,7 @@ class ProductSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name', read_only=True)
     category_name_ru = serializers.CharField(source='category.name_ru', read_only=True)
     restaurant_name = serializers.CharField(source='restaurant.name', read_only=True, allow_null=True)
-    restaurant_phone = serializers.SerializerMethodField()
+    restaurant_phone = serializers.CharField(source='restaurant.phone', read_only=True, allow_null=True)
     delivery_price = serializers.DecimalField(source='restaurant.delivery_price', max_digits=10, decimal_places=2, read_only=True, allow_null=True)
     addons = serializers.SerializerMethodField()
     working_hours = serializers.SerializerMethodField()
@@ -43,11 +43,6 @@ class ProductSerializer(serializers.ModelSerializer):
     def get_addons(self, obj):
         addons = obj.addons.filter(is_active=True)
         return ProductAddonSerializer(addons, many=True).data
-
-    def get_restaurant_phone(self, obj):
-        if obj.restaurant:
-            return obj.restaurant.phone
-        return None
 
     def get_working_hours(self, obj):
         if obj.restaurant and hasattr(obj.restaurant, 'working_hours'):
