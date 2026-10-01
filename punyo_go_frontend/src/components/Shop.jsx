@@ -85,6 +85,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
     const [showCartSuccess, setShowCartSuccess] = useState(false);
     const [isCheckingOut, setIsCheckingOut] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [successRestaurantPhone, setSuccessRestaurantPhone] = useState(null);
     const [pendingProduct, setPendingProduct] = useState(null);
     const [favoritesPage, setFavoritesPage] = useState(1);
     const [notifications, setNotifications] = useState([]);
@@ -405,6 +406,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
             quantity: quantity,
             addons: addons,
             restaurant_id: product.restaurant,
+            restaurant_phone: product.restaurant_phone,
             delivery_price: product.delivery_price || 0,
             working_hours: product.working_hours || null
         };
@@ -549,6 +551,8 @@ const Shop = ({ language, theme, toggleTheme }) => {
 
             const response = await api.createOrder(orderData);
             if (response.id) {
+                const phone = cart.length > 0 ? cart[0].restaurant_phone : null;
+                setSuccessRestaurantPhone(phone);
                 setShowSuccessModal(true);
                 setCart([]);
             }
@@ -1169,6 +1173,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
                 <SuccessModal
                     language={language}
                     onClose={() => setShowSuccessModal(false)}
+                    restaurantPhone={successRestaurantPhone}
                 />
             )}
         </div>

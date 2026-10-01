@@ -106,3 +106,53 @@
 .success-modal .ok-btn:active {
     transform: scale(0.98);
 }
+
+.phone-number-display {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text-color);
+    margin-bottom: 24px;
+    letter-spacing: 1px;
+}
+
+.modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.success-modal .call-btn {
+    background: #4ade80;
+    color: #1a1a1a;
+    border: none;
+    padding: 16px 30px;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3);
+}
+
+.success-modal .close-btn {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    padding: 14px 30px;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.success-modal .call-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.success-modal .close-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
