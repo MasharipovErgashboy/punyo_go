@@ -8,18 +8,7 @@ from .models import Order, OrderItem
 from .serializers import OrderSerializer
 
 
-from django.db import transaction
-from products.models import Product
-from .models import Order, OrderItem, PromoCode
-from decimal import Decimal
-import traceback
-import html
-import json
-from django.conf import settings
 
-@api_view(['POST'])
-def validate_promo(request):
-    code = request.data.get('code')
     if code:
         code = str(code).strip()
     else:
@@ -34,15 +23,7 @@ def validate_promo(request):
         return Response({'error': 'Promokod eskirgan yoki xato'}, status=status.HTTP_400_BAD_REQUEST)
         
     if promo.times_used >= promo.usage_limit:
-        promo.is_active = False
-        promo.save()
-        return Response({'error': 'Promokod eskirgan'}, status=status.HTTP_400_BAD_REQUEST)
-        
-    return Response({
-        'discount_percent': promo.discount_percent,
-        'message': 'Chegirma berildi'
-    })
-
+     
 @api_view(['POST'])
 @transaction.atomic
 def create_order(request):

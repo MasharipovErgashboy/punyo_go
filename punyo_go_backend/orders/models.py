@@ -3,11 +3,10 @@ from products.models import Product
 from users.models import UserProfile
 
 
-class PromoCode(models.Model):
+
     """Promo code model for discounts"""
     code = models.CharField(max_length=50, unique=True, verbose_name="Promokod")
-    discount_percent = models.PositiveIntegerField(verbose_name="Chegirma foizi (%)")
-    usage_limit = models.PositiveIntegerField(verbose_name="Necha kishi ishlata oladi")
+
     times_used = models.PositiveIntegerField(default=0, verbose_name="Ishlatilgan soni")
     is_active = models.BooleanField(default=True, verbose_name="Faol")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -21,7 +20,7 @@ class PromoCode(models.Model):
         return f"{self.code} - {self.discount_percent}%"
 
 
-class Order(models.Model):
+
     """Order model for user purchases"""
     STATUS_CHOICES = [
         ('pending', 'Kutilmoqda'),
@@ -46,8 +45,7 @@ class Order(models.Model):
     promo_code = models.ForeignKey(PromoCode, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Ishlatilgan Promokod")
     discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name="Chegirma summasi")
     delivery_address = models.TextField(blank=True, default='')
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+  k=True)
     phone_number = models.CharField(max_length=20, default='')
     notes = models.TextField(blank=True, default='')
     
