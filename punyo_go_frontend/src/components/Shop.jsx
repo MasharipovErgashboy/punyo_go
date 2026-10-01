@@ -336,6 +336,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
                         }
                     } catch (e) {
                         console.warn('Backend check failed, using provisional local identity');
+                        alert('API xatoligi: ' + e.message);
                     }
 
                     // Fallback to local/tg identity if backend is slow/offline but we HAVE tgUser
@@ -605,6 +606,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
             setLoading(false);
         } catch (error) {
             console.error('Error loading categories:', error);
+            alert('API xatoligi (categories): ' + error.message);
             setLoading(false);
         }
     };
