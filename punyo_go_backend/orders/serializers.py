@@ -11,10 +11,11 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     user_name = serializers.CharField(source='user.first_name', read_only=True)
+    restaurant_phone = serializers.CharField(source='restaurant.phone', read_only=True, allow_null=True)
     items = OrderItemSerializer(many=True, read_only=True)
     
     class Meta:
         model = Order
         fields = ['id', 'user', 'user_name', 'status', 'total_amount', 'delivery_address', 
-                  'latitude', 'longitude', 'phone_number', 'notes', 'created_at', 'items']
+                  'latitude', 'longitude', 'phone_number', 'notes', 'created_at', 'items', 'restaurant_phone']
         read_only_fields = ['id', 'created_at']

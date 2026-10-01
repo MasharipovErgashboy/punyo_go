@@ -551,7 +551,8 @@ const Shop = ({ language, theme, toggleTheme }) => {
 
             const response = await api.createOrder(orderData);
             if (response.id) {
-                const phone = cart.length > 0 ? cart[0].restaurant_phone : null;
+                const cartPhone = cart.length > 0 ? cart[0].restaurant_phone : null;
+                const phone = cartPhone || response.restaurant_phone;
                 setSuccessRestaurantPhone(phone);
                 setShowSuccessModal(true);
                 setCart([]);
