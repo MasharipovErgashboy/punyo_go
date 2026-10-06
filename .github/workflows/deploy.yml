@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -20,11 +23,13 @@ jobs:
         username: ${{ secrets.SERVER_USER }}
         key: ${{ secrets.SERVER_SSH_KEY }}
         script: |
-          # 1. Pull latest code
+          set -e
+
+          # 1. Pull latest code (authenticated via the workflow token, clean reset)
           cd /root/punyo_go
-          git stash
-          git pull origin main
-          
+          git fetch "https://x-access-token:${{ github.token }}@github.com/pmyge/punyo_go.git" main
+          git reset --hard FETCH_HEAD
+
           # 2. Update Backend
           cd /root/punyo_go/punyo_go_backend
           source venv/bin/activate
@@ -33,13 +38,13 @@ jobs:
           python manage.py migrate
           python manage.py collectstatic --noinput
           sudo systemctl restart punyo_backend
-          
+
           # 3. Update Bot
           cd /root/punyo_go/punyo_go_bot
           source venv/bin/activate
           pip install -r requirements.txt
           sudo systemctl restart punyo_bot
-          
+
           # 4. Rebuild Frontend from source so new changes go live
           cd /root/punyo_go/punyo_go_frontend
           npm install
