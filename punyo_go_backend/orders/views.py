@@ -1,29 +1,46 @@
+import html
+import json
+import traceback
+from decimal import Decimal
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from django.db import transaction
 from django.shortcuts import get_object_or_404
 
 from users.models import UserProfile
-from .models import Order, OrderItem
+from products.models import Product
+from .models import Order, OrderItem, PromoCode
 from .serializers import OrderSerializer
 
 
-
+@api_view(['POST'])
+def validate_promo(request):
+    """Validate a promo code and return its discount percentage."""
+    code = request.data.get('code')
     if code:
         code = str(code).strip()
     else:
         code = ''
-        
+
     if not code:
         return Response({'error': 'Promokod kiritilmagan'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
     promo = PromoCode.objects.filter(code=code, is_active=True).first()
-    
+
     if not promo:
         return Response({'error': 'Promokod eskirgan yoki xato'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
     if promo.times_used >= promo.usage_limit:
-     
+        return Response({'error': 'Promokod ishlatish limiti tugagan'}, status=status.HTTP_400_BAD_REQUEST)
+
+    return Response({
+        'discount_percent': promo.discount_percent,
+        'message': 'Chegirma berildi!',
+    })
+
+
 @api_view(['POST'])
 @transaction.atomic
 def create_order(request):
