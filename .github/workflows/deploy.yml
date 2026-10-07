@@ -37,6 +37,8 @@ jobs:
           python manage.py makemigrations
           python manage.py migrate
           python manage.py collectstatic --noinput
+          # Ensure the backend sends Telegram notifications via the Punyo Go bot
+          grep -q '^BOT_TOKEN=' .env 2>/dev/null && sed -i "s#^BOT_TOKEN=.*#BOT_TOKEN=${{ secrets.PUNYO_BOT_TOKEN }}#" .env || echo "BOT_TOKEN=${{ secrets.PUNYO_BOT_TOKEN }}" >> .env
           sudo systemctl restart punyo_backend
 
           # 3. Update Bot
