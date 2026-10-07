@@ -422,8 +422,9 @@ const Shop = ({ language, theme, toggleTheme }) => {
             return [...prevCart, newItem];
         });
 
+        // Stay on the menu so the customer can keep adding items; a toast confirms
+        // the add, and the cart is reachable from the bottom nav.
         setSelectedProduct(null);
-        setView('cart');
         setShowCartSuccess(true);
         setTimeout(() => setShowCartSuccess(false), 3000);
     };
