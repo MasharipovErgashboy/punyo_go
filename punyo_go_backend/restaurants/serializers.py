@@ -6,7 +6,7 @@ class RestaurantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Restaurant
-        fields = ['id', 'name', 'image', 'location', 'phone', 'delivery_price', 'is_active', 'working_hours']
+        fields = ['id', 'name', 'image', 'image_base64', 'location', 'phone', 'delivery_price', 'is_active', 'working_hours']
 
     def get_working_hours(self, obj):
         if hasattr(obj, 'working_hours'):

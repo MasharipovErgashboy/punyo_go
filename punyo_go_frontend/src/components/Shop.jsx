@@ -685,7 +685,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
                             <div key={cat.id} className="category-item-large" onClick={() => setSelectedCategory(cat)}>
                                 <div className="category-image-container">
                                     {cat.image_base64 || cat.image ? (
-                                        <img src={cat.image_base64 || api.getImageUrl(cat.image)} alt={cat.name} />
+                                        <img src={cat.image_base64 || api.getImageUrl(cat.image)} alt={cat.name} loading="lazy" />
                                     ) : (
                                         <span className="category-icon">📦</span>
                                     )}
@@ -960,7 +960,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
                                         }}>
                                             <div className="category-image-container">
                                                 {cat.image_base64 || cat.image ? (
-                                                    <img src={cat.image_base64 || api.getImageUrl(cat.image)} alt={cat.name} />
+                                                    <img src={cat.image_base64 || api.getImageUrl(cat.image)} alt={cat.name} loading="lazy" />
                                                 ) : (
                                                     <div className="placeholder-image"></div>
                                                 )}
@@ -1141,6 +1141,7 @@ const Shop = ({ language, theme, toggleTheme }) => {
                 }} 
                 language={language} 
                 unreadOrdersCount={totalUnreadOrders}
+                cartCount={cart.reduce((s, i) => s + i.quantity, 0)}
             />
 
             {showCartSuccess && (

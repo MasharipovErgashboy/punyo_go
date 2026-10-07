@@ -39,13 +39,13 @@ class Category(models.Model):
                 # In a real environment, you might check if the image field has changed
                 
                 # Optimize image for DB storage (max 400px width/height for categories)
-                img.thumbnail((400, 400))
+                img.thumbnail((300, 300))
                 
                 buffer = BytesIO()
                 # Save as JPEG with 70% quality to reduce size
                 if img.mode in ("RGBA", "P"):
                     img = img.convert("RGB")
-                img.save(buffer, format="JPEG", quality=70)
+                img.save(buffer, format="JPEG", quality=55)
                 
                 img_str = base64.b64encode(buffer.getvalue()).decode()
                 self.image_base64 = f"data:image/jpeg;base64,{img_str}"
@@ -104,12 +104,12 @@ class Product(models.Model):
             try:
                 img = Image.open(self.image)
                 # Optimize image for DB storage (max 800px width/height for products)
-                img.thumbnail((800, 800))
+                img.thumbnail((500, 500))
                 
                 buffer = BytesIO()
                 if img.mode in ("RGBA", "P"):
                     img = img.convert("RGB")
-                img.save(buffer, format="JPEG", quality=75)
+                img.save(buffer, format="JPEG", quality=60)
                 
                 img_str = base64.b64encode(buffer.getvalue()).decode()
                 self.image_base64 = f"data:image/jpeg;base64,{img_str}"

@@ -1,3 +1,7 @@
+import base64
+from io import BytesIO
+from PIL import Image
+from django.core.files.base import ContentFile
 import uuid
 from django.db import models
 from django.conf import settings
@@ -24,6 +28,7 @@ class Restaurant(models.Model):
     )
     name = models.CharField(max_length=200, verbose_name="Restoran nomi")
     image = models.ImageField(upload_to='restaurants/', verbose_name="Restoran rasmi")
+    image_base64 = models.TextField(blank=True, null=True, verbose_name="Rasm (Base64)")
     location = models.CharField(max_length=50, choices=DISTRICT_CHOICES, verbose_name="Joylashuvi")
     location_url = models.URLField(max_length=500, blank=True, null=True, verbose_name="Joylashuv Linki (Xarita)", help_text="Ixtiyoriy: Yandex/Google Maps linkini kiriting")
     phone = models.CharField(max_length=20, verbose_name="Telefon raqami")
@@ -43,6 +48,23 @@ class Restaurant(models.Model):
         verbose_name_plural = "Restoranlar"
         ordering = ['name']
     
+    def save(self, *args, **kwargs):
+        if self.image:
+            try:
+                img = Image.open(self.image)
+                img.thumbnail((500, 500))
+                buffer = BytesIO()
+                if img.mode in ("RGBA", "P"):
+                    img = img.convert("RGB")
+                img.save(buffer, format="JPEG", quality=60)
+                img_str = base64.b64encode(buffer.getvalue()).decode()
+                self.image_base64 = f"data:image/jpeg;base64,{img_str}"
+            except Exception as e:
+                print(f"Error processing restaurant image: {e}")
+        else:
+            self.image_base64 = None
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 

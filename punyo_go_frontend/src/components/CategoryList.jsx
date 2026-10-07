@@ -24,7 +24,7 @@ const CategoryList = ({ categories, selectedCategory, onSelectCategory, onShowAl
                     >
                         <div className="category-image-container">
                             {category.image_base64 || category.image ? (
-                                <img src={category.image_base64 || api.getImageUrl(category.image)} alt={category.name} />
+                                <img src={category.image_base64 || api.getImageUrl(category.image)} alt={category.name} loading="lazy" />
                             ) : (
                                 <span className="category-icon">📦</span>
                             )}

@@ -42,7 +42,7 @@ const ProductDetail = ({ product, language, onBack, favorites = [], onToggleFavo
                         {isFavorite ? '❤️' : '🤍'}
                     </button>
                     {product.image_base64 || product.image ? (
-                        <img src={product.image_base64 || getImageUrl(product.image)} alt={product.name} />
+                        <img src={product.image_base64 || getImageUrl(product.image)} alt={product.name} loading="lazy" />
                     ) : (
                         <div className="placeholder-image">🖼️</div>
                     )}

@@ -52,7 +52,7 @@ const RestaurantDetail = ({ restaurant, categories = [], language, onBack, onPro
         <div className="restaurant-detail-view">
             <div className="restaurant-detail-header">
                 <div className="restaurant-cover">
-                    <img src={api.getImageUrl(restaurant.image)} alt={restaurant.name} />
+                    <img src={api.getImageUrl(restaurant.image)} alt={restaurant.name} loading="lazy" />
                     <div className="cover-overlay"></div>
                     <button className="back-btn-overlay" onClick={onBack}>
                         <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -117,7 +117,7 @@ const RestaurantDetail = ({ restaurant, categories = [], language, onBack, onPro
                                 <div key={category.id} className="category-item">
                                     <div className="category-image-container">
                                         {category.image_base64 || category.image ? (
-                                            <img src={category.image_base64 || api.getImageUrl(category.image)} alt={category.name} />
+                                            <img src={category.image_base64 || api.getImageUrl(category.image)} alt={category.name} loading="lazy" />
                                         ) : (
                                             <span className="category-icon">📦</span>
                                         )}

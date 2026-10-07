@@ -1,7 +1,7 @@
 import React from 'react';
 import './BottomNav.css';
 
-const BottomNav = ({ currentView, onViewChange, language, unreadOrdersCount = 0 }) => {
+const BottomNav = ({ currentView, onViewChange, language, unreadOrdersCount = 0, cartCount = 0 }) => {
     return (
         <div className="bottom-nav">
             <div 
@@ -44,7 +44,7 @@ const BottomNav = ({ currentView, onViewChange, language, unreadOrdersCount = 0 
                         <circle cx="20" cy="21" r="1"></circle>
                         <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
                     </svg>
-                    {/* Badge could be added here if needed */}
+                    {cartCount > 0 && <span className="bottom-nav-badge">{cartCount}</span>}
                 </div>
                 <span>{language === 'ru' ? 'Корзина' : 'Savatcha'}</span>
             </div>
