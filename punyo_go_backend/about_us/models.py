@@ -1,3 +1,6 @@
+import base64
+from io import BytesIO
+from PIL import Image
 from django.db import models
 from django.utils import timezone
 from users.models import UserProfile
@@ -64,6 +67,7 @@ class Advertisement(models.Model):
     """Swiper advertisements for Mini App"""
     image = models.ImageField(upload_to='advertisements/', blank=True, null=True, help_text="Upload the banner image here (16:9 or similar ratio)")
     video = models.FileField(upload_to='advertisements/videos/', blank=True, null=True, help_text="Upload a video banner (mp4, webm). You must provide EITHER an image OR a video.")
+    image_base64 = models.TextField(blank=True, null=True, verbose_name="Rasm (Base64)")
     is_active = models.BooleanField(default=True, help_text="Uncheck to hide this banner")
     order = models.IntegerField(default=0, help_text="Order in the slider (lower comes first)")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -73,6 +77,23 @@ class Advertisement(models.Model):
         verbose_name = "Reklama (swiper)"
         verbose_name_plural = "Reklamalar (swiper)"
         ordering = ['order', '-created_at']
+
+    def save(self, *args, **kwargs):
+        if self.image:
+            try:
+                img = Image.open(self.image)
+                img.thumbnail((1000, 1000))
+                buffer = BytesIO()
+                if img.mode in ("RGBA", "P"):
+                    img = img.convert("RGB")
+                img.save(buffer, format="JPEG", quality=65)
+                img_str = base64.b64encode(buffer.getvalue()).decode()
+                self.image_base64 = f"data:image/jpeg;base64,{img_str}"
+            except Exception as e:
+                print(f"Error processing ad image: {e}")
+        else:
+            self.image_base64 = None
+        super().save(*args, **kwargs)
 
     def clean(self):
         if self.image and self.video:

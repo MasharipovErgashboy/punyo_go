@@ -51,4 +51,4 @@ class AboutSerializer(serializers.ModelSerializer):
 class AdvertisementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Advertisement
-        fields = ['id', 'image', 'video', 'order']
+        fields = ['id', 'image', 'image_base64', 'video', 'order']

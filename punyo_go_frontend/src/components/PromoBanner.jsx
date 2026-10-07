@@ -55,7 +55,7 @@ const PromoBanner = () => {
                                 />
                             </div>
                         ) : (
-                            <div className="promo-slide" style={{ backgroundImage: `url(${banner.image})` }}>
+                            <div className="promo-slide" style={{ backgroundImage: `url(${banner.image_base64 || banner.image})` }}>
                             </div>
                         )}
                     </SwiperSlide>

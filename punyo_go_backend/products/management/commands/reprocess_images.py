@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from products.models import Category, Product
 from restaurants.models import Restaurant
+from about_us.models import Advertisement
 
 
 class Command(BaseCommand):
@@ -8,7 +9,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         total = 0
-        for Model in (Category, Product, Restaurant):
+        for Model in (Category, Product, Restaurant, Advertisement):
             for obj in Model.objects.all():
                 try:
                     obj.save()
