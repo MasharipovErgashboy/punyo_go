@@ -41,10 +41,6 @@ jobs:
           grep -q '^BOT_TOKEN=' .env 2>/dev/null && sed -i "s#^BOT_TOKEN=.*#BOT_TOKEN=${{ secrets.PUNYO_BOT_TOKEN }}#" .env || echo "BOT_TOKEN=${{ secrets.PUNYO_BOT_TOKEN }}" >> .env
           sudo systemctl restart punyo_backend
 
-          # DIAGC (temporary)
-          cd /root/punyo_go/punyo_go_backend
-          ./venv/bin/python diag_check.py || true
-
           # 3. Update Bot
           cd /root/punyo_go/punyo_go_bot
           source venv/bin/activate

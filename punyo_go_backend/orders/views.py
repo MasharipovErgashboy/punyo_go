@@ -89,6 +89,35 @@ def create_order(request):
             else:
                 valid_promo = None
 
+        # Reject orders placed outside a restaurant's working hours (uses server time,
+        # so it does not depend on the customer's device clock).
+        from django.utils import timezone as _tz
+        import datetime as _dt
+        from zoneinfo import ZoneInfo as _ZI
+        from restaurants.models import Restaurant as _Rest
+        _now = _tz.localtime(_tz.now(), _ZI('Asia/Tashkent'))
+        _cur = _now.time()
+        for _rid in restaurant_items:
+            if not _rid:
+                continue
+            _rest = _Rest.objects.filter(id=_rid).first()
+            try:
+                _wh = _rest.working_hours if _rest else None
+            except Exception:
+                _wh = None
+            if _wh:
+                _end = _wh.end_time
+                if _end.hour == 0 and _end.minute == 0:
+                    _end = _dt.time(23, 59, 59)
+                if _wh.start_time < _end:
+                    _is_open = _wh.start_time <= _cur <= _end
+                else:
+                    _is_open = _cur >= _wh.start_time or _cur <= _end
+                if not _is_open:
+                    return Response({
+                        'error': f"⏰ {_rest.name} hozir yopiq. Ish vaqti: {_wh.start_time.strftime('%H:%M')} - {_wh.end_time.strftime('%H:%M')}. Iltimos, ish vaqtida buyurtma bering."
+                    }, status=status.HTTP_400_BAD_REQUEST)
+
         created_orders = []
         for restaurant_id, items in restaurant_items.items():
             order = Order.objects.create(
@@ -135,36 +164,9 @@ def create_order(request):
             order.save()
             created_orders.append(order)
             
-            # Calculate if delayed
+            # Orders outside working hours are rejected before creation, so a created
+            # order is always within hours and is notified immediately.
             is_delayed = False
-            from django.utils import timezone
-            import datetime
-            from zoneinfo import ZoneInfo
-
-            if hasattr(order.restaurant, 'working_hours'):
-                wh = order.restaurant.working_hours
-                tz = ZoneInfo('Asia/Tashkent')
-                now_tz = timezone.localtime(timezone.now(), tz)
-                current_time = now_tz.time()
-                
-                end_t = wh.end_time
-                if end_t.hour == 0 and end_t.minute == 0:
-                    end_t = datetime.time(23, 59, 59)
-                
-                if wh.start_time < end_t:
-                    if not (wh.start_time <= current_time <= end_t):
-                        is_delayed = True
-                else:
-                    if not (current_time >= wh.start_time or current_time <= end_t):
-                        is_delayed = True
-                
-                if is_delayed:
-                    send_time = now_tz.replace(hour=wh.start_time.hour, minute=wh.start_time.minute, second=0, microsecond=0)
-                    if send_time <= now_tz:
-                        send_time += datetime.timedelta(days=1)
-                    order.send_at = send_time
-                    order.is_telegram_sent = False
-                    order.save()
 
             if not is_delayed:
                 # Send notification to Telegram group
