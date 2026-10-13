@@ -1,6 +1,13 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Restaurant, RestaurantWorkingHour
+from .models import Restaurant, RestaurantWorkingHour, RestaurantPushToken
+
+
+@admin.register(RestaurantPushToken)
+class RestaurantPushTokenAdmin(admin.ModelAdmin):
+    list_display = ('restaurant', 'device_name', 'token', 'updated_at')
+    search_fields = ('restaurant__name', 'device_name', 'token')
+    readonly_fields = ('created_at', 'updated_at')
 
 @admin.register(RestaurantWorkingHour)
 class RestaurantWorkingHourAdmin(admin.ModelAdmin):

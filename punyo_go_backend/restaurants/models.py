@@ -69,6 +69,22 @@ class Restaurant(models.Model):
         return self.name
 
 
+class RestaurantPushToken(models.Model):
+    """Expo push notification token for a restaurant device (planshet/telefon)"""
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='push_tokens', verbose_name="Restoran")
+    token = models.CharField(max_length=255, unique=True, verbose_name="Expo push token")
+    device_name = models.CharField(max_length=120, blank=True, default='', verbose_name="Qurilma nomi")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Push token (qurilma)"
+        verbose_name_plural = "Push tokenlar (qurilmalar)"
+
+    def __str__(self):
+        return f"{self.restaurant.name} — {self.token[:20]}…"
+
+
 class RestaurantWorkingHour(models.Model):
     """Working hours for a restaurant"""
     restaurant = models.OneToOneField(Restaurant, on_delete=models.CASCADE, related_name='working_hours', verbose_name="Restoran")

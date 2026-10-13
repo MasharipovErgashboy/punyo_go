@@ -223,6 +223,21 @@ def create_order(request):
                 except Exception as e:
                     print(f"DEBUG: Failed to send TG notification: {e}")
 
+                # Send Expo push to the restaurant app devices (native restoran ilovasi)
+                try:
+                    from config.push_utils import send_expo_push
+                    if order.restaurant:
+                        tokens = list(order.restaurant.push_tokens.values_list('token', flat=True))
+                        if tokens:
+                            send_expo_push(
+                                tokens,
+                                title="🔔 Yangi buyurtma!",
+                                body=f"#{order.id} • {order.total_amount:,.0f} so'm • {order.phone_number}",
+                                data={"order_id": order.id, "type": "new_order"},
+                            )
+                except Exception as e:
+                    print(f"DEBUG: Failed to send Expo push: {e}")
+
         if valid_promo:
             valid_promo.times_used += 1
             if valid_promo.times_used >= valid_promo.usage_limit:
