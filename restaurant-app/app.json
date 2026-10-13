@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "Punyo Go Restoran",
+    "slug": "punyogo-restaurant",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": false,
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#FF6B2C"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "uz.punyogo.partner"
+    },
+    "android": {
+      "package": "uz.punyogo.partner",
+      "versionCode": 1,
+      "permissions": ["VIBRATE", "WAKE_LOCK"]
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "color": "#FF6B2C"
+        }
+      ]
+    ]
+  }
+}
