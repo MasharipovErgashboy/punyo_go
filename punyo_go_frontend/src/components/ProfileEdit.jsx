@@ -2,15 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../api';
 import './ProfileEdit.css';
 
+// Jizzax viloyati tumanlari (backend DISTRICT_CHOICES bilan mos)
+const DISTRICTS = [
+    'Arnasoy', 'Baxmal', "Do'stlik", 'Forish', "G'allaorol",
+    'Jizzax shahri', "Mirzacho'l", 'Paxtakor', 'Sharof Rashidov',
+    'Yangiobod', 'Zafarobod', 'Zarbdor', 'Zomin',
+];
+
 export default function ProfileEdit({ user, onBack, onSave, language }) {
     const [phoneNumber, setPhoneNumber] = useState(user?.phone_number || '');
     const [userName, setUserName] = useState(user?.first_name || '');
+    const [district, setDistrict] = useState(user?.district || '');
+    const [lang, setLang] = useState(user?.language || language || 'uz');
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (user) {
             setPhoneNumber(user.phone_number || '');
             setUserName(user.first_name || '');
+            setDistrict(user.district || '');
+            setLang(user.language || language || 'uz');
         }
     }, [user]);
 
@@ -20,9 +31,15 @@ export default function ProfileEdit({ user, onBack, onSave, language }) {
             const userId = user.telegram_user_id || user.id;
             const result = await api.updateUser(userId, {
                 phone_number: phoneNumber,
-                first_name: userName
+                first_name: userName,
+                district: district,
+                language: lang
             });
             if (result) {
+                // Til o'zgargan bo'lsa butun saytni yangilaymiz
+                if (lang !== (user?.language || language)) {
+                    window.dispatchEvent(new CustomEvent('langChange', { detail: lang }));
+                }
                 onSave(result);
             }
         } catch (error) {
@@ -78,6 +95,44 @@ export default function ProfileEdit({ user, onBack, onSave, language }) {
                             onChange={(e) => setPhoneNumber(e.target.value)}
                             placeholder="+998 -- --- -- --"
                         />
+                    </div>
+                    <div className="profile-divider"></div>
+                    <div className="profile-input-wrapper">
+                        <label>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            {language === 'ru' ? 'Район (Джизак)' : 'Tuman (Jizzax)'}
+                        </label>
+                        <select
+                            className="profile-select"
+                            value={district}
+                            onChange={(e) => setDistrict(e.target.value)}
+                        >
+                            <option value="">{language === 'ru' ? 'Выберите район' : 'Tumanni tanlang'}</option>
+                            {DISTRICTS.map((d) => (
+                                <option key={d} value={d}>{d}</option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+
+                <div className="profile-card">
+                    <div className="profile-input-wrapper">
+                        <label>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                            {language === 'ru' ? 'Язык' : 'Til'}
+                        </label>
+                        <div className="profile-lang-toggle">
+                            <button
+                                type="button"
+                                className={`profile-lang-btn ${lang === 'uz' ? 'active' : ''}`}
+                                onClick={() => setLang('uz')}
+                            >🇺🇿 O'zbek</button>
+                            <button
+                                type="button"
+                                className={`profile-lang-btn ${lang === 'ru' ? 'active' : ''}`}
+                                onClick={() => setLang('ru')}
+                            >🇷🇺 Русский</button>
+                        </div>
                     </div>
                 </div>
 

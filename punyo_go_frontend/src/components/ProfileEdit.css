@@ -131,6 +131,54 @@
     font-weight: 500;
 }
 
+.profile-select {
+    border: none;
+    outline: none;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-main, #fff);
+    background: transparent;
+    padding: 4px 0;
+    width: 100%;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238E8E93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right center;
+}
+
+.profile-select option {
+    color: #000;
+    background: #fff;
+}
+
+.profile-lang-toggle {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+    width: 100%;
+}
+
+.profile-lang-btn {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1.5px solid var(--border-color, #2C2C2E);
+    border-radius: 12px;
+    background: transparent;
+    color: var(--text-muted, #8E8E93);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.profile-lang-btn.active {
+    border-color: var(--accent-color, #FFB800);
+    background: var(--accent-color, #FFB800);
+    color: #fff;
+}
+
 .profile-divider {
     height: 1px;
     background: var(--border-color, #2C2C2E);
