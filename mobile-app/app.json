@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "Punyo Go",
+    "slug": "punyogo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "punyogo",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#FF6B2C"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "uz.punyogo.app"
+    },
+    "android": {
+      "package": "uz.punyogo.app",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "YOUR_GOOGLE_MAPS_API_KEY"
+        }
+      }
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Buyurtmani yetkazish uchun joylashuvingiz kerak."
+        }
+      ]
+    ]
+  }
+}
