@@ -168,11 +168,18 @@ def create_order(request):
             # order is always within hours and is notified immediately.
             is_delayed = False
 
+            # A restaurant can opt out of the Telegram group message (e.g. a test
+            # restaurant, or one fully migrated to the native app). The Expo push
+            # to the restaurant app still fires regardless.
+            tg_enabled = not (order.restaurant and order.restaurant.telegram_notifications is False)
+
             if not is_delayed:
                 # Send notification to Telegram group
                 try:
+                    if not tg_enabled:
+                        raise RuntimeError("telegram_notifications disabled for this restaurant")
                     from config.telegram_utils import send_telegram_notification
-                    
+
                     scheme = request.scheme
                     host = request.get_host()
                     admin_link = f"{scheme}://{host}/admin/orders/order/{order.id}/change/"

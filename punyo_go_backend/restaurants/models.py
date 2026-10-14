@@ -41,6 +41,11 @@ class Restaurant(models.Model):
         help_text="Tasdiqlangan buyurtmalar shu kanalga yuboriladi (masalan: -100123456789)"
     )
     is_active = models.BooleanField(default=True, verbose_name="Aktiv")
+    telegram_notifications = models.BooleanField(
+        default=True,
+        verbose_name="Telegram guruhiga xabar yuborilsinmi",
+        help_text="O'chirilsa, yangi buyurtmalar Telegram guruhiga yuborilmaydi (faqat ilovaga). Test restoran uchun o'chiring."
+    )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaratilgan vaqt")
     
     class Meta:

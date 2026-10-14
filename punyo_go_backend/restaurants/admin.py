@@ -50,8 +50,8 @@ class RestaurantWorkingHourAdmin(admin.ModelAdmin):
 
 @admin.register(Restaurant)
 class RestaurantAdmin(admin.ModelAdmin):
-    list_display = ('name', 'admin_user', 'image_preview', 'location', 'phone', 'is_active', 'id')
-    list_filter = ('is_active',)
+    list_display = ('name', 'admin_user', 'image_preview', 'location', 'phone', 'is_active', 'telegram_notifications', 'id')
+    list_filter = ('is_active', 'telegram_notifications')
     search_fields = ('name', 'location', 'phone', 'id')
     readonly_fields = ('id', 'image_preview_large', 'created_at')
     
@@ -60,8 +60,8 @@ class RestaurantAdmin(admin.ModelAdmin):
             'fields': ('id', 'name', 'is_active')
         }),
         ('Boshqaruv (Multi-vendor)', {
-            'fields': ('admin_user', 'telegram_chat_id'),
-            'description': 'Ushbu restoran uchun javobgar foydalanuvchini (Admin) tanlang. U faqat shu restoranni ko\'ra oladi.'
+            'fields': ('admin_user', 'telegram_chat_id', 'telegram_notifications'),
+            'description': 'Ushbu restoran uchun javobgar foydalanuvchini (Admin) tanlang. U faqat shu restoranni ko\'ra oladi. "Telegram guruhiga xabar" ni o\'chirsangiz — test uchun yoki ilovaga to\'liq o\'tgan restoran uchun — buyurtmalar Telegram guruhiga bormaydi, faqat ilovaga keladi.'
         }),
         ('Rasm', {
             'fields': ('image', 'image_preview_large')

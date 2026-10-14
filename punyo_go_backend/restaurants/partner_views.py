@@ -33,6 +33,9 @@ def _get_order_for_user(user, order_id):
 def _notify_customer(order, accepted, reason=''):
     """DM the customer via the customer bot about accept/reject."""
     try:
+        # Test / app-only restaurants opt out of Telegram entirely.
+        if order.restaurant and order.restaurant.telegram_notifications is False:
+            return
         from config.telegram_utils import send_telegram_notification
         uid = getattr(order.user, 'telegram_user_id', None)
         if not uid:

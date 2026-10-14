@@ -10,7 +10,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#FF6B2C"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "uz.punyogo.partner"
@@ -18,7 +20,11 @@
     "android": {
       "package": "uz.punyogo.partner",
       "versionCode": 1,
-      "permissions": ["VIBRATE", "WAKE_LOCK"]
+      "permissions": [
+        "VIBRATE",
+        "WAKE_LOCK",
+        "POST_NOTIFICATIONS"
+      ]
     },
     "plugins": [
       [
@@ -26,7 +32,8 @@
         {
           "color": "#FF6B2C"
         }
-      ]
+      ],
+      "expo-audio"
     ]
   }
 }

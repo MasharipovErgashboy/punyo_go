@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react';
 import {
   View, Text, FlatList, TouchableOpacity, StyleSheet,
-  RefreshControl, ActivityIndicator, Alert,
+  RefreshControl, ActivityIndicator, Alert, Modal,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Partner, money } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { fireNewOrderAlert, getPushToken } from '../notifications';
+import { initAudio, startAlarm, stopAlarm } from '../alarm';
 import { colors } from '../theme/colors';
 
 const STATUS_META = {
@@ -33,7 +34,19 @@ export default function OrdersScreen({ navigation }) {
   const [newCount, setNewCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [alarmCount, setAlarmCount] = useState(0); // >0 shows the ringing overlay
   const prevNewCount = useRef(null);
+
+  // Prepare audio once.
+  useEffect(() => { initAudio(); }, []);
+
+  const dismissAlarm = useCallback(() => {
+    stopAlarm();
+    setAlarmCount(0);
+  }, []);
+
+  // Always stop the ringing when leaving the screen.
+  useEffect(() => () => stopAlarm(), []);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -74,7 +87,10 @@ export default function OrdersScreen({ navigation }) {
       const nc = data.new_count || 0;
       setNewCount(nc);
       if (prevNewCount.current !== null && nc > prevNewCount.current) {
-        fireNewOrderAlert(nc - prevNewCount.current);
+        const added = nc - prevNewCount.current;
+        fireNewOrderAlert(added);      // OS notification (covers backgrounded app)
+        startAlarm();                  // loud looping ring until acknowledged
+        setAlarmCount(nc);             // show the full-screen overlay
       }
       prevNewCount.current = nc;
     } catch (e) {
@@ -108,7 +124,7 @@ export default function OrdersScreen({ navigation }) {
     return (
       <TouchableOpacity
         style={[styles.card, item.status === 'pending' && styles.cardNew]}
-        onPress={() => navigation.navigate('OrderDetail', { order: item })}
+        onPress={() => { dismissAlarm(); navigation.navigate('OrderDetail', { order: item }); }}
       >
         <View style={styles.cardTop}>
           <Text style={styles.orderId}>#{item.id}</Text>
@@ -129,6 +145,21 @@ export default function OrdersScreen({ navigation }) {
 
   return (
     <View style={styles.screen}>
+      <Modal visible={alarmCount > 0} transparent animationType="fade" onRequestClose={dismissAlarm}>
+        <View style={styles.alarmOverlay}>
+          <View style={styles.alarmCard}>
+            <Text style={styles.alarmBell}>🔔</Text>
+            <Text style={styles.alarmTitle}>YANGI BUYURTMA!</Text>
+            <Text style={styles.alarmSub}>
+              {alarmCount > 1 ? `${alarmCount} ta yangi buyurtma kutyapti` : 'Yangi buyurtma keldi'}
+            </Text>
+            <TouchableOpacity style={styles.alarmBtn} onPress={dismissAlarm} activeOpacity={0.85}>
+              <Text style={styles.alarmBtnText}>KO‘RDIM</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       <View style={styles.filters}>
         {FILTERS.map((f) => (
           <TouchableOpacity
@@ -195,4 +226,20 @@ const styles = StyleSheet.create({
   items: { color: colors.textMuted, fontWeight: '600' },
   total: { fontSize: 18, fontWeight: '900', color: colors.primary },
   time: { position: 'absolute', top: 14, right: 110, color: colors.textMuted, fontSize: 12, display: 'none' },
+  alarmOverlay: {
+    flex: 1, backgroundColor: 'rgba(0,0,0,0.65)',
+    alignItems: 'center', justifyContent: 'center', padding: 28,
+  },
+  alarmCard: {
+    backgroundColor: '#fff', borderRadius: 24, padding: 30, alignItems: 'center',
+    width: '100%', maxWidth: 360,
+  },
+  alarmBell: { fontSize: 64 },
+  alarmTitle: { fontSize: 26, fontWeight: '900', color: colors.primary, marginTop: 10, textAlign: 'center' },
+  alarmSub: { fontSize: 16, color: colors.text, marginTop: 8, textAlign: 'center', fontWeight: '600' },
+  alarmBtn: {
+    marginTop: 24, backgroundColor: colors.primary, borderRadius: 16,
+    paddingVertical: 16, paddingHorizontal: 40, width: '100%', alignItems: 'center',
+  },
+  alarmBtnText: { color: '#fff', fontSize: 18, fontWeight: '900', letterSpacing: 0.5 },
 });
